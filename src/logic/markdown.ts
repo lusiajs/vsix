@@ -1,9 +1,15 @@
-import type { ApiEntry } from "../../../../reference/api.ts";
+import type { ApiEntry, ApiMember } from "../../../../reference/api.ts";
 import type { HoverResult } from "./hover.ts";
 import type { PropDef } from "./props.ts";
 
 export function hoverMarkdown(result: HoverResult): string {
-  return result.kind === "api" ? apiMarkdown(result.entry) : componentMarkdown(result.name, result.props);
+  if (result.kind === "api") return apiMarkdown(result.entry);
+  if (result.kind === "css") return cssMarkdown(result.name);
+  return componentMarkdown(result.name, result.props);
+}
+
+function cssMarkdown(name: string): string {
+  return [`**${name}**`, "", fence("ts", `{ ${name}: string | number }`), "CSS style property. Set it in a keyframe, such as `0: { ${name}: ... }`.", ""].join("\n");
 }
 
 function apiMarkdown(entry: ApiEntry): string {
@@ -24,7 +30,15 @@ function apiMarkdown(entry: ApiEntry): string {
 
 function membersMarkdown(entry: ApiEntry): string[] {
   if (!entry.members) return [];
-  return ["Members:", "", ...entry.members.map((member) => `- \`${entry.name}.${member.name}\`: ${member.summary}`), ""];
+  return ["Members:", "", ...memberLines(entry.name, entry.members), ""];
+}
+
+/** One line per member; a nested group (such as EASE.STYLE) lists its own members under it. */
+function memberLines(path: string, members: ApiMember[]): string[] {
+  return members.flatMap((member) => {
+    const memberPath = `${path}.${member.name}`;
+    return [`- \`${memberPath}\`: ${member.summary}`, ...memberLines(memberPath, member.members ?? [])];
+  });
 }
 
 function componentMarkdown(name: string, props: PropDef[]): string {

@@ -1,7 +1,8 @@
 import type { ApiEntry } from "../../../../reference/api.ts";
 import { findApiById, findScriptApi } from "./api-lookup.ts";
 import type { PropLookup } from "./completions.ts";
-import { isInAnimate } from "./animate-fields.ts";
+import { cssKeyAt, isInAnimate } from "./animate-fields.ts";
+import { enumOwnerAt } from "./enum-members.ts";
 import { findComponentImport } from "./imports.ts";
 import type { PropDef } from "./props.ts";
 import { regionAt } from "./regions.ts";
@@ -10,7 +11,8 @@ import { attributeNameAt, wordAt } from "./word.ts";
 
 export type HoverResult =
   | { kind: "api"; entry: ApiEntry }
-  | { kind: "component"; name: string; props: PropDef[] };
+  | { kind: "component"; name: string; props: PropDef[] }
+  | { kind: "css"; name: string };
 
 const STYLE_TOKENS: Array<[string, string]> = [
   ["@scoped", "scoped"],
@@ -28,7 +30,7 @@ export function hoverAt(text: string, offset: number, propsOf: PropLookup): Hove
 }
 
 function scriptHover(text: string, offset: number): HoverResult | undefined {
-  const entry = findScriptApi(wordAt(text, offset));
+  const entry = findScriptApi(wordAt(text, offset)) ?? enumOwnerAt(text, offset);
   return entry ? { kind: "api", entry } : undefined;
 }
 
@@ -41,7 +43,7 @@ function styleHover(text: string, offset: number): HoverResult | undefined {
 function markupHover(text: string, offset: number, propsOf: PropLookup): HoverResult | undefined {
   const tag = openTagAt(text, offset);
   if (tag?.name === "style") return styleTagHover(text, offset);
-  return flowTagHover(text, offset) ?? plainAttributeHover(text, offset, tag) ?? animateMoreHover(text, offset) ?? componentHover(text, offset, propsOf);
+  return flowTagHover(text, offset) ?? plainAttributeHover(text, offset, tag) ?? animateMoreHover(text, offset) ?? cssHover(text, offset) ?? componentHover(text, offset, propsOf);
 }
 
 /** Hover on the `more` key inside an animate object. */
@@ -112,4 +114,10 @@ function tokenCovers(line: string, token: string, column: number): boolean {
     at = line.indexOf(token, at + 1);
   }
   return false;
+}
+
+/** Hover on a style property written as a key of a keyframe. */
+function cssHover(text: string, offset: number): HoverResult | undefined {
+  const name = cssKeyAt(text, offset);
+  return name === undefined ? undefined : { kind: "css", name };
 }

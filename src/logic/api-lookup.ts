@@ -18,7 +18,7 @@ export function findApiById(id: string): ApiEntry | undefined {
   return api.find((entry) => entry.id === id);
 }
 
-/** An enum object such as `TRANSITION`, the entry that lists its members. */
+/** An enum object such as `EASE`, the entry that lists its members. */
 export function findEnum(name: string): ApiEntry | undefined {
   return api.find((entry) => entry.kind === "value" && entry.members !== undefined && entry.name === name);
 }

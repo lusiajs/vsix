@@ -1,3 +1,4 @@
+import { CSS_PROPERTIES } from "./css-properties.ts";
 import { enumNameItem } from "./enum-members.ts";
 import { expressionEnd } from "./format-expressions.ts";
 import type { CompletionItemData, ScriptItem } from "./completion-data.ts";
@@ -5,11 +6,12 @@ import type { CompletionItemData, ScriptItem } from "./completion-data.ts";
 const ANIMATE_OPEN = "animate={";
 
 const FIELD_ITEMS: CompletionItemData[] = [
-  { label: "animation", kind: "property", insertText: "animation: $1", snippet: true, detail: "Keyframes to play" },
-  { label: "active", kind: "property", insertText: "active: $1", snippet: true, detail: "Trigger: ACTIVE member or a store (default ACTIVE.IN)" },
+  { label: "style", kind: "property", insertText: "style: $1", snippet: true, detail: "Keyframes to play" },
+  { label: "when", kind: "property", insertText: "when: $1", snippet: true, detail: "Trigger: WHEN member or a store (default WHEN.ATTACH)" },
   { label: "control", kind: "property", insertText: "control: $1", snippet: true, detail: "A controller() that plays, reverses, stops or seeks" },
   { label: "once", kind: "property", insertText: "once: true", snippet: false, detail: "Play forward only once" },
   { label: "more", kind: "property", insertText: "more: { $1 }", snippet: true, detail: "Trigger options: VIEW margin, amount, reverse; HOVER inDelay, outDelay, out, outDuration; SCROLL start, end, follow, part" },
+  { label: "midway", kind: "property", insertText: "midway: $1", snippet: true, detail: "What a new play does while one runs: MIDWAY member, or { play, turn, turnDuration, turnStyle, turnEase }" },
   { label: "keep", kind: "property", insertText: "keep: false", snippet: false, detail: "Remove the inline styles when a play ends (default true)" },
   { label: "duration", kind: "property", insertText: "duration: $1", snippet: true, detail: "Length of one play, in ms (default 300)" },
   { label: "delay", kind: "property", insertText: "delay: $1", snippet: true, detail: "Wait before each forward play, in ms" },
@@ -38,17 +40,47 @@ const MORE_FIELDS: Record<string, CompletionItemData[]> = {
   ],
 };
 
+/** The keys of a `midway: { ... }` object. */
+const MIDWAY_FIELDS: CompletionItemData[] = [
+  { label: "play", kind: "property", insertText: "play: $1", snippet: true, detail: "MIDWAY member: what a new play does while one runs (default MIDWAY.TURN)" },
+  { label: "turn", kind: "property", insertText: "turn: $1", snippet: true, detail: "TURN member or a function: how the motion changes direction (default TURN.SUDDEN)" },
+  { label: "turnDuration", kind: "property", insertText: "turnDuration: $1", snippet: true, detail: "Length of the change in ms (default 200)" },
+  { label: "turnStyle", kind: "property", insertText: "turnStyle: $1", snippet: true, detail: "EASE.STYLE member for the blend (default EASE.STYLE.CUBIC)" },
+  { label: "turnEase", kind: "property", insertText: "turnEase: $1", snippet: true, detail: "EASE member for the blend (default EASE.INOUT)" },
+];
+
+/** The style properties of a keyframe object, in camelCase, as the DOM names them. */
+const CSS_FIELDS: CompletionItemData[] = CSS_PROPERTIES.map((name) => ({
+  label: name,
+  kind: "property",
+  insertText: `${name}: $1`,
+  snippet: true,
+  detail: "CSS style property",
+}));
+
+const CSS_NAMES: ReadonlySet<string> = new Set(CSS_PROPERTIES);
+
+/** The keys of a keyframes object. `default` sets the easing for keys that do not set their own. */
+const KEYFRAMES_FIELDS: CompletionItemData[] = [
+  { label: "default", kind: "property", insertText: "default: [$1]", snippet: true, detail: "Easing for keys that do not set their own: [EASE.STYLE.x, EASE.y], [EASE.STYLE.x] or [EASE.y]" },
+];
+
 /**
  * Completions inside `animate={...}`: the item keys of an AnimateItem, the
- * ACTIVE enum after `active:`, or the `more` keys of the item's trigger.
- * Undefined when the cursor is elsewhere.
+ * WHEN enum after `when:`, the MIDWAY and TURN enums, or the keys of
+ * `more` and `midway` objects. Undefined when the cursor is elsewhere.
  */
 export function animateFieldsAt(text: string, offset: number): ScriptItem[] | undefined {
   const open = animateExpressionOpen(text, offset);
   if (open === -1) return undefined;
   const typed = text.slice(open, offset);
-  if (ACTIVE_VALUE.test(typed)) return enumNameItem("ACTIVE");
-  if (isMoreKeyPosition(typed)) return moreFieldsFor(typed);
+  if (WHEN_VALUE.test(typed)) return enumNameItem("WHEN");
+  if (MIDWAY_VALUE.test(typed)) return enumNameItem("MIDWAY");
+  if (TURN_VALUE.test(typed)) return enumNameItem("TURN");
+  if (isObjectKeyPosition(typed, MORE_OPEN)) return moreFieldsFor(typed);
+  if (isObjectKeyPosition(typed, MIDWAY_OPEN)) return MIDWAY_FIELDS;
+  if (isObjectKeyPosition(typed, STYLE_OPEN)) return KEYFRAMES_FIELDS;
+  if (isCssKeyPosition(typed)) return CSS_FIELDS;
   return isItemKeyPosition(typed) ? FIELD_ITEMS : undefined;
 }
 
@@ -57,22 +89,50 @@ export function isInAnimate(text: string, offset: number): boolean {
   return animateExpressionOpen(text, offset) !== -1;
 }
 
-const ACTIVE_VALUE = /\bactive\s*:\s*[\w$]*$/;
-const MORE_OPEN = /\bmore\s*:\s*$/;
-const KEY_POSITION = /[{,]\s*[\w$]*$/;
-const ACTIVE_NAMES = /\bactive\s*:\s*ACTIVE\.([A-Z]+)/g;
+/** The style property under the cursor when it is a key of a keyframe css object, such as `opacity` in `0: { opacity }`. */
+export function cssKeyAt(text: string, offset: number): string | undefined {
+  let start = offset;
+  while (start > 0 && WORD_CHAR.test(text.charAt(start - 1))) start--;
+  let end = offset;
+  while (end < text.length && WORD_CHAR.test(text.charAt(end))) end++;
+  const name = text.slice(start, end);
+  if (!CSS_NAMES.has(name)) return undefined;
+  const open = animateExpressionOpen(text, start);
+  if (open === -1 || !isCssKeyPosition(text.slice(open, start))) return undefined;
+  return name;
+}
 
-/** True at a key of a `more: {...}` object. */
-function isMoreKeyPosition(typed: string): boolean {
+const WORD_CHAR = /[\w$]/;
+/** A `{` that is the value of a numeric key: `0: {`, or `1: [EASE.OUT, {` with the ease first. */
+const CSS_OPEN = /\b\d+(?:\.\d+)?\s*:\s*(?:\[[^[\]{}]*,?\s*)?$/;
+
+function isCssKeyPosition(typed: string): boolean {
   const stack = openersOf(typed);
   if (stack[stack.length - 1] !== "{") return false;
   const before = typed.slice(0, typed.lastIndexOf("{"));
-  return MORE_OPEN.test(before) && KEY_POSITION.test(typed);
+  return CSS_OPEN.test(before) && KEY_POSITION.test(typed);
 }
 
-/** The `more` keys for the last `active: ACTIVE.X` before the cursor. Undefined when no trigger is set yet. */
+const WHEN_VALUE = /\bwhen\s*:\s*[\w$]*$/;
+const MIDWAY_VALUE = /\bmidway\s*:\s*[\w$]*$/;
+const TURN_VALUE = /\bturn\s*:\s*[\w$]*$/;
+const MORE_OPEN = /\bmore\s*:\s*$/;
+const MIDWAY_OPEN = /\bmidway\s*:\s*$/;
+const STYLE_OPEN = /\bstyle\s*:\s*$/;
+const KEY_POSITION = /[{,]\s*[\w$]*$/;
+const WHEN_NAMES = /\bwhen\s*:\s*WHEN\.([A-Z]+)/g;
+
+/** True at a key of an object that follows `opener`, such as `more: {...}`. */
+function isObjectKeyPosition(typed: string, opener: RegExp): boolean {
+  const stack = openersOf(typed);
+  if (stack[stack.length - 1] !== "{") return false;
+  const before = typed.slice(0, typed.lastIndexOf("{"));
+  return opener.test(before) && KEY_POSITION.test(typed);
+}
+
+/** The `more` keys for the last `when: WHEN.X` before the cursor. Undefined when no trigger is set yet. */
 function moreFieldsFor(typed: string): CompletionItemData[] | undefined {
-  const names = [...typed.matchAll(ACTIVE_NAMES)];
+  const names = [...typed.matchAll(WHEN_NAMES)];
   const trigger = names[names.length - 1]?.[1];
   return trigger === undefined ? undefined : MORE_FIELDS[trigger];
 }

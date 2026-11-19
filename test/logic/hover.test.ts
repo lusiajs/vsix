@@ -62,9 +62,19 @@ describe("hover", () => {
     expect(hoverAt(text, 5, noProps)).toBeUndefined();
   });
 
+  test("shows the CSS property under the cursor in a keyframe css object", () => {
+    const text = "<div animate={{ animation: { 0: { opacity: 0 }, 1: { opacity: 1 } } }}>x</div>";
+    expect(hoverAt(text, text.indexOf("opacity") + 2, noProps)).toEqual({ kind: "css", name: "opacity" });
+  });
+
   test("shows the enum entry for a name in the script", () => {
-    const text = '<script>\nimport { TRANSITION } from "lucia";\n</script>';
-    expect(apiId(hoverAt(text, text.indexOf("TRANSITION") + 2, noProps))).toBe("transition");
+    const text = '<script>\nimport { EASE } from "lucia";\n</script>';
+    expect(apiId(hoverAt(text, text.indexOf("EASE") + 2, noProps))).toBe("ease");
+  });
+
+  test("shows the enum entry for a member of a nested group in the script", () => {
+    const text = '<script>\nimport { EASE } from "lucia";\nconst s = EASE.STYLE.QUART;\n</script>';
+    expect(apiId(hoverAt(text, text.indexOf("QUART") + 2, noProps))).toBe("ease");
   });
 });
 
