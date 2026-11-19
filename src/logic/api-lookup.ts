@@ -20,7 +20,9 @@ export function findApiById(id: string): ApiEntry | undefined {
 
 /** An enum object such as `EASE`, the entry that lists its members. */
 export function findEnum(name: string): ApiEntry | undefined {
-  return api.find((entry) => entry.kind === "value" && entry.members !== undefined && entry.name === name);
+  return api.find(
+    (entry) => entry.kind === "value" && entry.members !== undefined && entry.name === name,
+  );
 }
 
 /** Script names that come from `lucia` and can be auto-imported. `setup` is a hook, not an export. */

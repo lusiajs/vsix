@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { findSections, scriptSection, sectionAt } from "../../../editors/vscode/src/logic/sections.ts";
+import {
+  findSections,
+  scriptSection,
+  sectionAt,
+} from "../../../editors/vscode/src/logic/sections.ts";
 import { regionAt } from "../../../editors/vscode/src/logic/regions.ts";
 import { isTagNameTyping, openTagAt, tagNameAt } from "../../../editors/vscode/src/logic/tag.ts";
 

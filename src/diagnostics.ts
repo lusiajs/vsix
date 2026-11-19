@@ -45,7 +45,10 @@ export class LuciaDiagnostics implements vscode.Disposable {
   private check(document: vscode.TextDocument): void {
     this.checkCompile(document);
     const issues = lintLucia(document.getText(), document.fileName);
-    this.lints.set(document.uri, issues.map((issue) => lintDiagnostic(document, issue)));
+    this.lints.set(
+      document.uri,
+      issues.map((issue) => lintDiagnostic(document, issue)),
+    );
   }
 
   private checkCompile(document: vscode.TextDocument): void {

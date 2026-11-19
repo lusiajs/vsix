@@ -15,10 +15,15 @@ const KINDS: Record<CompletionKind, vscode.CompletionItemKind> = {
 };
 
 export class LuciaCompletionProvider implements vscode.CompletionItemProvider {
-  provideCompletionItems(document: vscode.TextDocument, position: vscode.Position): vscode.CompletionItem[] {
+  provideCompletionItems(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+  ): vscode.CompletionItem[] {
     const text = document.getText();
     const lookup = (name: string) => componentProps(document.fileName, text, name);
-    return completionsAt(text, document.offsetAt(position), lookup).map((data) => toItem(document, data));
+    return completionsAt(text, document.offsetAt(position), lookup).map((data) =>
+      toItem(document, data),
+    );
   }
 }
 

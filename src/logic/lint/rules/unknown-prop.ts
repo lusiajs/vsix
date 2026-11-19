@@ -13,7 +13,8 @@ export function unknownProp({ script, markup, childProps }: LintContext): LintFi
     if (!declared) continue;
     const names = new Set(declared.map((prop) => prop.name));
     for (const attribute of tagAttributes(markup, tag.index + 1 + name.length)) {
-      if (!names.has(attribute.name)) findings.push(unknownFinding(name, attribute.name, attribute.offset));
+      if (!names.has(attribute.name))
+        findings.push(unknownFinding(name, attribute.name, attribute.offset));
     }
   }
   return findings;

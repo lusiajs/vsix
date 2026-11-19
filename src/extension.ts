@@ -15,10 +15,17 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.workspace.onDidOpenTextDocument((document) => diagnostics.schedule(document)),
     vscode.workspace.onDidChangeTextDocument((event) => diagnostics.schedule(event.document)),
     vscode.workspace.onDidCloseTextDocument((document) => diagnostics.clear(document)),
-    vscode.languages.registerCompletionItemProvider(SELECTOR, new LuciaCompletionProvider(), ...COMPLETION_TRIGGERS),
+    vscode.languages.registerCompletionItemProvider(
+      SELECTOR,
+      new LuciaCompletionProvider(),
+      ...COMPLETION_TRIGGERS,
+    ),
     vscode.languages.registerHoverProvider(SELECTOR, new LuciaHoverProvider()),
     vscode.languages.registerDefinitionProvider(SELECTOR, new LuciaDefinitionProvider()),
-    vscode.languages.registerDocumentFormattingEditProvider(SELECTOR, new LuciaFormattingProvider()),
+    vscode.languages.registerDocumentFormattingEditProvider(
+      SELECTOR,
+      new LuciaFormattingProvider(),
+    ),
   );
   vscode.workspace.textDocuments.forEach((document) => diagnostics.schedule(document));
 }

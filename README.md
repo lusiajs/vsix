@@ -4,16 +4,16 @@ Editor support for `.lucia` components.
 
 ## Features
 
-| Feature | What it does |
-|---|---|
-| Highlighting | Script as TypeScript, styles as SCSS or CSS, markup as HTML, `{expr}` as TypeScript |
-| Completion | Lucia API names, component tags, child props, style keywords, flow tags, events and `bind` |
-| Hover | API docs for names, style keywords, flow tags, events, `bind` and component tags (with props) |
-| Errors | Compile errors from the Lucia compiler, on open and on change |
-| Warnings | Lint rules, shown with source `lucia-lint` |
-| Go to definition | Component tag to its `.lucia` file |
-| Format | Script as TypeScript, styles as SCSS or CSS, markup as HTML. Flow tags are kept as written |
-| Snippets | Component, props, child component, scoped style, `IF`, `EACH`, `FOR`, click handler, two-way input |
+| Feature          | What it does                                                                                       |
+| ---------------- | -------------------------------------------------------------------------------------------------- |
+| Highlighting     | Script as TypeScript, styles as SCSS or CSS, markup as HTML, `{expr}` as TypeScript                |
+| Completion       | Lucia API names, component tags, child props, style keywords, flow tags, events and `bind`         |
+| Hover            | API docs for names, style keywords, flow tags, events, `bind` and component tags (with props)      |
+| Errors           | Compile errors from the Lucia compiler, on open and on change                                      |
+| Warnings         | Lint rules, shown with source `lucia-lint`                                                         |
+| Go to definition | Component tag to its `.lucia` file                                                                 |
+| Format           | Script as TypeScript, styles as SCSS or CSS, markup as HTML. Flow tags are kept as written         |
+| Snippets         | Component, props, child component, scoped style, `IF`, `EACH`, `FOR`, click handler, two-way input |
 
 See `docs/editor.md` in the LuciaJS repo for the lint rules and the API table.
 

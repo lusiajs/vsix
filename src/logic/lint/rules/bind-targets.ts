@@ -14,9 +14,12 @@ export function bindTargets({ script, markup }: LintContext): LintFinding[] {
   for (const tag of markup.matchAll(TAG)) {
     const name = tag[1] ?? "";
     if (name === "style") continue;
-    const bind = tagAttributes(markup, tag.index + 1 + name.length).find((attribute) => attribute.name === "bind");
+    const bind = tagAttributes(markup, tag.index + 1 + name.length).find(
+      (attribute) => attribute.name === "bind",
+    );
     const message = bind && bindMessage(name, imported.has(name));
-    if (bind && message) findings.push({ offset: bind.offset, code: "bind-target", message, severity: "error" });
+    if (bind && message)
+      findings.push({ offset: bind.offset, code: "bind-target", message, severity: "error" });
   }
   return findings;
 }

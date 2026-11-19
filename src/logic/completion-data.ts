@@ -3,7 +3,8 @@ import { apiKey, findApiById, importableApi, importKey } from "./api-lookup.ts";
 import type { LuciaImport } from "./imports.ts";
 import type { ApiEntry } from "../../../../reference/api.ts";
 
-export type CompletionKind = "function" | "type" | "class" | "property" | "keyword" | "snippet" | "variable";
+export type CompletionKind =
+  "function" | "type" | "class" | "property" | "keyword" | "snippet" | "variable";
 
 export interface CompletionItemData {
   label: string;
@@ -71,15 +72,51 @@ export function propItems(props: PropDef[]): CompletionItemData[] {
 }
 
 export const STYLE_ATTRIBUTE_ITEMS: CompletionItemData[] = [
-  { label: "scoped", kind: "keyword", insertText: "scoped", snippet: false, detail: "Scoped style" },
-  { label: "global", kind: "keyword", insertText: "global", snippet: false, detail: "Global style" },
-  { label: 'lang="css"', kind: "keyword", insertText: 'lang="css"', snippet: false, detail: "Plain CSS, no Sass" },
+  {
+    label: "scoped",
+    kind: "keyword",
+    insertText: "scoped",
+    snippet: false,
+    detail: "Scoped style",
+  },
+  {
+    label: "global",
+    kind: "keyword",
+    insertText: "global",
+    snippet: false,
+    detail: "Global style",
+  },
+  {
+    label: 'lang="css"',
+    kind: "keyword",
+    insertText: 'lang="css"',
+    snippet: false,
+    detail: "Plain CSS, no Sass",
+  },
 ];
 
 export const STYLE_BODY_ITEMS: CompletionItemData[] = [
-  { label: "@scoped", kind: "keyword", insertText: "@scoped {\n\t$1\n}", snippet: true, detail: "Scoped rules block" },
-  { label: "@global", kind: "keyword", insertText: "@global {\n\t$1\n}", snippet: true, detail: "Global rules block" },
-  { label: ":global()", kind: "keyword", insertText: ":global($1)", snippet: true, detail: "Global part of a selector" },
+  {
+    label: "@scoped",
+    kind: "keyword",
+    insertText: "@scoped {\n\t$1\n}",
+    snippet: true,
+    detail: "Scoped rules block",
+  },
+  {
+    label: "@global",
+    kind: "keyword",
+    insertText: "@global {\n\t$1\n}",
+    snippet: true,
+    detail: "Global rules block",
+  },
+  {
+    label: ":global()",
+    kind: "keyword",
+    insertText: ":global($1)",
+    snippet: true,
+    detail: "Global part of a selector",
+  },
 ];
 
 export const MOTION_ATTRIBUTE_ITEMS: CompletionItemData[] = [

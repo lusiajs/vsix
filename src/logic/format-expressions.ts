@@ -35,9 +35,17 @@ export function protectExpressions(markup: string): ProtectedMarkup {
 /** Puts the expressions back. A placeholder that the formatter quoted as a whole attribute value loses the quotes. */
 export function restoreExpressions(html: string, expressions: string[]): string {
   const restored = html
-    .replace(ATTRIBUTE_PLACEHOLDER, (_match, index: string) => `=${expressionAt(expressions, index)}`)
-    .replace(BARE_ATTRIBUTE_PLACEHOLDER, (_match, index: string) => `=${expressionAt(expressions, index)}`);
-  return restored.replace(PLACEHOLDER_PATTERN, (_match, index: string) => expressionAt(expressions, index));
+    .replace(
+      ATTRIBUTE_PLACEHOLDER,
+      (_match, index: string) => `=${expressionAt(expressions, index)}`,
+    )
+    .replace(
+      BARE_ATTRIBUTE_PLACEHOLDER,
+      (_match, index: string) => `=${expressionAt(expressions, index)}`,
+    );
+  return restored.replace(PLACEHOLDER_PATTERN, (_match, index: string) =>
+    expressionAt(expressions, index),
+  );
 }
 
 /** The last index of the protected span that starts at `i` (an expression or a flow tag), or -1. */

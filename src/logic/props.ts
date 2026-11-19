@@ -13,7 +13,9 @@ export function parsePropDefs(source: string): PropDef[] {
   const match = PROPS_CALL.exec(source);
   if (!match) return [];
   const open = match.index + match[0].length - 1;
-  return objectEntries(source, open).map(parsePropEntry).filter((prop) => prop !== undefined);
+  return objectEntries(source, open)
+    .map(parsePropEntry)
+    .filter((prop) => prop !== undefined);
 }
 
 function parsePropEntry(entry: string): PropDef | undefined {

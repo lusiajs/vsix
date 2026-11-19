@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { parseLuciaImports, resolveImportPath, scriptImports } from "../../../editors/vscode/src/logic/imports.ts";
+import {
+  parseLuciaImports,
+  resolveImportPath,
+  scriptImports,
+} from "../../../editors/vscode/src/logic/imports.ts";
 import { planLuciaImport } from "../../../editors/vscode/src/logic/auto-import.ts";
 
 describe("lucia imports", () => {

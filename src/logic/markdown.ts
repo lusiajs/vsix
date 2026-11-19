@@ -9,7 +9,13 @@ export function hoverMarkdown(result: HoverResult): string {
 }
 
 function cssMarkdown(name: string): string {
-  return [`**${name}**`, "", fence("ts", `{ ${name}: string | number }`), "CSS style property. Set it in a keyframe, such as `0: { ${name}: ... }`.", ""].join("\n");
+  return [
+    `**${name}**`,
+    "",
+    fence("ts", `{ ${name}: string | number }`),
+    "CSS style property. Set it in a keyframe, such as `0: { ${name}: ... }`.",
+    "",
+  ].join("\n");
 }
 
 function apiMarkdown(entry: ApiEntry): string {
@@ -37,18 +43,24 @@ function membersMarkdown(entry: ApiEntry): string[] {
 function memberLines(path: string, members: ApiMember[]): string[] {
   return members.flatMap((member) => {
     const memberPath = `${path}.${member.name}`;
-    return [`- \`${memberPath}\`: ${member.summary}`, ...memberLines(memberPath, member.members ?? [])];
+    return [
+      `- \`${memberPath}\`: ${member.summary}`,
+      ...memberLines(memberPath, member.members ?? []),
+    ];
   });
 }
 
 function componentMarkdown(name: string, props: PropDef[]): string {
   const lines = [`**<${name} />**`, "", "Props:", ""];
-  if (props.length === 0) return [...lines.slice(0, 2), "This component declares no props."].join("\n");
+  if (props.length === 0)
+    return [...lines.slice(0, 2), "This component declares no props."].join("\n");
   return [...lines, ...props.map(propLine)].join("\n");
 }
 
 function propLine(prop: PropDef): string {
-  return prop.defaultValue === undefined ? `- \`${prop.name}\`` : `- \`${prop.name}\` = \`${prop.defaultValue}\``;
+  return prop.defaultValue === undefined
+    ? `- \`${prop.name}\``
+    : `- \`${prop.name}\` = \`${prop.defaultValue}\``;
 }
 
 function fence(language: string, code: string): string {

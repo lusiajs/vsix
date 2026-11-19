@@ -2,7 +2,10 @@ import type { PropDef } from "../props.ts";
 import { findSections } from "../sections.ts";
 import type { LintContext } from "./types.ts";
 
-export function buildContext(source: string, childLookup: (name: string) => PropDef[] | undefined): LintContext {
+export function buildContext(
+  source: string,
+  childLookup: (name: string) => PropDef[] | undefined,
+): LintContext {
   const script = findSections(source).find((section) => section.kind === "script");
   const cache = new Map<string, PropDef[] | undefined>();
   return {

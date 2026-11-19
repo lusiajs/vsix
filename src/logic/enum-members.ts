@@ -40,7 +40,18 @@ export function enumOwnerAt(text: string, offset: number): ApiEntry | undefined 
 /** The enum name itself, as a completion that imports it. */
 export function enumNameItem(name: string): ScriptItem[] {
   const entry = findEnum(name);
-  return entry ? [{ label: entry.name, kind: "variable", insertText: entry.name, snippet: false, detail: entry.summary, importName: entry.name }] : [];
+  return entry
+    ? [
+        {
+          label: entry.name,
+          kind: "variable",
+          insertText: entry.name,
+          snippet: false,
+          detail: entry.summary,
+          importName: entry.name,
+        },
+      ]
+    : [];
 }
 
 function membersAt(members: ApiMember[] | undefined, names: string[]): ApiMember[] | undefined {

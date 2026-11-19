@@ -8,7 +8,8 @@ export interface LuciaImport {
   index: number;
 }
 
-const LUCIA_DEFAULT_IMPORT = /import\s+([A-Za-z_$][\w$]*)\s*(?:,\s*\{[^}]*\}\s*)?from\s*["']([^"'\n]+\.lucia)["']/g;
+const LUCIA_DEFAULT_IMPORT =
+  /import\s+([A-Za-z_$][\w$]*)\s*(?:,\s*\{[^}]*\}\s*)?from\s*["']([^"'\n]+\.lucia)["']/g;
 
 /** Default imports of `.lucia` files in a script's text. */
 export function parseLuciaImports(script: string): LuciaImport[] {

@@ -8,7 +8,8 @@ export const styleAttribute: LintRule = ({ markup }) => {
   const findings: LintFinding[] = [];
   for (const tag of markup.matchAll(STYLE_TAG)) {
     for (const attribute of tagAttributes(markup, tag.index + "<style".length)) {
-      if (!KNOWN_ATTRIBUTES.has(attribute.name)) findings.push(unknownStyleAttribute(attribute.name, attribute.offset));
+      if (!KNOWN_ATTRIBUTES.has(attribute.name))
+        findings.push(unknownStyleAttribute(attribute.name, attribute.offset));
     }
   }
   return findings;

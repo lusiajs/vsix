@@ -24,7 +24,10 @@ describe("lucia grammar with the real TypeScript grammar", () => {
 
   test("the parentheses of the arrow are TypeScript parameter punctuation", async () => {
     const lines = await tokenizeLucia(SOURCE);
-    const open = lines[3]?.find((token) => token.text === "(" && token.scopes.includes("punctuation.definition.parameters.begin.ts"));
+    const open = lines[3]?.find(
+      (token) =>
+        token.text === "(" && token.scopes.includes("punctuation.definition.parameters.begin.ts"),
+    );
     expect(open).toBeDefined();
   });
 
@@ -36,26 +39,31 @@ describe("lucia grammar with the real TypeScript grammar", () => {
   });
 
   test("the animate attribute is a keyword-like attribute name", async () => {
-    const lines = await tokenizeLucia('<div animate={fade} duration={400}>x</div>');
+    const lines = await tokenizeLucia("<div animate={fade} duration={400}>x</div>");
     expect(tokenOn(lines, 0, "animate")?.scopes).toContain("keyword.other.animate.lucia");
     expect(tokenOn(lines, 0, "duration")?.scopes).not.toContain("keyword.other.animate.lucia");
   });
 
   test("the expression of animate is an embedded TypeScript expression", async () => {
-    const lines = await tokenizeLucia('<div animate={[{ animation: fade, active: ACTIVE.VIEW }]}>x</div>');
+    const lines = await tokenizeLucia(
+      "<div animate={[{ animation: fade, active: ACTIVE.VIEW }]}>x</div>",
+    );
     expect(tokenOn(lines, 0, "fade")?.scopes).toContain("meta.embedded.block.typescript");
   });
 
   test("the word animate inside quoted text is not an attribute keyword", async () => {
     const lines = await tokenizeLucia('<p class="animate fade">x</p>');
-    const keywords = lines[0]?.filter((token) => token.scopes.includes("keyword.other.animate.lucia")) ?? [];
+    const keywords =
+      lines[0]?.filter((token) => token.scopes.includes("keyword.other.animate.lucia")) ?? [];
     expect(keywords).toEqual([]);
   });
 });
 
 describe("flow tags, events and bind in the grammar", () => {
   test("IF, ELSEIF, ELSE, EACH and FOR are control keywords in both open and close tags", async () => {
-    const lines = await tokenizeLucia("<IF {a}>\n</IF>\n<ELSEIF {b}>\n<ELSE>\n<EACH {c}>\n<FOR {n}>\n</FOR>");
+    const lines = await tokenizeLucia(
+      "<IF {a}>\n</IF>\n<ELSEIF {b}>\n<ELSE>\n<EACH {c}>\n<FOR {n}>\n</FOR>",
+    );
     expect(tokenOn(lines, 0, "IF")?.scopes).toContain("keyword.control.flow.lucia");
     expect(tokenOn(lines, 1, "IF")?.scopes).toContain("keyword.control.flow.lucia");
     expect(tokenOn(lines, 2, "ELSEIF")?.scopes).toContain("keyword.control.flow.lucia");

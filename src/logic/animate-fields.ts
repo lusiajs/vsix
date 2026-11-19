@@ -6,47 +6,213 @@ import type { CompletionItemData, ScriptItem } from "./completion-data.ts";
 const ANIMATE_OPEN = "animate={";
 
 const FIELD_ITEMS: CompletionItemData[] = [
-  { label: "style", kind: "property", insertText: "style: $1", snippet: true, detail: "Keyframes to play" },
-  { label: "when", kind: "property", insertText: "when: $1", snippet: true, detail: "Trigger: WHEN member or a store (default WHEN.ATTACH)" },
-  { label: "control", kind: "property", insertText: "control: $1", snippet: true, detail: "A controller() that plays, reverses, stops or seeks" },
-  { label: "once", kind: "property", insertText: "once: true", snippet: false, detail: "Play forward only once" },
-  { label: "more", kind: "property", insertText: "more: { $1 }", snippet: true, detail: "Trigger options: VIEW margin, amount, reverse; HOVER inDelay, outDelay, out, outDuration; SCROLL start, end, follow, part" },
-  { label: "midway", kind: "property", insertText: "midway: $1", snippet: true, detail: "What a new play does while one runs: MIDWAY member, or { play, turn, turnDuration, turnStyle, turnEase }" },
-  { label: "keep", kind: "property", insertText: "keep: false", snippet: false, detail: "Remove the inline styles when a play ends (default true)" },
-  { label: "duration", kind: "property", insertText: "duration: $1", snippet: true, detail: "Length of one play, in ms (default 300)" },
-  { label: "delay", kind: "property", insertText: "delay: $1", snippet: true, detail: "Wait before each forward play, in ms" },
-  { label: "loop", kind: "property", insertText: "loop: $1", snippet: true, detail: "true repeats forever, or a count" },
-  { label: "backAndForth", kind: "property", insertText: "backAndForth: true", snippet: false, detail: "With loop: each repeat plays 0 to 1, then back to 0" },
+  {
+    label: "style",
+    kind: "property",
+    insertText: "style: $1",
+    snippet: true,
+    detail: "Keyframes to play",
+  },
+  {
+    label: "when",
+    kind: "property",
+    insertText: "when: $1",
+    snippet: true,
+    detail: "Trigger: WHEN member or a store (default WHEN.ATTACH)",
+  },
+  {
+    label: "control",
+    kind: "property",
+    insertText: "control: $1",
+    snippet: true,
+    detail: "A controller() that plays, reverses, stops or seeks",
+  },
+  {
+    label: "once",
+    kind: "property",
+    insertText: "once: true",
+    snippet: false,
+    detail: "Play forward only once",
+  },
+  {
+    label: "more",
+    kind: "property",
+    insertText: "more: { $1 }",
+    snippet: true,
+    detail:
+      "Trigger options: VIEW margin, amount, reverse; HOVER inDelay, outDelay, out, outDuration; SCROLL start, end, follow, part",
+  },
+  {
+    label: "midway",
+    kind: "property",
+    insertText: "midway: $1",
+    snippet: true,
+    detail:
+      "What a new play does while one runs: MIDWAY member, or { play, turn, turnDuration, turnStyle, turnEase }",
+  },
+  {
+    label: "keep",
+    kind: "property",
+    insertText: "keep: false",
+    snippet: false,
+    detail: "Remove the inline styles when a play ends (default true)",
+  },
+  {
+    label: "duration",
+    kind: "property",
+    insertText: "duration: $1",
+    snippet: true,
+    detail: "Length of one play, in ms (default 300)",
+  },
+  {
+    label: "delay",
+    kind: "property",
+    insertText: "delay: $1",
+    snippet: true,
+    detail: "Wait before each forward play, in ms",
+  },
+  {
+    label: "loop",
+    kind: "property",
+    insertText: "loop: $1",
+    snippet: true,
+    detail: "true repeats forever, or a count",
+  },
+  {
+    label: "backAndForth",
+    kind: "property",
+    insertText: "backAndForth: true",
+    snippet: false,
+    detail: "With loop: each repeat plays 0 to 1, then back to 0",
+  },
 ];
 
 /** The keys of `more` for each trigger. Each trigger takes only its own. */
 const MORE_FIELDS: Record<string, CompletionItemData[]> = {
   VIEW: [
-    { label: "margin", kind: "property", insertText: "margin: $1", snippet: true, detail: "How far inside the screen edge, in px or a CSS length such as \"10%\" (default 0)" },
-    { label: "amount", kind: "property", insertText: "amount: $1", snippet: true, detail: "Share of the element that must be visible, 0 to 1 (default 0.15)" },
-    { label: "reverse", kind: "property", insertText: "reverse: true", snippet: false, detail: "Play back out when it leaves the view, and again on re-entry" },
+    {
+      label: "margin",
+      kind: "property",
+      insertText: "margin: $1",
+      snippet: true,
+      detail: 'How far inside the screen edge, in px or a CSS length such as "10%" (default 0)',
+    },
+    {
+      label: "amount",
+      kind: "property",
+      insertText: "amount: $1",
+      snippet: true,
+      detail: "Share of the element that must be visible, 0 to 1 (default 0.15)",
+    },
+    {
+      label: "reverse",
+      kind: "property",
+      insertText: "reverse: true",
+      snippet: false,
+      detail: "Play back out when it leaves the view, and again on re-entry",
+    },
   ],
   HOVER: [
-    { label: "inDelay", kind: "property", insertText: "inDelay: $1", snippet: true, detail: "Ms to wait after pointer enter before playing in (default 0)" },
-    { label: "outDelay", kind: "property", insertText: "outDelay: $1", snippet: true, detail: "Ms to wait after pointer leave before playing back (default 0)" },
-    { label: "out", kind: "property", insertText: "out: { $1 }", snippet: true, detail: "Keyframes for leaving. Without it, the in plays backward" },
-    { label: "outDuration", kind: "property", insertText: "outDuration: $1", snippet: true, detail: "Ms for the way out (default: the item duration). Needs out" },
+    {
+      label: "inDelay",
+      kind: "property",
+      insertText: "inDelay: $1",
+      snippet: true,
+      detail: "Ms to wait after pointer enter before playing in (default 0)",
+    },
+    {
+      label: "outDelay",
+      kind: "property",
+      insertText: "outDelay: $1",
+      snippet: true,
+      detail: "Ms to wait after pointer leave before playing back (default 0)",
+    },
+    {
+      label: "out",
+      kind: "property",
+      insertText: "out: { $1 }",
+      snippet: true,
+      detail: "Keyframes for leaving. Without it, the in plays backward",
+    },
+    {
+      label: "outDuration",
+      kind: "property",
+      insertText: "outDuration: $1",
+      snippet: true,
+      detail: "Ms for the way out (default: the item duration). Needs out",
+    },
   ],
   SCROLL: [
-    { label: "start", kind: "property", insertText: "start: $1", snippet: true, detail: "Line where the progress is 0, from the bottom edge: 0 to 1 (default 0)" },
-    { label: "end", kind: "property", insertText: "end: $1", snippet: true, detail: "Line where the progress is 1, from the bottom edge: 0 to 1 (default 1). Not with follow" },
-    { label: "follow", kind: "property", insertText: "follow: $1", snippet: true, detail: "Store of the tall element that drives the progress, such as one set by bind-element. Not with start or end" },
-    { label: "part", kind: "property", insertText: "part: [$1]", snippet: true, detail: "Slice of the progress that this item plays: [from, to], 0 to 1" },
+    {
+      label: "start",
+      kind: "property",
+      insertText: "start: $1",
+      snippet: true,
+      detail: "Line where the progress is 0, from the bottom edge: 0 to 1 (default 0)",
+    },
+    {
+      label: "end",
+      kind: "property",
+      insertText: "end: $1",
+      snippet: true,
+      detail:
+        "Line where the progress is 1, from the bottom edge: 0 to 1 (default 1). Not with follow",
+    },
+    {
+      label: "follow",
+      kind: "property",
+      insertText: "follow: $1",
+      snippet: true,
+      detail:
+        "Store of the tall element that drives the progress, such as one set by bind-element. Not with start or end",
+    },
+    {
+      label: "part",
+      kind: "property",
+      insertText: "part: [$1]",
+      snippet: true,
+      detail: "Slice of the progress that this item plays: [from, to], 0 to 1",
+    },
   ],
 };
 
 /** The keys of a `midway: { ... }` object. */
 const MIDWAY_FIELDS: CompletionItemData[] = [
-  { label: "play", kind: "property", insertText: "play: $1", snippet: true, detail: "MIDWAY member: what a new play does while one runs (default MIDWAY.TURN)" },
-  { label: "turn", kind: "property", insertText: "turn: $1", snippet: true, detail: "TURN member or a function: how the motion changes direction (default TURN.SUDDEN)" },
-  { label: "turnDuration", kind: "property", insertText: "turnDuration: $1", snippet: true, detail: "Length of the change in ms (default 200)" },
-  { label: "turnStyle", kind: "property", insertText: "turnStyle: $1", snippet: true, detail: "EASE.STYLE member for the blend (default EASE.STYLE.CUBIC)" },
-  { label: "turnEase", kind: "property", insertText: "turnEase: $1", snippet: true, detail: "EASE member for the blend (default EASE.INOUT)" },
+  {
+    label: "play",
+    kind: "property",
+    insertText: "play: $1",
+    snippet: true,
+    detail: "MIDWAY member: what a new play does while one runs (default MIDWAY.TURN)",
+  },
+  {
+    label: "turn",
+    kind: "property",
+    insertText: "turn: $1",
+    snippet: true,
+    detail: "TURN member or a function: how the motion changes direction (default TURN.SUDDEN)",
+  },
+  {
+    label: "turnDuration",
+    kind: "property",
+    insertText: "turnDuration: $1",
+    snippet: true,
+    detail: "Length of the change in ms (default 200)",
+  },
+  {
+    label: "turnStyle",
+    kind: "property",
+    insertText: "turnStyle: $1",
+    snippet: true,
+    detail: "EASE.STYLE member for the blend (default EASE.STYLE.CUBIC)",
+  },
+  {
+    label: "turnEase",
+    kind: "property",
+    insertText: "turnEase: $1",
+    snippet: true,
+    detail: "EASE member for the blend (default EASE.INOUT)",
+  },
 ];
 
 /** The style properties of a keyframe object, in camelCase, as the DOM names them. */
@@ -62,7 +228,14 @@ const CSS_NAMES: ReadonlySet<string> = new Set(CSS_PROPERTIES);
 
 /** The keys of a keyframes object. `default` sets the easing for keys that do not set their own. */
 const KEYFRAMES_FIELDS: CompletionItemData[] = [
-  { label: "default", kind: "property", insertText: "default: [$1]", snippet: true, detail: "Easing for keys that do not set their own: [EASE.STYLE.x, EASE.y], [EASE.STYLE.x] or [EASE.y]" },
+  {
+    label: "default",
+    kind: "property",
+    insertText: "default: [$1]",
+    snippet: true,
+    detail:
+      "Easing for keys that do not set their own: [EASE.STYLE.x, EASE.y], [EASE.STYLE.x] or [EASE.y]",
+  },
 ];
 
 /**

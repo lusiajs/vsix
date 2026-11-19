@@ -73,11 +73,11 @@ describe("LuciaJS VS Code grammar", () => {
     expect(Object.keys(grammar.injections ?? {})).toEqual(["L:meta.tag"]);
   });
 
-  test("the style begin rules select CSS for lang=\"css\" and SCSS otherwise", () => {
+  test('the style begin rules select CSS for lang="css" and SCSS otherwise', () => {
     const cssBegin = new RegExp(findRepo("style-css").begin!);
     const scssBegin = new RegExp(findRepo("style-scss").begin!);
-    expect(cssBegin.test("<style lang=\"css\">")).toBe(true);
-    expect(cssBegin.test("<style global lang=\"css\">")).toBe(true);
+    expect(cssBegin.test('<style lang="css">')).toBe(true);
+    expect(cssBegin.test('<style global lang="css">')).toBe(true);
     expect(cssBegin.test("<style>")).toBe(false);
     expect(scssBegin.test("<style>")).toBe(true);
     expect(scssBegin.test("<style scoped>")).toBe(true);

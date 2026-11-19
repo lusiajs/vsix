@@ -22,7 +22,11 @@ const STYLE_TOKENS: Array<[string, string]> = [
 
 const STYLE_TAG_IDS: Record<string, string> = { scoped: "style-scoped", global: "style-global" };
 
-export function hoverAt(text: string, offset: number, propsOf: PropLookup): HoverResult | undefined {
+export function hoverAt(
+  text: string,
+  offset: number,
+  propsOf: PropLookup,
+): HoverResult | undefined {
   const region = regionAt(text, offset);
   if (region.section?.kind === "script") return scriptHover(text, offset);
   if (region.section?.kind === "style") return styleHover(text, offset);
@@ -43,7 +47,13 @@ function styleHover(text: string, offset: number): HoverResult | undefined {
 function markupHover(text: string, offset: number, propsOf: PropLookup): HoverResult | undefined {
   const tag = openTagAt(text, offset);
   if (tag?.name === "style") return styleTagHover(text, offset);
-  return flowTagHover(text, offset) ?? plainAttributeHover(text, offset, tag) ?? animateMoreHover(text, offset) ?? cssHover(text, offset) ?? componentHover(text, offset, propsOf);
+  return (
+    flowTagHover(text, offset) ??
+    plainAttributeHover(text, offset, tag) ??
+    animateMoreHover(text, offset) ??
+    cssHover(text, offset) ??
+    componentHover(text, offset, propsOf)
+  );
 }
 
 /** Hover on the `more` key inside an animate object. */
@@ -52,7 +62,13 @@ function animateMoreHover(text: string, offset: number): HoverResult | undefined
   return apiResult("animate-more");
 }
 
-const FLOW_TAG_IDS: Record<string, string> = { IF: "if", ELSEIF: "elseif", ELSE: "else", EACH: "each", FOR: "for" };
+const FLOW_TAG_IDS: Record<string, string> = {
+  IF: "if",
+  ELSEIF: "elseif",
+  ELSE: "else",
+  EACH: "each",
+  FOR: "for",
+};
 
 const FLOW_TAG_NAME = /<\/?(IF|ELSEIF|ELSE|EACH|FOR)(?=[\s/>])/g;
 
@@ -61,13 +77,18 @@ function flowTagHover(text: string, offset: number): HoverResult | undefined {
   for (const match of text.matchAll(FLOW_TAG_NAME)) {
     const name = match[1] ?? "";
     const nameStart = match.index + match[0].length - name.length;
-    if (offset >= nameStart && offset <= nameStart + name.length) return apiResult(FLOW_TAG_IDS[name]);
+    if (offset >= nameStart && offset <= nameStart + name.length)
+      return apiResult(FLOW_TAG_IDS[name]);
   }
   return undefined;
 }
 
 /** Hover for `animate`, `on<event>`, `bind`, `bind-<prop>` and `bind-element` on a plain tag. */
-function plainAttributeHover(text: string, offset: number, tag: OpenTag | undefined): HoverResult | undefined {
+function plainAttributeHover(
+  text: string,
+  offset: number,
+  tag: OpenTag | undefined,
+): HoverResult | undefined {
   if (!tag || findComponentImport(text, tag.name)) return undefined;
   return apiResult(attributeHoverId(attributeNameAt(text, offset)));
 }
@@ -84,7 +105,11 @@ function apiResult(id: string | undefined): HoverResult | undefined {
   return entry ? { kind: "api", entry } : undefined;
 }
 
-function componentHover(text: string, offset: number, propsOf: PropLookup): HoverResult | undefined {
+function componentHover(
+  text: string,
+  offset: number,
+  propsOf: PropLookup,
+): HoverResult | undefined {
   const componentTag = tagNameAt(text, offset);
   if (!componentTag || !findComponentImport(text, componentTag.name)) return undefined;
   return { kind: "component", name: componentTag.name, props: propsOf(componentTag.name) };

@@ -8,7 +8,10 @@ describe("object entries", () => {
   });
 
   test("keeps nested braces and strings together", () => {
-    expect(objectEntries(`({ a: { b: "}" }, c: [1, 2] })`, 1)).toEqual([`a: { b: "}" }`, "c: [1, 2]"]);
+    expect(objectEntries(`({ a: { b: "}" }, c: [1, 2] })`, 1)).toEqual([
+      `a: { b: "}" }`,
+      "c: [1, 2]",
+    ]);
   });
 });
 

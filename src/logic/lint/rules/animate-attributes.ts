@@ -19,5 +19,12 @@ export function animateAttributes({ script, markup }: LintContext): LintFinding[
 function tagFindings(attributes: AttributeName[]): LintFinding[] {
   const animate = attributes.find((attribute) => attribute.name === "animate");
   if (!animate || animate.value === "expression") return [];
-  return [{ offset: animate.offset, code: "animate-keyframes", message: "animate needs {keyframes}", severity: "error" }];
+  return [
+    {
+      offset: animate.offset,
+      code: "animate-keyframes",
+      message: "animate needs {keyframes}",
+      severity: "error",
+    },
+  ];
 }

@@ -18,7 +18,15 @@ const FLOW_TAG_BODIES: Record<string, string> = {
   FOR: "FOR {$1} from={$2} to={$3}>\n\t$0\n</FOR>",
 };
 
-const EVENT_NAMES = ["onclick", "oninput", "onchange", "onsubmit", "onkeydown", "onfocus", "onblur"];
+const EVENT_NAMES = [
+  "onclick",
+  "oninput",
+  "onchange",
+  "onsubmit",
+  "onkeydown",
+  "onfocus",
+  "onblur",
+];
 
 const EACH_ATTRIBUTES = ["as", "index", "key"];
 const FOR_ATTRIBUTES = ["from", "to", "step"];
@@ -70,9 +78,27 @@ const BIND_ELEMENT_ITEM: CompletionItemData = {
 };
 
 const FORM_BIND_ITEMS: CompletionItemData[] = [
-  { label: "bind", kind: "property", insertText: "bind={$1}", snippet: true, detail: findApiById("bind")?.summary },
-  { label: "bind-value", kind: "property", insertText: "bind-value={$1}", snippet: true, detail: findApiById("bind-prop")?.summary },
-  { label: "bind-checked", kind: "property", insertText: "bind-checked={$1}", snippet: true, detail: findApiById("bind-prop")?.summary },
+  {
+    label: "bind",
+    kind: "property",
+    insertText: "bind={$1}",
+    snippet: true,
+    detail: findApiById("bind")?.summary,
+  },
+  {
+    label: "bind-value",
+    kind: "property",
+    insertText: "bind-value={$1}",
+    snippet: true,
+    detail: findApiById("bind-prop")?.summary,
+  },
+  {
+    label: "bind-checked",
+    kind: "property",
+    insertText: "bind-checked={$1}",
+    snippet: true,
+    detail: findApiById("bind-prop")?.summary,
+  },
 ];
 
 /** Attributes for a plain HTML tag: animate, events, bind-element, and bind on form controls. */

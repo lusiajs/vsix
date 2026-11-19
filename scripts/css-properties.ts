@@ -6,13 +6,23 @@ import ts from "typescript";
 
 const LEFT_OUT = new Set(["cssText", "cssFloat"]);
 const libPath = join(import.meta.dir, "../../../node_modules/typescript/lib/lib.dom.d.ts");
-const source = ts.createSourceFile(libPath, await Bun.file(libPath).text(), ts.ScriptTarget.Latest, true);
+const source = ts.createSourceFile(
+  libPath,
+  await Bun.file(libPath).text(),
+  ts.ScriptTarget.Latest,
+  true,
+);
 
 const names: string[] = [];
 source.forEachChild((node) => {
   if (!ts.isInterfaceDeclaration(node) || node.name.text !== "CSSStyleDeclaration") return;
   for (const member of node.members) {
-    if (!ts.isPropertySignature(member) || !member.type || member.type.kind !== ts.SyntaxKind.StringKeyword) continue;
+    if (
+      !ts.isPropertySignature(member) ||
+      !member.type ||
+      member.type.kind !== ts.SyntaxKind.StringKeyword
+    )
+      continue;
     if (!ts.isIdentifier(member.name)) continue;
     const name = member.name.text;
     if (!LEFT_OUT.has(name)) names.push(name);

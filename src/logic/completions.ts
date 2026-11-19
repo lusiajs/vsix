@@ -1,7 +1,20 @@
 import { planLuciaImport, type TextEdit } from "./auto-import.ts";
-import { scriptItems, tagNameItems, propItems, STYLE_ATTRIBUTE_ITEMS, STYLE_BODY_ITEMS, type CompletionItemData, type ScriptItem } from "./completion-data.ts";
+import {
+  scriptItems,
+  tagNameItems,
+  propItems,
+  STYLE_ATTRIBUTE_ITEMS,
+  STYLE_BODY_ITEMS,
+  type CompletionItemData,
+  type ScriptItem,
+} from "./completion-data.ts";
 import { animateFieldsAt } from "./animate-fields.ts";
-import { FLOW_TAG_ITEMS, flowAttributeItems, isFlowTag, markupAttributeItems } from "./markup-items.ts";
+import {
+  FLOW_TAG_ITEMS,
+  flowAttributeItems,
+  isFlowTag,
+  markupAttributeItems,
+} from "./markup-items.ts";
 import { enumMembersAt } from "./enum-members.ts";
 import { findComponentImport, scriptImports } from "./imports.ts";
 import type { PropDef } from "./props.ts";
@@ -16,7 +29,11 @@ export interface CompletionResult extends CompletionItemData {
 
 export type PropLookup = (componentName: string) => PropDef[];
 
-export function completionsAt(text: string, offset: number, propsOf: PropLookup): CompletionResult[] {
+export function completionsAt(
+  text: string,
+  offset: number,
+  propsOf: PropLookup,
+): CompletionResult[] {
   const members = enumMembersAt(text, offset);
   if (members) return members.map((item) => withScriptImport(item, text));
   const region = regionAt(text, offset);
@@ -41,11 +58,23 @@ function withImport(item: ScriptItem, text: string, section: Section): Completio
   const script = text.slice(section.contentStart, section.contentEnd);
   const edit = importName ? planLuciaImport(script, importName) : undefined;
   if (!edit) return data;
-  return { ...data, importEdit: { ...edit, start: edit.start + section.contentStart, end: edit.end + section.contentStart } };
+  return {
+    ...data,
+    importEdit: {
+      ...edit,
+      start: edit.start + section.contentStart,
+      end: edit.end + section.contentStart,
+    },
+  };
 }
 
-function markupCompletions(text: string, offset: number, propsOf: PropLookup): CompletionItemData[] {
-  if (isTagNameTyping(text, offset)) return [...tagNameItems(scriptImports(text)), ...FLOW_TAG_ITEMS];
+function markupCompletions(
+  text: string,
+  offset: number,
+  propsOf: PropLookup,
+): CompletionItemData[] {
+  if (isTagNameTyping(text, offset))
+    return [...tagNameItems(scriptImports(text)), ...FLOW_TAG_ITEMS];
   const fields = animateFieldsAt(text, offset);
   if (fields) return fields.map((item) => withScriptImport(item, text));
   const tag = openTagAt(text, offset);

@@ -11,5 +11,10 @@ export const emptyExpression: LintRule = ({ markup }) => {
 };
 
 function emptyFinding(offset: number): LintFinding {
-  return { offset, code: "empty-expression", message: "Empty expression: {} renders nothing", severity: "warning" };
+  return {
+    offset,
+    code: "empty-expression",
+    message: "Empty expression: {} renders nothing",
+    severity: "warning",
+  };
 }

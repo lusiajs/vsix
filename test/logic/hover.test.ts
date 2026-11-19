@@ -33,7 +33,11 @@ describe("hover", () => {
     const text = `<script>\nimport Badge from "./badge.lucia";\n</script>\n<Badge />`;
     const lookup = () => [{ name: "label", defaultValue: '"New"' }];
     const result = hoverAt(text, text.lastIndexOf("Badge") + 1, lookup);
-    expect(result).toEqual({ kind: "component", name: "Badge", props: [{ name: "label", defaultValue: '"New"' }] });
+    expect(result).toEqual({
+      kind: "component",
+      name: "Badge",
+      props: [{ name: "label", defaultValue: '"New"' }],
+    });
     expect(result && hoverMarkdown(result)).toContain('`label` = `"New"`');
   });
 
@@ -48,7 +52,8 @@ describe("hover", () => {
   });
 
   test("shows the more entry on the more key inside animate", () => {
-    const text = "<div animate={{ animation: fade, active: ACTIVE.VIEW, more: { reverse: true } }}>x</div>";
+    const text =
+      "<div animate={{ animation: fade, active: ACTIVE.VIEW, more: { reverse: true } }}>x</div>";
     expect(apiId(hoverAt(text, text.indexOf("more") + 1, noProps))).toBe("animate-more");
   });
 
@@ -64,7 +69,10 @@ describe("hover", () => {
 
   test("shows the CSS property under the cursor in a keyframe css object", () => {
     const text = "<div animate={{ animation: { 0: { opacity: 0 }, 1: { opacity: 1 } } }}>x</div>";
-    expect(hoverAt(text, text.indexOf("opacity") + 2, noProps)).toEqual({ kind: "css", name: "opacity" });
+    expect(hoverAt(text, text.indexOf("opacity") + 2, noProps)).toEqual({
+      kind: "css",
+      name: "opacity",
+    });
   });
 
   test("shows the enum entry for a name in the script", () => {
@@ -115,7 +123,8 @@ describe("hover for markup features", () => {
   });
 
   test("shows the PRESET entry in the script", () => {
-    const text = '<script>\nimport { PRESET } from "lucia";\n</script>\n<div animate={PRESET.FADE}>x</div>';
+    const text =
+      '<script>\nimport { PRESET } from "lucia";\n</script>\n<div animate={PRESET.FADE}>x</div>';
     expect(apiId(hoverAt(text, text.indexOf("PRESET") + 2, noProps))).toBe("preset");
   });
 
