@@ -1,0 +1,13 @@
+import * as vscode from "vscode";
+import { componentProps } from "../component-file.ts";
+import { hoverAt } from "../logic/hover.ts";
+import { hoverMarkdown } from "../logic/markdown.ts";
+
+export class LuciaHoverProvider implements vscode.HoverProvider {
+  provideHover(document: vscode.TextDocument, position: vscode.Position): vscode.Hover | undefined {
+    const text = document.getText();
+    const lookup = (name: string) => componentProps(document.fileName, text, name);
+    const result = hoverAt(text, document.offsetAt(position), lookup);
+    return result ? new vscode.Hover(new vscode.MarkdownString(hoverMarkdown(result))) : undefined;
+  }
+}

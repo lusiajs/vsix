@@ -1,0 +1,64 @@
+{
+  "name": "lucia-vscode",
+  "displayName": "LuciaJS",
+  "description": "Syntax, completion, hover, diagnostics and navigation for LuciaJS .lucia components.",
+  "version": "0.2.0",
+  "publisher": "lucia",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:lucia"
+  ],
+  "scripts": {
+    "build": "bun build src/extension.ts --target node --format cjs --external vscode --outfile dist/extension.js",
+    "package": "bun run build && bunx @vscode/vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.80.0",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "lucia",
+        "aliases": [
+          "LuciaJS",
+          "lucia"
+        ],
+        "extensions": [
+          ".lucia"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "lucia",
+        "scopeName": "source.lucia",
+        "path": "./syntaxes/lucia.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.typescript": "typescript",
+          "meta.embedded.block.css": "css",
+          "meta.embedded.block.scss": "scss",
+          "meta.embedded.block.html": "html"
+        }
+      }
+    ],
+    "snippets": [
+      {
+        "language": "lucia",
+        "path": "./snippets/lucia.json"
+      }
+    ]
+  },
+  "dependencies": {
+    "prettier": "^3.10.1"
+  }
+}

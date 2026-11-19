@@ -1,0 +1,7 @@
+<script>
+import { props } from "lucia";
+
+const { label, tone } = props({ label: "New", tone: "info" });
+</script>
+
+<span class="badge {tone}">{label}</span>
