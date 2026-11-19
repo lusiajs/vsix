@@ -16,10 +16,8 @@ export function errorPosition(error: unknown): ErrorPosition {
   return { line: lineInMessage(message), column: 1, message };
 }
 
-// LuciaError puts `file:line:column: ` in front of the message. The editor shows the position itself.
 function luciaPosition(error: LuciaError): ErrorPosition {
-  const prefix = `${error.file}:${error.line}:${error.column}: `;
-  return { line: error.line, column: error.column, message: error.message.replace(prefix, "") };
+  return { line: error.line ?? 1, column: error.column ?? 1, message: error.message };
 }
 
 function lineInMessage(message: string): number {
