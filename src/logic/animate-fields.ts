@@ -148,7 +148,8 @@ const MORE_FIELDS: Record<string, CompletionItemData[]> = {
       kind: "property",
       insertText: "start: $1",
       snippet: true,
-      detail: "Line where the progress is 0, from the bottom edge: 0 to 1 (default 0)",
+      detail:
+        "Where the progress is 0: SCROLL_AT member, or { element, window } with EDGE (default SCROLL_AT.ENTER)",
     },
     {
       label: "end",
@@ -156,7 +157,7 @@ const MORE_FIELDS: Record<string, CompletionItemData[]> = {
       insertText: "end: $1",
       snippet: true,
       detail:
-        "Line where the progress is 1, from the bottom edge: 0 to 1 (default 1). Not with follow",
+        "Where the progress is 1: SCROLL_AT member, or { element, window } with EDGE (default SCROLL_AT.LEAVE). Not with follow",
     },
     {
       label: "follow",

@@ -154,6 +154,24 @@ describe("motion completions", () => {
     ]);
   });
 
+  test("completes ENTER, CENTER and LEAVE after SCROLL_AT.", () => {
+    const text = "<script>\n\n</script>\nx = SCROLL_AT.";
+    expect(completionsAt(text, text.length, noProps).map((item) => item.label)).toEqual([
+      "ENTER",
+      "CENTER",
+      "LEAVE",
+    ]);
+  });
+
+  test("completes TOP, CENTER and BOTTOM after EDGE.", () => {
+    const text = "<script>\n\n</script>\nx = EDGE.";
+    expect(completionsAt(text, text.length, noProps).map((item) => item.label)).toEqual([
+      "TOP",
+      "CENTER",
+      "BOTTOM",
+    ]);
+  });
+
   test("completes STYLE, IN, OUT and INOUT after EASE.", () => {
     const text = "<script>\n\n</script>\nx = EASE.";
     expect(completionsAt(text, text.length, noProps).map((item) => item.label)).toEqual([

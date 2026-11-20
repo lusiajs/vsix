@@ -5,6 +5,7 @@ import { bindTargets } from "./lint/rules/bind-targets.ts";
 import { emptyExpression } from "./lint/rules/empty-expression.ts";
 import { flowChain } from "./lint/rules/flow-chain.ts";
 import { propsTwice } from "./lint/rules/props-twice.ts";
+import { scrollLines } from "./lint/rules/scroll-lines.ts";
 import { styleAttribute } from "./lint/rules/style-attribute.ts";
 import { unknownProp } from "./lint/rules/unknown-prop.ts";
 import { unusedImport } from "./lint/rules/unused-import.ts";
@@ -19,6 +20,7 @@ const RULES: LintRule[] = [
   emptyExpression,
   styleAttribute,
   animateAttributes,
+  scrollLines,
   flowChain,
   bindTargets,
 ];

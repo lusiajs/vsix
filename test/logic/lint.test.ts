@@ -137,4 +137,16 @@ describe("flow and bind lint rules", () => {
   test("bind-target passes bind-value and bind-element on any tag", () => {
     expect(codes("<p bind-element={el} bind-value={x}>y</p>")).toEqual([]);
   });
+
+  test("scroll-numeric-line flags a numeric start or end in a file that uses WHEN.SCROLL", () => {
+    const source =
+      "<div animate={{ when: WHEN.SCROLL, more: { start: 0.2, end: SCROLL_AT.LEAVE } }}>";
+    expect(lintLucia(source, PARENT).map((issue) => [issue.code, issue.column])).toEqual([
+      ["scroll-numeric-line", 44],
+    ]);
+  });
+
+  test("scroll-numeric-line ignores files without WHEN.SCROLL", () => {
+    expect(codes("<div animate={{ when: WHEN.VIEW, more: { start: 0.2 } }}>")).toEqual([]);
+  });
 });
