@@ -1,31 +1,48 @@
 // The ESM build bundles; the UMD factory hides its requires from Bun.
-import {
-  getLanguageService,
-  type CompletionItem,
-  type LanguageService,
-} from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
+import type { CompletionItem } from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { CompletionResult } from "../../../shared/completions.ts";
-import { inExpressionAt } from "@language/format-expressions.ts";
 import type { HoverResult } from "../../../shared/hover.ts";
-import { findComponentImport } from "@language/imports.ts";
-import { isFlowTag } from "../../../shared/markup-items.ts";
-import { regionAt } from "@language/regions.ts";
-import { isTagNameTyping, openTagAt } from "@language/tag.ts";
+import { isTagNameTyping } from "@language/tag.ts";
+import {
+  URI,
+  editable,
+  htmlService,
+  isPlainTag,
+  markupHtml,
+  ownedTag,
+  startTagNameBefore,
+} from "./html-shared.ts";
 import { editorDocument, hoverText, offsetRange, toCompletionKind } from "./language-service.ts";
+import type { RegionEdit } from "./region-types.ts";
 
-const URI = "inmemory://lusia/markup.html";
 const SNIPPET_FORMAT = 2;
 
-let service: LanguageService | undefined;
+export { htmlDiagnostics } from "./html-diagnostics.ts";
+export {
+  htmlHighlights,
+  htmlLinkedRanges,
+  htmlRename,
+  htmlRenameRange,
+} from "./html-navigation.ts";
+export { htmlFolding, htmlLinks, htmlSelection, htmlSymbols } from "./html-structure.ts";
+export type {
+  RegionDiagnostic,
+  RegionEdit,
+  RegionFolding,
+  RegionHighlight,
+  RegionLink,
+  RegionSelection,
+  RegionSymbol,
+} from "./region-types.ts";
 
 export function htmlCompletions(text: string, offset: number): CompletionResult[] {
   if (!editable(text, offset)) return [];
   if (!isTagNameTyping(text, offset) && ownedTag(text, offset)) return [];
   const document = editorDocument(URI, "html", text);
   try {
-    const htmlDocument = html().parseHTMLDocument(document);
-    const list = html().doComplete(document, document.positionAt(offset), htmlDocument);
+    const htmlDocument = htmlService().parseHTMLDocument(document);
+    const list = htmlService().doComplete(document, document.positionAt(offset), htmlDocument);
     const results: CompletionResult[] = [];
     for (const item of list.items) {
       const result = completionResult(document, item);
@@ -38,11 +55,12 @@ export function htmlCompletions(text: string, offset: number): CompletionResult[
 }
 
 export function htmlHover(text: string, offset: number): HoverResult | undefined {
-  if (!editable(text, offset) || ownedTag(text, offset) || !insideTag(text, offset)) return undefined;
+  if (!editable(text, offset) || ownedTag(text, offset) || !insideTag(text, offset))
+    return undefined;
   const document = editorDocument(URI, "html", text);
   try {
-    const htmlDocument = html().parseHTMLDocument(document);
-    const result = html().doHover(document, document.positionAt(offset), htmlDocument);
+    const htmlDocument = htmlService().parseHTMLDocument(document);
+    const result = htmlService().doHover(document, document.positionAt(offset), htmlDocument);
     const markdown = hoverText(result);
     if (!result || !markdown) return undefined;
     return { kind: "markdown", markdown, range: offsetRange(document, result.range) };
@@ -51,31 +69,24 @@ export function htmlHover(text: string, offset: number): HoverResult | undefined
   }
 }
 
+/** The closing tag to insert after the `>` the user just typed, for plain tags. */
+export function htmlTagClose(text: string, offset: number): RegionEdit | undefined {
+  if (!editable(text, offset) || text.charAt(offset - 1) !== ">") return undefined;
+  const name = startTagNameBefore(text, offset);
+  if (!name || !isPlainTag(text, name)) return undefined;
+  const { document, parsed } = markupHtml(text);
+  try {
+    const completion = htmlService().doTagComplete(document, document.positionAt(offset), parsed);
+    if (!completion) return undefined;
+    return { range: { start: offset, end: offset }, newText: completion.replace("$0", "") };
+  } catch {
+    return undefined;
+  }
+}
+
 /** Whether the cursor is in a tag, not in the text between tags. */
 function insideTag(text: string, offset: number): boolean {
   return text.lastIndexOf("<", offset) > text.lastIndexOf(">", offset);
-}
-
-/** The HTML service only sees markup outside an expression. */
-function editable(text: string, offset: number): boolean {
-  return regionAt(text, offset).kind === "markup" && !inExpressionAt(text, offset);
-}
-
-/** Whether the shared completion table owns the tag at the cursor. */
-function ownedTag(text: string, offset: number): boolean {
-  const tag = openTagAt(text, offset);
-  if (!tag) return false;
-  return (
-    tag.name === "style" ||
-    tag.name === "script" ||
-    isFlowTag(tag.name) ||
-    findComponentImport(text, tag.name) !== undefined
-  );
-}
-
-function html(): LanguageService {
-  service ??= getLanguageService({ useDefaultDataProvider: true });
-  return service;
 }
 
 function completionResult(
