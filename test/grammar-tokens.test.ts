@@ -3,9 +3,9 @@ import { tokenizeLucia, type Token } from "./support/tokenizer.ts";
 
 const SOURCE = [
   "<script>",
-  'import { store } from "lucia";',
-  'const name = store("Ada");',
-  "const greeting = store.from(() => `Hello, ${name.value}!`);",
+  'import { variable } from "lucia";',
+  'const name = variable("Ada");',
+  "const greeting = variable.compute(() => `Hello, ${name.value}!`);",
   "</script>",
   "<p>Derived: {greeting}</p>",
 ].join("\n");

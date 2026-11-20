@@ -1,11 +1,11 @@
 import { api, type ApiEntry } from "../../../../reference/api.ts";
 
-/** The name a script uses for an entry, such as `store.from` for `store.from()`. */
+/** The name a script uses for an entry, such as `variable.compute` for `variable.compute()`. */
 export function apiKey(entry: ApiEntry): string {
   return entry.name.replace(/^function /, "").split(/[(<]/)[0] ?? entry.name;
 }
 
-/** The lucia export an entry comes from: `store` for `store.from`. */
+/** The lucia export an entry comes from: `variable` for `variable.compute`. */
 export function importKey(entry: ApiEntry): string {
   return apiKey(entry).split(".")[0] ?? apiKey(entry);
 }
