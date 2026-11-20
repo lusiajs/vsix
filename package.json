@@ -25,6 +25,11 @@
     "vscode-textmate": "^9.3.2"
   },
   "contributes": {
+    "configurationDefaults": {
+      "emmet.includeLanguages": {
+        "lusia": "html"
+      }
+    },
     "languages": [
       {
         "id": "lusia",
