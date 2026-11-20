@@ -89,6 +89,26 @@ describe("lint rules", () => {
     ).toEqual([]);
   });
 
+  test("animate-key flags a typo of default in keyframes kept in the script", () => {
+    const source =
+      "<script>\nconst fadeUp = { defaut: [EASE.OUT], 0: { opacity: 0 }, 1: { opacity: 1 } };\n</script>\n<div animate={fadeUp}>x</div>";
+    const issues = lintLucia(source, PARENT);
+    expect(issues).toEqual([
+      {
+        line: 2,
+        column: 18,
+        message:
+          "unknown keyframes key 'defaut'. Keys are numbers from 0 to 1 or 'default' (did you mean 'default'?)",
+        severity: "error",
+        code: "animate-key",
+      },
+    ]);
+  });
+
+  test("animate-key flags a typo of an item key", () => {
+    expect(codes("<div animate={{ style: fade, durtion: 400 }}>x</div>")).toEqual(["animate-key"]);
+  });
+
   test("animate-keyframes skips a component tag, whose animate is a prop", () => {
     expect(codes(`${BADGE_IMPORT}<Badge animate="x" />`)).not.toContain("animate-keyframes");
   });
@@ -147,6 +167,8 @@ describe("flow and bind lint rules", () => {
   });
 
   test("scroll-numeric-line ignores files without WHEN.SCROLL", () => {
-    expect(codes("<div animate={{ when: WHEN.VIEW, more: { start: 0.2 } }}>")).toEqual([]);
+    expect(codes("<div animate={{ when: WHEN.VIEW, more: { start: 0.2 } }}>")).not.toContain(
+      "scroll-numeric-line",
+    );
   });
 });

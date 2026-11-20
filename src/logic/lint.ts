@@ -1,6 +1,7 @@
 import { declaredProps } from "../component-file.ts";
 import { buildContext } from "./lint/context.ts";
 import { animateAttributes } from "./lint/rules/animate-attributes.ts";
+import { animateKeys } from "./lint/rules/animate-keys.ts";
 import { bindTargets } from "./lint/rules/bind-targets.ts";
 import { emptyExpression } from "./lint/rules/empty-expression.ts";
 import { flowChain } from "./lint/rules/flow-chain.ts";
@@ -20,6 +21,7 @@ const RULES: LintRule[] = [
   emptyExpression,
   styleAttribute,
   animateAttributes,
+  animateKeys,
   scrollLines,
   flowChain,
   bindTargets,
