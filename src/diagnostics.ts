@@ -1,21 +1,29 @@
 import * as vscode from "vscode";
-import { compile } from "../../../src/compiler/index.ts";
-import { lintLusia, type LintIssue } from "@language/lint.ts";
-import { errorPosition } from "../../shared/error-position.ts";
-import { declaredProps } from "./component-file.ts";
+import {
+  compileDiagnostics,
+  cssSourceDiagnostics,
+  htmlSourceDiagnostics,
+  lintDiagnostics,
+  typeScriptDiagnostics,
+  type SourceDiagnostics,
+  type SourceName,
+} from "./diagnostics-sources.ts";
+import { htmlDiagnostics } from "./logic/html.ts";
+import { TsProject } from "./ts/project.ts";
 
 const DEBOUNCE_MS = 300;
-const LINT_SOURCE = "lusia-lint";
+const SOURCES: SourceName[] = ["lusia", "lusia-lint", "typescript", "html", "css"];
 
 export class LusiaDiagnostics implements vscode.Disposable {
-  private readonly errors = vscode.languages.createDiagnosticCollection("lusia");
-  private readonly lints = vscode.languages.createDiagnosticCollection(LINT_SOURCE);
+  private readonly collections = collections();
   private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
+  private readonly versions = new Map<string, number>();
 
   schedule(document: vscode.TextDocument): void {
     if (document.languageId !== "lusia") return;
     const key = document.uri.toString();
     this.cancel(key);
+    this.versions.set(key, document.version);
     this.timers.set(
       key,
       setTimeout(() => {
@@ -26,16 +34,18 @@ export class LusiaDiagnostics implements vscode.Disposable {
   }
 
   clear(document: vscode.TextDocument): void {
-    this.cancel(document.uri.toString());
-    this.errors.delete(document.uri);
-    this.lints.delete(document.uri);
+    const key = document.uri.toString();
+    this.cancel(key);
+    this.versions.delete(key);
+    for (const source of SOURCES) this.collections[source].delete(document.uri);
+    TsProject.forget(document.fileName);
   }
 
   dispose(): void {
     for (const timer of this.timers.values()) clearTimeout(timer);
     this.timers.clear();
-    this.errors.dispose();
-    this.lints.dispose();
+    this.versions.clear();
+    for (const source of SOURCES) this.collections[source].dispose();
   }
 
   private cancel(key: string): void {
@@ -44,42 +54,52 @@ export class LusiaDiagnostics implements vscode.Disposable {
   }
 
   private check(document: vscode.TextDocument): void {
-    this.checkCompile(document);
     const text = document.getText();
-    const issues = lintLusia(text, (name) => declaredProps(document.fileName, text, name));
-    this.lints.set(
-      document.uri,
-      issues.map((issue) => lintDiagnostic(document, issue)),
-    );
+    const version = document.version;
+    const sources: SourceDiagnostics = {
+      lusia: compileDiagnostics(document),
+      "lusia-lint": lintDiagnostics(document),
+      typescript: typeScriptDiagnostics(document),
+      css: cssSourceDiagnostics(document),
+    };
+    this.apply(document, sources);
+    void htmlDiagnostics(text).then((issues) => {
+      if (this.stale(document, version)) return;
+      sources.html = htmlSourceDiagnostics(document, issues);
+      this.apply(document, sources);
+    });
   }
 
-  private checkCompile(document: vscode.TextDocument): void {
-    try {
-      compile(document.getText(), document.fileName);
-      this.errors.delete(document.uri);
-    } catch (error) {
-      this.errors.set(document.uri, [compileDiagnostic(document, error)]);
+  /** Sets every collection, dropping a finding another source already reported with the same span. */
+  private apply(document: vscode.TextDocument, sources: SourceDiagnostics): void {
+    const seen = new Set<string>();
+    for (const source of SOURCES) {
+      const unique = (sources[source] ?? []).filter((item) => {
+        const key = `${rangeKey(item.range)}:${item.message}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      this.collections[source].set(document.uri, unique);
     }
   }
+
+  private stale(document: vscode.TextDocument, version: number): boolean {
+    const key = document.uri.toString();
+    return document.version !== version || this.versions.get(key) !== version;
+  }
 }
 
-function compileDiagnostic(document: vscode.TextDocument, error: unknown): vscode.Diagnostic {
-  const { line, column, message } = errorPosition(error);
-  const range = lineRange(document, line - 1, column - 1);
-  return new vscode.Diagnostic(range, message, vscode.DiagnosticSeverity.Error);
+function collections(): Record<SourceName, vscode.DiagnosticCollection> {
+  return {
+    lusia: vscode.languages.createDiagnosticCollection("lusia"),
+    "lusia-lint": vscode.languages.createDiagnosticCollection("lusia-lint"),
+    typescript: vscode.languages.createDiagnosticCollection("typescript"),
+    html: vscode.languages.createDiagnosticCollection("html"),
+    css: vscode.languages.createDiagnosticCollection("css"),
+  };
 }
 
-function lintDiagnostic(document: vscode.TextDocument, issue: LintIssue): vscode.Diagnostic {
-  const range = lineRange(document, issue.line - 1, issue.column - 1);
-  const diagnostic = new vscode.Diagnostic(range, issue.message, vscode.DiagnosticSeverity.Warning);
-  diagnostic.source = LINT_SOURCE;
-  diagnostic.code = issue.code;
-  return diagnostic;
-}
-
-/** From a column to the end of its line. Line and column are 0-based here. */
-function lineRange(document: vscode.TextDocument, line: number, column: number): vscode.Range {
-  const lineIndex = Math.min(Math.max(line, 0), document.lineCount - 1);
-  const start = new vscode.Position(lineIndex, Math.max(column, 0));
-  return new vscode.Range(start, document.lineAt(lineIndex).range.end);
+function rangeKey(range: vscode.Range): string {
+  return `${range.start.line}:${range.start.character}:${range.end.line}:${range.end.character}`;
 }
