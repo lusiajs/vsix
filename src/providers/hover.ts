@@ -3,7 +3,7 @@ import { componentProps } from "../component-file.ts";
 import { hoverAt } from "../logic/hover.ts";
 import { hoverMarkdown } from "../logic/markdown.ts";
 
-export class LuciaHoverProvider implements vscode.HoverProvider {
+export class LusiaHoverProvider implements vscode.HoverProvider {
   provideHover(document: vscode.TextDocument, position: vscode.Position): vscode.Hover | undefined {
     const text = document.getText();
     const lookup = (name: string) => componentProps(document.fileName, text, name);

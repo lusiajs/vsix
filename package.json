@@ -1,9 +1,9 @@
 {
-  "name": "lucia-vscode",
-  "displayName": "LuciaJS",
-  "description": "Syntax, completion, hover, diagnostics and navigation for LuciaJS .lucia components.",
+  "name": "lusia-vscode",
+  "displayName": "Lusia",
+  "description": "Syntax, completion, hover, diagnostics and navigation for Lusia .lusia components.",
   "version": "0.2.0",
-  "publisher": "lucia",
+  "publisher": "lusia",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -12,7 +12,7 @@
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
-    "onLanguage:lucia"
+    "onLanguage:lusia"
   ],
   "scripts": {
     "build": "bun build src/extension.ts --target node --format cjs --external vscode --outfile dist/extension.js",
@@ -27,22 +27,22 @@
   "contributes": {
     "languages": [
       {
-        "id": "lucia",
+        "id": "lusia",
         "aliases": [
-          "LuciaJS",
-          "lucia"
+          "Lusia",
+          "lusia"
         ],
         "extensions": [
-          ".lucia"
+          ".lusia"
         ],
         "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
       {
-        "language": "lucia",
-        "scopeName": "source.lucia",
-        "path": "./syntaxes/lucia.tmLanguage.json",
+        "language": "lusia",
+        "scopeName": "source.lusia",
+        "path": "./syntaxes/lusia.tmLanguage.json",
         "embeddedLanguages": {
           "meta.embedded.block.typescript": "typescript",
           "meta.embedded.block.css": "css",
@@ -53,8 +53,8 @@
     ],
     "snippets": [
       {
-        "language": "lucia",
-        "path": "./snippets/lucia.json"
+        "language": "lusia",
+        "path": "./snippets/lusia.json"
       }
     ]
   },

@@ -1,20 +1,20 @@
 {
-  "Lucia component": {
-    "prefix": "lucia",
-    "description": "LuciaJS component skeleton",
+  "Lusia component": {
+    "prefix": "lusia",
+    "description": "Lusia component skeleton",
     "body": ["<script>", "$0", "</script>", "", "<p>${1:Hello}</p>", "", "<style>", "</style>"]
   },
-  "Lucia props": {
+  "Lusia props": {
     "prefix": "props",
     "description": "Declare props with defaults",
     "body": ["const { ${1:label} } = props({ ${1:label}: ${2:\"New\"} });"]
   },
-  "Lucia component with props": {
-    "prefix": "lucia-props",
+  "Lusia component with props": {
+    "prefix": "lusia-props",
     "description": "Component that declares props and uses them",
     "body": [
       "<script>",
-      "import { props } from \"lucia\";",
+      "import { props } from \"lusia\";",
       "",
       "const { ${1:label} } = props({ ${1:label}: ${2:\"New\"} });",
       "</script>",
@@ -26,48 +26,48 @@
       "</style>"
     ]
   },
-  "Lucia parent using a child": {
-    "prefix": "lucia-child",
+  "Lusia parent using a child": {
+    "prefix": "lusia-child",
     "description": "Import a child component and pass it props",
     "body": [
       "<script>",
-      "import ${1:Badge} from \"./${2:badge}.lucia\";",
+      "import ${1:Badge} from \"./${2:badge}.lusia\";",
       "</script>",
       "",
       "<${1:Badge} ${3:label}=\"${4:Done}\" />"
     ]
   },
-  "Lucia if": {
-    "prefix": "lucia-if",
+  "Lusia if": {
+    "prefix": "lusia-if",
     "description": "Show markup while a condition is true",
     "body": ["<IF {${1:condition}}>", "\t$0", "</IF>"]
   },
-  "Lucia if else": {
-    "prefix": "lucia-if-else",
+  "Lusia if else": {
+    "prefix": "lusia-if-else",
     "description": "Show one part when a condition is true, another when not",
     "body": ["<IF {${1:condition}}>", "\t$2", "</IF>", "<ELSE>", "\t$0", "</ELSE>"]
   },
-  "Lucia each": {
-    "prefix": "lucia-each",
+  "Lusia each": {
+    "prefix": "lusia-each",
     "description": "Repeat markup for each item in a list",
     "body": ["<EACH {${1:list}} as={${2:item}} key={${2:item}.id}>", "\t$0", "</EACH>"]
   },
-  "Lucia for": {
-    "prefix": "lucia-for",
+  "Lusia for": {
+    "prefix": "lusia-for",
     "description": "Repeat markup for a range of numbers",
     "body": ["<FOR {${1:i}} from={${2:0}} to={${3:5}}>", "\t$0", "</FOR>"]
   },
-  "Lucia click handler": {
-    "prefix": "lucia-click",
+  "Lusia click handler": {
+    "prefix": "lusia-click",
     "description": "Button that runs a function on click",
     "body": ["<button onclick={${1:handler}}>${2:Click}</button>"]
   },
-  "Lucia two-way input": {
-    "prefix": "lucia-bind",
+  "Lusia two-way input": {
+    "prefix": "lusia-bind",
     "description": "Text field linked to a variable",
     "body": ["<input bind={${1:name}} />"]
   },
-  "Lucia scoped style": {
+  "Lusia scoped style": {
     "prefix": "style-scoped",
     "description": "Style that only applies to this component's own markup",
     "body": ["<style scoped>", "${1:.card} {", "\t$0", "}", "</style>"]

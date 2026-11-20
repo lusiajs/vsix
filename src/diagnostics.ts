@@ -1,18 +1,18 @@
 import * as vscode from "vscode";
 import { compile } from "../../../src/compiler/index.ts";
-import { lintLucia, type LintIssue } from "./logic/lint.ts";
+import { lintLusia, type LintIssue } from "./logic/lint.ts";
 import { errorPosition } from "./logic/error-position.ts";
 
 const DEBOUNCE_MS = 300;
-const LINT_SOURCE = "lucia-lint";
+const LINT_SOURCE = "lusia-lint";
 
-export class LuciaDiagnostics implements vscode.Disposable {
-  private readonly errors = vscode.languages.createDiagnosticCollection("lucia");
+export class LusiaDiagnostics implements vscode.Disposable {
+  private readonly errors = vscode.languages.createDiagnosticCollection("lusia");
   private readonly lints = vscode.languages.createDiagnosticCollection(LINT_SOURCE);
   private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
 
   schedule(document: vscode.TextDocument): void {
-    if (document.languageId !== "lucia") return;
+    if (document.languageId !== "lusia") return;
     const key = document.uri.toString();
     this.cancel(key);
     this.timers.set(
@@ -44,7 +44,7 @@ export class LuciaDiagnostics implements vscode.Disposable {
 
   private check(document: vscode.TextDocument): void {
     this.checkCompile(document);
-    const issues = lintLucia(document.getText(), document.fileName);
+    const issues = lintLusia(document.getText(), document.fileName);
     this.lints.set(
       document.uri,
       issues.map((issue) => lintDiagnostic(document, issue)),

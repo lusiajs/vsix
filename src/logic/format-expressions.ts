@@ -6,9 +6,9 @@ export interface ProtectedMarkup {
 }
 
 const QUOTES = new Set(["'", '"', "`"]);
-const PLACEHOLDER_PATTERN = /LUCIAEXPR(\d+)X/g;
-const ATTRIBUTE_PLACEHOLDER = /="LUCIAEXPR(\d+)X"/g;
-const BARE_ATTRIBUTE_PLACEHOLDER = /=LUCIAEXPR(\d+)X/g;
+const PLACEHOLDER_PATTERN = /LUSIAEXPR(\d+)X/g;
+const ATTRIBUTE_PLACEHOLDER = /="LUSIAEXPR(\d+)X"/g;
+const BARE_ATTRIBUTE_PLACEHOLDER = /=LUSIAEXPR(\d+)X/g;
 
 const FLOW_OPEN = /<(?:IF|ELSEIF|ELSE|EACH|FOR|CONTENT|HTML|FALLBACK|NOLAZY)(?=[\s/>])/y;
 const FLOW_CLOSE = /<\/(?:IF|ELSEIF|ELSE|EACH|FOR|HTML|FALLBACK)\s*>/y;
@@ -87,7 +87,7 @@ export function expressionEnd(text: string, open: number): number {
 }
 
 function placeholder(index: number): string {
-  return `LUCIAEXPR${index}X`;
+  return `LUSIAEXPR${index}X`;
 }
 
 function expressionAt(expressions: string[], index: string): string {

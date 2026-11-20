@@ -1,6 +1,6 @@
 import type { PropDef } from "./props.ts";
 import { apiKey, findApiById, importableApi, importKey } from "./api-lookup.ts";
-import type { LuciaImport } from "./imports.ts";
+import type { LusiaImport } from "./imports.ts";
 import type { ApiEntry } from "../../../../reference/api.ts";
 
 export type CompletionKind =
@@ -14,7 +14,7 @@ export interface CompletionItemData {
   detail?: string;
 }
 
-/** A script item; `importName` says which `lucia` import it needs. */
+/** A script item; `importName` says which `lusia` import it needs. */
 export interface ScriptItem extends CompletionItemData {
   importName?: string;
 }
@@ -51,7 +51,7 @@ export function scriptItems(): ScriptItem[] {
   return [...apiItems, propsItem];
 }
 
-export function tagNameItems(imports: LuciaImport[]): CompletionItemData[] {
+export function tagNameItems(imports: LusiaImport[]): CompletionItemData[] {
   return imports.map((item) => ({
     label: item.name,
     kind: "class",

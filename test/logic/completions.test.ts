@@ -2,29 +2,29 @@ import { describe, expect, test } from "bun:test";
 import { completionsAt } from "../../../editors/vscode/src/logic/completions.ts";
 
 const noProps = () => [];
-const BADGE_SCRIPT = `<script>\nimport Badge from "./badge.lucia";\n</script>\n`;
+const BADGE_SCRIPT = `<script>\nimport Badge from "./badge.lusia";\n</script>\n`;
 
 describe("script completions", () => {
   const text = "<script>\n\n</script>";
   const items = completionsAt(text, 9, noProps);
   const labels = items.map((item) => item.label);
 
-  test("offers lucia API names with an auto-import edit", () => {
+  test("offers lusia API names with an auto-import edit", () => {
     const variable = items.find((item) => item.label === "variable");
     expect(variable?.importEdit).toEqual({
       start: 8,
       end: 8,
-      text: 'import { variable } from "lucia";\n',
+      text: 'import { variable } from "lusia";\n',
     });
   });
 
-  test("a dotted name is offered, and imports its lucia export", () => {
+  test("a dotted name is offered, and imports its lusia export", () => {
     const from = items.find((item) => item.label === "variable.compute");
     expect(from?.insertText).toBe("variable.compute");
     expect(from?.importEdit).toEqual({
       start: 8,
       end: 8,
-      text: 'import { variable } from "lucia";\n',
+      text: 'import { variable } from "lusia";\n',
     });
   });
 
@@ -91,7 +91,7 @@ describe("motion completions", () => {
     const ease = items.find((item) => item.label === "EASE");
     expect(ease).toMatchObject({
       kind: "variable",
-      importEdit: { text: 'import { EASE } from "lucia";\n' },
+      importEdit: { text: 'import { EASE } from "lusia";\n' },
     });
     expect(items.find((item) => item.label === "WHEN")?.kind).toBe("variable");
     expect(items.find((item) => item.label === "CURVE")).toBeUndefined();
@@ -113,7 +113,7 @@ describe("motion completions", () => {
       "ELASTIC",
       "BOUNCE",
     ]);
-    expect(items[0]?.importEdit?.text).toBe('import { EASE } from "lucia";\n');
+    expect(items[0]?.importEdit?.text).toBe('import { EASE } from "lusia";\n');
   });
 
   test("completes the members after WHEN. in markup", () => {

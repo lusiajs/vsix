@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { formatLucia } from "../../../editors/vscode/src/logic/format.ts";
+import { formatLusia } from "../../../editors/vscode/src/logic/format.ts";
 import {
   expressionEnd,
   protectExpressions,
@@ -10,7 +10,7 @@ const SAMPLE = `<style scoped>
 .card{padding:1rem}
 </style>
 <script>
-import {variable} from "lucia";
+import {variable} from "lusia";
 const name=variable("Ada");
 </script>
 <p class="a {name}">Hi {name.value}</p>
@@ -19,23 +19,23 @@ const name=variable("Ada");
 
 describe("format", () => {
   test("is idempotent", async () => {
-    const once = await formatLucia(SAMPLE);
-    expect(await formatLucia(once)).toBe(once);
+    const once = await formatLusia(SAMPLE);
+    expect(await formatLusia(once)).toBe(once);
   });
 
   test("keeps every {expr} and turns a whole attribute value into an expression", async () => {
-    const output = await formatLucia(SAMPLE);
+    const output = await formatLusia(SAMPLE);
     expect(output).toContain("{name.value}");
     expect(output).toContain('disabled={name.value === "" || {a:1}.a}');
     expect(output).toContain('class="a {name}"');
   });
 
   test("keeps the style attributes", async () => {
-    expect(await formatLucia(SAMPLE)).toContain("<style scoped>");
+    expect(await formatLusia(SAMPLE)).toContain("<style scoped>");
   });
 
   test("keeps section order with one blank line between sections", async () => {
-    const output = await formatLucia(SAMPLE);
+    const output = await formatLusia(SAMPLE);
     const order = ["<style scoped>", "<script>", "<p ", "<button"].map((tag) =>
       output.indexOf(tag),
     );
@@ -45,7 +45,7 @@ describe("format", () => {
   });
 
   test("formats the script as TypeScript", async () => {
-    expect(await formatLucia(SAMPLE)).toContain('const name = variable("Ada");');
+    expect(await formatLusia(SAMPLE)).toContain('const name = variable("Ada");');
   });
 });
 
@@ -60,7 +60,7 @@ describe("format expressions", () => {
     expect(protectedMarkup.expressions).toEqual(["{a}", "{b}", "{c}"]);
     expect(
       restoreExpressions(
-        `<p>LUCIAEXPR0X</p><b x="LUCIAEXPR1X">LUCIAEXPR2X</b>`,
+        `<p>LUSIAEXPR0X</p><b x="LUSIAEXPR1X">LUSIAEXPR2X</b>`,
         protectedMarkup.expressions,
       ),
     ).toBe(`<p>{a}</p><b x={b}>{c}</b>`);
@@ -83,7 +83,7 @@ describe("format flow tags", () => {
 `;
 
   test("keeps every flow tag uppercase and its attributes", async () => {
-    const output = await formatLucia(FLOW);
+    const output = await formatLusia(FLOW);
     for (const tag of [
       "<EACH {todos} as={todo} index={i} key={todo.id}>",
       "</EACH>",
@@ -99,8 +99,8 @@ describe("format flow tags", () => {
   });
 
   test("is idempotent", async () => {
-    const once = await formatLucia(FLOW);
-    expect(await formatLucia(once)).toBe(once);
+    const once = await formatLusia(FLOW);
+    expect(await formatLusia(once)).toBe(once);
   });
 
   test("protects a flow tag like an expression", () => {

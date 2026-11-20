@@ -27,8 +27,8 @@ const RULES: LintRule[] = [
   bindTargets,
 ];
 
-/** Lint warnings for a .lucia source. `file` is used to find the props of imported components. */
-export function lintLucia(source: string, file: string): LintIssue[] {
+/** Lint warnings for a .lusia source. `file` is used to find the props of imported components. */
+export function lintLusia(source: string, file: string): LintIssue[] {
   const context = buildContext(source, (name) => declaredProps(file, source, name));
   return RULES.flatMap((rule) => rule(context))
     .sort((a, b) => a.offset - b.offset)

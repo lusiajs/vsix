@@ -1,4 +1,4 @@
-import { parseLuciaImports } from "../../imports.ts";
+import { parseLusiaImports } from "../../imports.ts";
 import { tagAttributes, type AttributeName } from "../attributes.ts";
 import type { LintContext, LintFinding } from "../types.ts";
 
@@ -6,7 +6,7 @@ const TAG = /<([A-Za-z][\w.-]*)/g;
 
 /** Mirrors the compiler's check on the `animate` attribute: it must be `{expr}`. */
 export function animateAttributes({ script, markup }: LintContext): LintFinding[] {
-  const imported = new Set(parseLuciaImports(script).map((item) => item.name));
+  const imported = new Set(parseLusiaImports(script).map((item) => item.name));
   const findings: LintFinding[] = [];
   for (const tag of markup.matchAll(TAG)) {
     const name = tag[1] ?? "";

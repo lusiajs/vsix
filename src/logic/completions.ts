@@ -1,4 +1,4 @@
-import { planLuciaImport, type TextEdit } from "./auto-import.ts";
+import { planLusiaImport, type TextEdit } from "./auto-import.ts";
 import {
   scriptItems,
   tagNameItems,
@@ -56,7 +56,7 @@ function withScriptImport(item: ScriptItem, text: string): CompletionResult {
 function withImport(item: ScriptItem, text: string, section: Section): CompletionResult {
   const { importName, ...data } = item;
   const script = text.slice(section.contentStart, section.contentEnd);
-  const edit = importName ? planLuciaImport(script, importName) : undefined;
+  const edit = importName ? planLusiaImport(script, importName) : undefined;
   if (!edit) return data;
   return {
     ...data,

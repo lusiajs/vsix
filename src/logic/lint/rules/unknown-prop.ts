@@ -1,12 +1,12 @@
 import { componentPropName } from "../../../../../../src/compiler/template/bind.ts";
-import { parseLuciaImports } from "../../imports.ts";
+import { parseLusiaImports } from "../../imports.ts";
 import { tagAttributes } from "../attributes.ts";
 import type { LintContext, LintFinding } from "../types.ts";
 
 const COMPONENT_TAG = /<([A-Za-z][\w.-]*)/g;
 
 export function unknownProp({ script, markup, childProps }: LintContext): LintFinding[] {
-  const imported = new Set(parseLuciaImports(script).map((item) => item.name));
+  const imported = new Set(parseLusiaImports(script).map((item) => item.name));
   const findings: LintFinding[] = [];
   for (const tag of markup.matchAll(COMPONENT_TAG)) {
     const name = tag[1] ?? "";

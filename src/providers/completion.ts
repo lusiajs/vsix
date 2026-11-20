@@ -14,7 +14,7 @@ const KINDS: Record<CompletionKind, vscode.CompletionItemKind> = {
   variable: vscode.CompletionItemKind.Variable,
 };
 
-export class LuciaCompletionProvider implements vscode.CompletionItemProvider {
+export class LusiaCompletionProvider implements vscode.CompletionItemProvider {
   provideCompletionItems(
     document: vscode.TextDocument,
     position: vscode.Position,

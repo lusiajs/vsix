@@ -1,5 +1,5 @@
 import { FORM_TAGS } from "../../../../../../src/compiler/template/bind.ts";
-import { parseLuciaImports } from "../../imports.ts";
+import { parseLusiaImports } from "../../imports.ts";
 import { tagAttributes } from "../attributes.ts";
 import type { LintContext, LintFinding } from "../types.ts";
 
@@ -9,7 +9,7 @@ const ON_PLAIN_TAG = "bind works on input, textarea and select; use bind-<proper
 
 /** Mirrors the compiler: plain `bind` only works on form controls, and `bind-element` not on components. */
 export function bindTargets({ script, markup }: LintContext): LintFinding[] {
-  const imported = new Set(parseLuciaImports(script).map((item) => item.name));
+  const imported = new Set(parseLusiaImports(script).map((item) => item.name));
   const findings: LintFinding[] = [];
   for (const tag of markup.matchAll(TAG)) {
     const name = tag[1] ?? "";

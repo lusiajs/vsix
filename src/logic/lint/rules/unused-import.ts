@@ -1,8 +1,8 @@
-import { parseLuciaImports } from "../../imports.ts";
+import { parseLusiaImports } from "../../imports.ts";
 import type { LintFinding, LintRule } from "../types.ts";
 
 export const unusedImport: LintRule = ({ script, scriptOffset, markup }) =>
-  parseLuciaImports(script)
+  parseLusiaImports(script)
     .filter((item) => !isUsedAsTag(markup, item.name))
     .map((item): LintFinding => ({
       offset: scriptOffset + item.index,

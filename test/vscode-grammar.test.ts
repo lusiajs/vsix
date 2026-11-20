@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const EXTENSION = join(import.meta.dir, "../../editors/vscode");
-const GRAMMAR_PATH = join(EXTENSION, "syntaxes/lucia.tmLanguage.json");
+const GRAMMAR_PATH = join(EXTENSION, "syntaxes/lusia.tmLanguage.json");
 
 interface Rule {
   begin?: string;
@@ -46,9 +46,9 @@ function collectIncludes(node: unknown, found: string[] = []): string[] {
   return found;
 }
 
-describe("LuciaJS VS Code grammar", () => {
-  test("parses as JSON with the lucia scope name", () => {
-    expect(grammar.scopeName).toBe("source.lucia");
+describe("Lusia VS Code grammar", () => {
+  test("parses as JSON with the lusia scope name", () => {
+    expect(grammar.scopeName).toBe("source.lusia");
     expect(grammar.patterns).toBeArray();
   });
 

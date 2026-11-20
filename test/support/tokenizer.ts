@@ -32,7 +32,7 @@ interface TextmateModule {
 }
 
 const GRAMMAR_FILES: Record<string, string> = {
-  "source.lucia": join(EXTENSION, "syntaxes/lucia.tmLanguage.json"),
+  "source.lusia": join(EXTENSION, "syntaxes/lusia.tmLanguage.json"),
   "source.ts": join(FIXTURES, "typescript.json"),
   "source.js": join(FIXTURES, "javascript.json"),
   "source.css": join(FIXTURES, "css.json"),
@@ -47,7 +47,7 @@ export interface Token {
 
 let grammarPromise: Promise<TextmateGrammar> | undefined;
 
-async function loadLuciaGrammar(): Promise<TextmateGrammar> {
+async function loadLusiaGrammar(): Promise<TextmateGrammar> {
   const onig = extensionRequire("vscode-oniguruma") as OnigModule;
   const textmate = extensionRequire("vscode-textmate") as TextmateModule;
   const wasm = readFileSync(extensionRequire.resolve("vscode-oniguruma/release/onig.wasm"));
@@ -63,14 +63,14 @@ async function loadLuciaGrammar(): Promise<TextmateGrammar> {
       return path ? textmate.parseRawGrammar(readFileSync(path, "utf8"), path) : null;
     },
   });
-  const grammar = await registry.loadGrammar("source.lucia");
-  if (!grammar) throw new Error("source.lucia grammar did not load");
+  const grammar = await registry.loadGrammar("source.lusia");
+  if (!grammar) throw new Error("source.lusia grammar did not load");
   return grammar;
 }
 
-/** Tokenizes a whole .lucia document, line by line, with the real grammars. */
-export async function tokenizeLucia(source: string): Promise<Token[][]> {
-  grammarPromise ??= loadLuciaGrammar();
+/** Tokenizes a whole .lusia document, line by line, with the real grammars. */
+export async function tokenizeLusia(source: string): Promise<Token[][]> {
+  grammarPromise ??= loadLusiaGrammar();
   const grammar = await grammarPromise;
   let ruleStack: unknown = null;
   return source.split("\n").map((line) => {

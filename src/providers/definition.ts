@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { componentPath } from "../component-file.ts";
 import { tagNameAt } from "../logic/tag.ts";
 
-export class LuciaDefinitionProvider implements vscode.DefinitionProvider {
+export class LusiaDefinitionProvider implements vscode.DefinitionProvider {
   provideDefinition(
     document: vscode.TextDocument,
     position: vscode.Position,

@@ -1,8 +1,8 @@
 import { formatMarkup, formatScript, formatStyle } from "./format-parts.ts";
 import { findSections, type Section } from "./sections.ts";
 
-/** Formats a .lucia file: script as TypeScript, styles as SCSS or CSS, markup as HTML. Sections keep their order. */
-export async function formatLucia(source: string): Promise<string> {
+/** Formats a .lusia file: script as TypeScript, styles as SCSS or CSS, markup as HTML. Sections keep their order. */
+export async function formatLusia(source: string): Promise<string> {
   const blocks: string[] = [];
   let last = 0;
   for (const section of findSections(source)) {

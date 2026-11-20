@@ -1,6 +1,6 @@
 {
-  "name": "LuciaJS",
-  "scopeName": "source.lucia",
+  "name": "Lusia",
+  "scopeName": "source.lusia",
   "patterns": [{ "include": "#document" }],
   "repository": {
     "document": {
@@ -22,12 +22,12 @@
       "end": "(/?>)",
       "beginCaptures": {
         "1": { "name": "punctuation.definition.tag.begin.html" },
-        "2": { "name": "keyword.control.flow.lucia" }
+        "2": { "name": "keyword.control.flow.lusia" }
       },
       "endCaptures": {
         "1": { "name": "punctuation.definition.tag.end.html" }
       },
-      "name": "meta.tag.flow.lucia",
+      "name": "meta.tag.flow.lusia",
       "patterns": [
         { "include": "#flow-attribute" },
         { "include": "#attribute-expression" },
@@ -38,7 +38,7 @@
       "match": "(</)(IF|ELSEIF|ELSE|EACH|FOR|HTML|FALLBACK)(\\s*>)",
       "captures": {
         "1": { "name": "punctuation.definition.tag.begin.html" },
-        "2": { "name": "keyword.control.flow.lucia" },
+        "2": { "name": "keyword.control.flow.lusia" },
         "3": { "name": "punctuation.definition.tag.end.html" }
       }
     },
@@ -48,11 +48,11 @@
     },
     "event-attribute": {
       "match": "(?<=\\s)on[a-z]+(?=\\s*=\\s*\\{)",
-      "name": "keyword.other.event.lucia"
+      "name": "keyword.other.event.lusia"
     },
     "bind-attribute": {
       "match": "(?<=\\s)bind(-[a-z][a-z-]*)?(?=\\s*=\\s*\\{)",
-      "name": "keyword.other.bind.lucia"
+      "name": "keyword.other.bind.lusia"
     },
     "script": {
       "begin": "(<)(script)(\\s[^>]*)?(>)",
@@ -107,7 +107,7 @@
     },
     "style-at-rules": {
       "match": "@(scoped|global)\\b",
-      "name": "keyword.control.at-rule.lucia"
+      "name": "keyword.control.at-rule.lusia"
     },
     "section-attributes": {
       "patterns": [
@@ -125,16 +125,16 @@
     },
     "motion-attribute": {
       "match": "(?<=\\s)animate(?=\\s*(=|/?>|\\s))",
-      "name": "keyword.other.animate.lucia"
+      "name": "keyword.other.animate.lusia"
     },
     "expression": {
       "begin": "\\{",
       "end": "\\}",
       "beginCaptures": {
-        "0": { "name": "punctuation.section.embedded.begin.lucia" }
+        "0": { "name": "punctuation.section.embedded.begin.lusia" }
       },
       "endCaptures": {
-        "0": { "name": "punctuation.section.embedded.end.lucia" }
+        "0": { "name": "punctuation.section.embedded.end.lusia" }
       },
       "contentName": "meta.embedded.block.typescript",
       "patterns": [{ "include": "#expression" }, { "include": "source.ts" }]

@@ -30,7 +30,7 @@ describe("hover", () => {
   });
 
   test("shows a component's props with defaults on its tag", () => {
-    const text = `<script>\nimport Badge from "./badge.lucia";\n</script>\n<Badge />`;
+    const text = `<script>\nimport Badge from "./badge.lusia";\n</script>\n<Badge />`;
     const lookup = () => [{ name: "label", defaultValue: '"New"' }];
     const result = hoverAt(text, text.lastIndexOf("Badge") + 1, lookup);
     expect(result).toEqual({
@@ -76,12 +76,12 @@ describe("hover", () => {
   });
 
   test("shows the enum entry for a name in the script", () => {
-    const text = '<script>\nimport { EASE } from "lucia";\n</script>';
+    const text = '<script>\nimport { EASE } from "lusia";\n</script>';
     expect(apiId(hoverAt(text, text.indexOf("EASE") + 2, noProps))).toBe("ease");
   });
 
   test("shows the enum entry for a member of a nested group in the script", () => {
-    const text = '<script>\nimport { EASE } from "lucia";\nconst s = EASE.STYLE.QUART;\n</script>';
+    const text = '<script>\nimport { EASE } from "lusia";\nconst s = EASE.STYLE.QUART;\n</script>';
     expect(apiId(hoverAt(text, text.indexOf("QUART") + 2, noProps))).toBe("ease");
   });
 });
@@ -124,7 +124,7 @@ describe("hover for markup features", () => {
 
   test("shows the PRESET entry in the script", () => {
     const text =
-      '<script>\nimport { PRESET } from "lucia";\n</script>\n<div animate={PRESET.FADE}>x</div>';
+      '<script>\nimport { PRESET } from "lusia";\n</script>\n<div animate={PRESET.FADE}>x</div>';
     expect(apiId(hoverAt(text, text.indexOf("PRESET") + 2, noProps))).toBe("preset");
   });
 

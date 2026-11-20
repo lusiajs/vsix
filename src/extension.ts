@@ -1,15 +1,15 @@
 import * as vscode from "vscode";
-import { LuciaDiagnostics } from "./diagnostics.ts";
-import { LuciaCompletionProvider } from "./providers/completion.ts";
-import { LuciaDefinitionProvider } from "./providers/definition.ts";
-import { LuciaFormattingProvider } from "./providers/format.ts";
-import { LuciaHoverProvider } from "./providers/hover.ts";
+import { LusiaDiagnostics } from "./diagnostics.ts";
+import { LusiaCompletionProvider } from "./providers/completion.ts";
+import { LusiaDefinitionProvider } from "./providers/definition.ts";
+import { LusiaFormattingProvider } from "./providers/format.ts";
+import { LusiaHoverProvider } from "./providers/hover.ts";
 
-const SELECTOR: vscode.DocumentSelector = { language: "lucia" };
+const SELECTOR: vscode.DocumentSelector = { language: "lusia" };
 const COMPLETION_TRIGGERS = ["<", " ", "@", ":"];
 
 export function activate(context: vscode.ExtensionContext): void {
-  const diagnostics = new LuciaDiagnostics();
+  const diagnostics = new LusiaDiagnostics();
   context.subscriptions.push(
     diagnostics,
     vscode.workspace.onDidOpenTextDocument((document) => diagnostics.schedule(document)),
@@ -17,14 +17,14 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.workspace.onDidCloseTextDocument((document) => diagnostics.clear(document)),
     vscode.languages.registerCompletionItemProvider(
       SELECTOR,
-      new LuciaCompletionProvider(),
+      new LusiaCompletionProvider(),
       ...COMPLETION_TRIGGERS,
     ),
-    vscode.languages.registerHoverProvider(SELECTOR, new LuciaHoverProvider()),
-    vscode.languages.registerDefinitionProvider(SELECTOR, new LuciaDefinitionProvider()),
+    vscode.languages.registerHoverProvider(SELECTOR, new LusiaHoverProvider()),
+    vscode.languages.registerDefinitionProvider(SELECTOR, new LusiaDefinitionProvider()),
     vscode.languages.registerDocumentFormattingEditProvider(
       SELECTOR,
-      new LuciaFormattingProvider(),
+      new LusiaFormattingProvider(),
     ),
   );
   vscode.workspace.textDocuments.forEach((document) => diagnostics.schedule(document));
