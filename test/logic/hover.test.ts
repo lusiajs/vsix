@@ -10,8 +10,8 @@ function apiId(result: HoverResult | undefined): string | undefined {
 
 describe("hover", () => {
   test("shows the API entry for a name in the script", () => {
-    const text = "<script>\nconst s = store(0);\n</script>";
-    expect(apiId(hoverAt(text, text.indexOf("store") + 2, noProps))).toBe("store");
+    const text = "<script>\nconst s = variable(0);\n</script>";
+    expect(apiId(hoverAt(text, text.indexOf("variable") + 2, noProps))).toBe("variable");
   });
 
   test("shows the scoped style entry on a style tag", () => {

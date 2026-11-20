@@ -8,7 +8,7 @@ import { planLuciaImport } from "../../../editors/vscode/src/logic/auto-import.t
 
 describe("lucia imports", () => {
   test("reads default imports of .lucia files only", () => {
-    const script = `import Badge from "./badge.lucia";\nimport { store } from "lucia";\nimport Card, { x } from './card.lucia';`;
+    const script = `import Badge from "./badge.lucia";\nimport { variable } from "lucia";\nimport Card, { x } from './card.lucia';`;
     expect(parseLuciaImports(script)).toEqual([
       { name: "Badge", specifier: "./badge.lucia", index: 0 },
       { name: "Card", specifier: "./card.lucia", index: script.indexOf("import Card") },
@@ -31,17 +31,17 @@ describe("auto import", () => {
 
   test("creates an import when the script has none", () => {
     const script = "\nconst x = 1;\n";
-    const edit = planLuciaImport(script, "store");
-    expect(edit && apply(script, edit)).toBe('import { store } from "lucia";\n\nconst x = 1;\n');
+    const edit = planLuciaImport(script, "variable");
+    expect(edit && apply(script, edit)).toBe('import { variable } from "lucia";\n\nconst x = 1;\n');
   });
 
   test("adds the name to an existing lucia import", () => {
     const other = 'import { props } from "lucia";\n';
-    const added = planLuciaImport(other, "store");
-    expect(added && apply(other, added)).toBe('import { props, store } from "lucia";\n');
+    const added = planLuciaImport(other, "variable");
+    expect(added && apply(other, added)).toBe('import { props, variable } from "lucia";\n');
   });
 
   test("adds nothing when the name is already imported", () => {
-    expect(planLuciaImport('import { store } from "lucia";', "store")).toBeUndefined();
+    expect(planLuciaImport('import { variable } from "lucia";', "variable")).toBeUndefined();
   });
 });

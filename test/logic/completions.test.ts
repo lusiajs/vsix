@@ -10,21 +10,21 @@ describe("script completions", () => {
   const labels = items.map((item) => item.label);
 
   test("offers lucia API names with an auto-import edit", () => {
-    const store = items.find((item) => item.label === "store");
-    expect(store?.importEdit).toEqual({
+    const variable = items.find((item) => item.label === "variable");
+    expect(variable?.importEdit).toEqual({
       start: 8,
       end: 8,
-      text: 'import { store } from "lucia";\n',
+      text: 'import { variable } from "lucia";\n',
     });
   });
 
   test("a dotted name is offered, and imports its lucia export", () => {
-    const from = items.find((item) => item.label === "store.from");
-    expect(from?.insertText).toBe("store.from");
+    const from = items.find((item) => item.label === "variable.compute");
+    expect(from?.insertText).toBe("variable.compute");
     expect(from?.importEdit).toEqual({
       start: 8,
       end: 8,
-      text: 'import { store } from "lucia";\n',
+      text: 'import { variable } from "lucia";\n',
     });
   });
 

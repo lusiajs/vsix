@@ -18,7 +18,7 @@ const FIELD_ITEMS: CompletionItemData[] = [
     kind: "property",
     insertText: "when: $1",
     snippet: true,
-    detail: "Trigger: WHEN member or a store (default WHEN.ATTACH)",
+    detail: "Trigger: WHEN member or a variable (default WHEN.ATTACH)",
   },
   {
     label: "control",
@@ -165,7 +165,7 @@ const MORE_FIELDS: Record<string, CompletionItemData[]> = {
       insertText: "follow: $1",
       snippet: true,
       detail:
-        "Store of the tall element that drives the progress, such as one set by bind-element. Not with start or end",
+        "Variable of the tall element that drives the progress, such as one set by bind-element. Not with start or end",
     },
     {
       label: "part",

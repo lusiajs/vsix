@@ -10,8 +10,8 @@ const SAMPLE = `<style scoped>
 .card{padding:1rem}
 </style>
 <script>
-import {store} from "lucia";
-const name=store("Ada");
+import {variable} from "lucia";
+const name=variable("Ada");
 </script>
 <p class="a {name}">Hi {name.value}</p>
 <button disabled={name.value === "" || {a:1}.a}>Go</button>
@@ -45,7 +45,7 @@ describe("format", () => {
   });
 
   test("formats the script as TypeScript", async () => {
-    expect(await formatLucia(SAMPLE)).toContain('const name = store("Ada");');
+    expect(await formatLucia(SAMPLE)).toContain('const name = variable("Ada");');
   });
 });
 

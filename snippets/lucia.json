@@ -64,7 +64,7 @@
   },
   "Lucia two-way input": {
     "prefix": "lucia-bind",
-    "description": "Text field linked to a store",
+    "description": "Text field linked to a variable",
     "body": ["<input bind={${1:name}} />"]
   },
   "Lucia scoped style": {
