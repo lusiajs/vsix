@@ -11,35 +11,13 @@ export interface LuciaImport {
 const LUCIA_DEFAULT_IMPORT =
   /import\s+([A-Za-z_$][\w$]*)\s*(?:,\s*\{[^}]*\}\s*)?from\s*["']([^"'\n]+\.lucia)["']/g;
 
-// A top-level `const Name = lazy(...)` is a component too. Its file is the first import("...") in its statement.
-const LAZY_DECLARATION = /^const\s+([A-Za-z_$][\w$]*)\s*=\s*lazy\s*\(/gm;
-const DYNAMIC_IMPORT = /import\(\s*["']([^"'\n]+)["']\s*\)/;
-const NEXT_STATEMENT = /\n\S/g;
-
-/** Default imports of `.lucia` files, and lazy() components, in a script's text. */
+/** Default imports of `.lucia` files in a script's text. */
 export function parseLuciaImports(script: string): LuciaImport[] {
-  const imports = [...script.matchAll(LUCIA_DEFAULT_IMPORT)].map((match) => ({
+  return [...script.matchAll(LUCIA_DEFAULT_IMPORT)].map((match) => ({
     name: match[1] ?? "",
     specifier: match[2] ?? "",
     index: match.index,
   }));
-  return [...imports, ...lazyComponents(script)].sort((a, b) => a.index - b.index);
-}
-
-function lazyComponents(script: string): LuciaImport[] {
-  return [...script.matchAll(LAZY_DECLARATION)].map((match) => {
-    const statement = script.slice(match.index, statementEnd(script, match.index));
-    return {
-      name: match[1] ?? "",
-      specifier: DYNAMIC_IMPORT.exec(statement)?.[1] ?? "",
-      index: match.index,
-    };
-  });
-}
-
-function statementEnd(script: string, from: number): number {
-  NEXT_STATEMENT.lastIndex = from + 1;
-  return NEXT_STATEMENT.exec(script)?.index ?? script.length;
 }
 
 export function scriptImports(text: string): LuciaImport[] {
