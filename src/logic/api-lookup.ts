@@ -25,9 +25,9 @@ export function findEnum(name: string): ApiEntry | undefined {
   );
 }
 
-/** Script names that come from `lusia` and can be auto-imported. `setup` is a hook, not an export. */
+/** Script names that come from `lusia` and can be auto-imported. */
 export function importableApi(): ApiEntry[] {
-  return api.filter((entry) => isScriptEntry(entry) && entry.id !== "setup");
+  return api.filter((entry) => isScriptEntry(entry));
 }
 
 function isScriptEntry(entry: ApiEntry): boolean {

@@ -7,7 +7,6 @@ const BADGE_SCRIPT = `<script>\nimport Badge from "./badge.lusia";\n</script>\n`
 describe("script completions", () => {
   const text = "<script>\n\n</script>";
   const items = completionsAt(text, 9, noProps);
-  const labels = items.map((item) => item.label);
 
   test("offers lusia API names with an auto-import edit", () => {
     const variable = items.find((item) => item.label === "variable");
@@ -34,8 +33,13 @@ describe("script completions", () => {
     expect(props?.insertText.startsWith("props({")).toBe(true);
   });
 
-  test("does not offer setup, which is not an export", () => {
-    expect(labels).not.toContain("setup");
+  test("offers setup, which is now a lusia export", () => {
+    const setup = items.find((item) => item.label === "setup");
+    expect(setup?.importEdit).toEqual({
+      start: 8,
+      end: 8,
+      text: 'import { setup } from "lusia";\n',
+    });
   });
 });
 
