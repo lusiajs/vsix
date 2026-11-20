@@ -303,7 +303,14 @@ describe("flow and element completions", () => {
     const flow = completionsAt(text, text.length, noProps).filter(
       (item) => item.kind === "keyword" && item.snippet,
     );
-    expect(flow.map((item) => item.label)).toEqual(["IF", "ELSEIF", "ELSE", "EACH", "FOR"]);
+    expect(flow.map((item) => item.label)).toEqual([
+      "IF",
+      "ELSEIF",
+      "ELSE",
+      "EACH",
+      "FOR",
+      "CONTENT",
+    ]);
     expect(flow.find((item) => item.label === "IF")?.insertText).toBe("IF {$1}>\n\t$0\n</IF>");
   });
 

@@ -10,7 +10,7 @@ const PLACEHOLDER_PATTERN = /LUCIAEXPR(\d+)X/g;
 const ATTRIBUTE_PLACEHOLDER = /="LUCIAEXPR(\d+)X"/g;
 const BARE_ATTRIBUTE_PLACEHOLDER = /=LUCIAEXPR(\d+)X/g;
 
-const FLOW_OPEN = /<(?:IF|ELSEIF|ELSE|EACH|FOR)(?=[\s/>])/y;
+const FLOW_OPEN = /<(?:IF|ELSEIF|ELSE|EACH|FOR|CONTENT)(?=[\s/>])/y;
 const FLOW_CLOSE = /<\/(?:IF|ELSEIF|ELSE|EACH|FOR)\s*>/y;
 
 /** Swaps each `{expr}` and each flow tag for a placeholder that the HTML formatter leaves alone. */

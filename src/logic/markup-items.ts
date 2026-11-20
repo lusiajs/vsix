@@ -8,6 +8,7 @@ const FLOW_TAGS: Record<string, string> = {
   ELSE: "Shown when no branch is true",
   EACH: "Repeat for each item",
   FOR: "Repeat for a range of numbers",
+  CONTENT: "Children given to this component",
 };
 
 const FLOW_TAG_BODIES: Record<string, string> = {
@@ -16,6 +17,7 @@ const FLOW_TAG_BODIES: Record<string, string> = {
   ELSE: "ELSE>\n\t$0\n</ELSE>",
   EACH: "EACH {$1} as={$2} key={$3}>\n\t$0\n</EACH>",
   FOR: "FOR {$1} from={$2} to={$3}>\n\t$0\n</FOR>",
+  CONTENT: "CONTENT />",
 };
 
 const EVENT_NAMES = [
