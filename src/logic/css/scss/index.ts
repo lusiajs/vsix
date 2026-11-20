@@ -1,5 +1,5 @@
-import { createRequire } from "node:module";
 import { dirname } from "node:path";
+import { parseFile } from "sass-graph";
 import type { IMixin } from "scss-symbols-parser";
 import {
   defaultNamespace,
@@ -11,19 +11,13 @@ import {
 } from "./parse.ts";
 import type { ScssIndex, ScssMember, ScssMemberKind } from "./types.ts";
 
-interface SassGraph {
-  parseFile(
-    filePath: string,
-    options?: { loadPaths?: string[]; extensions?: string[] },
-  ): { index: Record<string, unknown> };
-}
-
 const MAX_DEPTH = 8;
 
-let sassGraphModule: SassGraph | undefined;
-
 /** The reachable SCSS members of a style, resolved from its imports on disk. */
-export function buildScssIndex(fileName: string | undefined, style: string): ScssIndex {
+export function buildScssIndex(
+  fileName: string | undefined,
+  style: string,
+): ScssIndex {
   const members: ScssMember[] = [];
   const files = new Set<string>();
   if (!fileName) return { members, files: [] };
@@ -73,7 +67,8 @@ function collectModule(
     if (directive.kind !== "forward") continue;
     for (const forward of directive.paths) {
       const target = resolveScssModule(path, forward.value);
-      if (target) members.push(...collectModule(target, files, stack, depth + 1));
+      if (target)
+        members.push(...collectModule(target, files, stack, depth + 1));
     }
   }
   stack.delete(path);
@@ -83,7 +78,7 @@ function collectModule(
 /** The files an `@import` pulls in, partials and nested imports resolved by sass-graph. */
 function importTree(path: string): string[] {
   try {
-    const graph = sassGraph().parseFile(path, {
+    const graph = parseFile(path, {
       loadPaths: [dirname(path)],
       extensions: ["scss", "sass"],
     });
@@ -92,12 +87,6 @@ function importTree(path: string): string[] {
   } catch {
     return [path];
   }
-}
-
-function sassGraph(): SassGraph {
-  // sass-graph ships no type declarations, so it is loaded with the shape used here.
-  sassGraphModule ??= createRequire(import.meta.url)("sass-graph") as SassGraph;
-  return sassGraphModule;
 }
 
 function fileMembers(file: ScssFile): ScssMember[] {
