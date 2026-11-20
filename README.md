@@ -7,13 +7,15 @@ Editor support for `.lusia` components.
 | Feature          | What it does                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------------- |
 | Highlighting     | Script as TypeScript, styles as SCSS or CSS, markup as HTML, `{expr}` as TypeScript                |
-| Completion       | Lusia API names, component tags, child props, style keywords, flow tags, events, `bind-value`      |
-| Hover            | API docs for names, style keywords, flow tags, events, `bind-value`, component tags (with props)   |
+| Completion       | Lusia API names with a details panel, members, locals, `.ts` imports, components, markup and style |
+| Hover            | API docs, dotted names, `.ts` JSDoc, components, markup and style                                  |
 | Errors           | Compile errors from the Lusia compiler, on open and on change                                      |
 | Warnings         | Lint rules, shown with source `lusia-lint`                                                         |
 | Go to definition | Component tag to its `.lusia` file                                                                 |
 | Format           | Script as TypeScript, styles as SCSS or CSS, markup as HTML. Flow tags are kept as written         |
 | Snippets         | Component, props, child component, scoped style, `IF`, `EACH`, `FOR`, click handler, two-way input |
+
+The completion details panel shows the signature, summary, bullets and example from `reference/api.ts`. A name imported from a `.ts` file shows its signature and JSDoc.
 
 See the site Guide (https://azpepoze.github.io/lusia/guide) for the lint rules and `reference/api.ts` for the API table.
 
