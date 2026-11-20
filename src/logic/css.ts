@@ -11,8 +11,8 @@ import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { CompletionResult } from "../../../shared/completions.ts";
 import type { HoverResult } from "../../../shared/hover.ts";
 import type { TextRange } from "../../../shared/range.ts";
-import { regionAt } from "../../../shared/regions.ts";
-import type { Section } from "../../../shared/sections.ts";
+import { regionAt } from "@language/regions.ts";
+import type { Section } from "@language/sections.ts";
 import {
   editorDocument,
   hoverText,

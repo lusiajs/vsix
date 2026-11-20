@@ -1,5 +1,5 @@
 import { format } from "prettier";
-import { protectExpressions, restoreExpressions } from "../../../shared/format-expressions.ts";
+import { protectExpressions, restoreExpressions } from "@language/format-expressions.ts";
 
 export function formatScript(code: string): Promise<string> {
   return formatCode(code, "typescript");

@@ -6,12 +6,12 @@ import {
 } from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { CompletionResult } from "../../../shared/completions.ts";
-import { inExpressionAt } from "../../../shared/format-expressions.ts";
+import { inExpressionAt } from "@language/format-expressions.ts";
 import type { HoverResult } from "../../../shared/hover.ts";
-import { findComponentImport } from "../../../shared/imports.ts";
+import { findComponentImport } from "@language/imports.ts";
 import { isFlowTag } from "../../../shared/markup-items.ts";
-import { regionAt } from "../../../shared/regions.ts";
-import { isTagNameTyping, openTagAt } from "../../../shared/tag.ts";
+import { regionAt } from "@language/regions.ts";
+import { isTagNameTyping, openTagAt } from "@language/tag.ts";
 import { editorDocument, hoverText, offsetRange, toCompletionKind } from "./language-service.ts";
 
 const URI = "inmemory://lusia/markup.html";

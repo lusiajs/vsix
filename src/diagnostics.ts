@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { compile } from "../../../src/compiler/index.ts";
-import { lintLusia, type LintIssue } from "../../shared/lint.ts";
+import { lintLusia, type LintIssue } from "@language/lint.ts";
 import { errorPosition } from "../../shared/error-position.ts";
 import { declaredProps } from "./component-file.ts";
 
