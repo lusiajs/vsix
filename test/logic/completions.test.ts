@@ -124,6 +124,9 @@ describe("motion completions", () => {
       "VIEW",
       "HOVER",
       "SCROLL",
+      "MOVE",
+      "RESIZE",
+      "MOVE_OR_RESIZE",
       "MANUAL",
     ]);
   });
