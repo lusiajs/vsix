@@ -13,7 +13,10 @@ let loading: Promise<void> | undefined;
  * one, else the version the extension bundles, so a project needs no TypeScript install.
  */
 export function loadTypeScript(startDir: string): TypeScriptModule | undefined {
-  return workspaceTypeScript(startDir) ?? fallback;
+  const workspace = workspaceTypeScript(startDir);
+  if (workspace !== undefined) return workspace;
+  if (fallback === undefined) void preloadTypeScript();
+  return fallback;
 }
 
 /** Starts loading the extension's TypeScript, so a workspace without one still gets the features. */
@@ -21,7 +24,9 @@ export function preloadTypeScript(): Promise<void> {
   if (loading !== undefined) return loading;
   loading = import("typescript")
     .then((module) => {
-      fallback = (module as { default?: TypeScriptModule }).default ?? (module as TypeScriptModule);
+      fallback =
+        (module as { default?: TypeScriptModule }).default ??
+        (module as TypeScriptModule);
     })
     .catch(() => undefined);
   return loading;
