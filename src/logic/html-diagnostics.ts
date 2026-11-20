@@ -1,4 +1,4 @@
-import { HtmlValidate, type ConfigData, type Message } from "html-validate/browser";
+import type { ConfigData, HtmlValidate, Message } from "html-validate/browser";
 import { expressionEnd } from "@language/format-expressions.ts";
 import { findComponentImport } from "@language/imports.ts";
 import { findSections } from "@language/sections.ts";
@@ -27,11 +27,11 @@ const CONFIG: ConfigData = {
 const START_TAG = /^<([A-Za-z][\w.-]*)/;
 const NO_SELF_CLOSING = "no-self-closing";
 
-let validator: HtmlValidate | undefined;
+let validator: Promise<HtmlValidate> | undefined;
 
 export async function htmlDiagnostics(text: string): Promise<RegionDiagnostic[]> {
   try {
-    const report = await htmlValidate().validateSource({
+    const report = await (await htmlValidate()).validateSource({
       data: markupView(text),
       filename: FILENAME,
       line: 1,
@@ -48,8 +48,11 @@ export async function htmlDiagnostics(text: string): Promise<RegionDiagnostic[]>
   }
 }
 
-function htmlValidate(): HtmlValidate {
-  validator ??= new HtmlValidate(CONFIG);
+// html-validate is large, so it loads on the first check, not when the extension starts.
+function htmlValidate(): Promise<HtmlValidate> {
+  validator ??= import("html-validate/browser").then(
+    ({ HtmlValidate }) => new HtmlValidate(CONFIG),
+  );
   return validator;
 }
 

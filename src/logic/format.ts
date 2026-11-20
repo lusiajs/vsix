@@ -1,10 +1,12 @@
-import { format, type Options } from "prettier";
+import type { Options } from "prettier";
 import { formatLusia as formatLusiaSource } from "@language/format.ts";
 import { prettierParts } from "@language/prettier-parts.ts";
 
-const parts = prettierParts(async () => ({
-  format: (code, options) => format(code, options as Options),
-})).parts;
+// Prettier is large, so it loads on the first format, not when the extension starts.
+const parts = prettierParts(async () => {
+  const { format } = await import("prettier");
+  return { format: (code, options) => format(code, options as Options) };
+}).parts;
 
 /** Formats a .lusia file with the shared section kernel and Prettier. */
 export function formatLusia(source: string): Promise<string> {
