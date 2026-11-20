@@ -18,7 +18,7 @@
       ]
     },
     "flow-open": {
-      "begin": "(<)(IF|ELSEIF|ELSE|EACH|FOR|CONTENT)(?=[\\s/>])",
+      "begin": "(<)(IF|ELSEIF|ELSE|EACH|FOR|CONTENT|HTML)(?=[\\s/>])",
       "end": "(/?>)",
       "beginCaptures": {
         "1": { "name": "punctuation.definition.tag.begin.html" },
@@ -35,7 +35,7 @@
       ]
     },
     "flow-close": {
-      "match": "(</)(IF|ELSEIF|ELSE|EACH|FOR)(\\s*>)",
+      "match": "(</)(IF|ELSEIF|ELSE|EACH|FOR|HTML)(\\s*>)",
       "captures": {
         "1": { "name": "punctuation.definition.tag.begin.html" },
         "2": { "name": "keyword.control.flow.lucia" },

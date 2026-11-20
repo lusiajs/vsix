@@ -69,9 +69,10 @@ const FLOW_TAG_IDS: Record<string, string> = {
   EACH: "each",
   FOR: "for",
   CONTENT: "content",
+  HTML: "html",
 };
 
-const FLOW_TAG_NAME = /<\/?(IF|ELSEIF|ELSE|EACH|FOR|CONTENT)(?=[\s/>])/g;
+const FLOW_TAG_NAME = /<\/?(IF|ELSEIF|ELSE|EACH|FOR|CONTENT|HTML)(?=[\s/>])/g;
 
 /** Hover on a flow tag's name, in its opening or closing tag. */
 function flowTagHover(text: string, offset: number): HoverResult | undefined {

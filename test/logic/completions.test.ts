@@ -310,6 +310,7 @@ describe("flow and element completions", () => {
       "EACH",
       "FOR",
       "CONTENT",
+      "HTML",
     ]);
     expect(flow.find((item) => item.label === "IF")?.insertText).toBe("IF {$1}>\n\t$0\n</IF>");
   });
