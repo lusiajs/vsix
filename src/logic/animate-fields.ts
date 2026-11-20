@@ -294,7 +294,7 @@ const MORE_OPEN = /\bmore\s*:\s*$/;
 const MIDWAY_OPEN = /\bmidway\s*:\s*$/;
 const STYLE_OPEN = /\bstyle\s*:\s*$/;
 const KEY_POSITION = /[{,]\s*[\w$]*$/;
-const WHEN_NAMES = /\bwhen\s*:\s*WHEN\.([A-Z]+)/g;
+const WHEN_NAMES = /\bwhen\s*:\s*WHEN\.([A-Z_]+)/g;
 
 /** True at a key of an object that follows `opener`, such as `more: {...}`. */
 function isObjectKeyPosition(typed: string, opener: RegExp): boolean {
