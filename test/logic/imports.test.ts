@@ -15,6 +15,18 @@ describe("lucia imports", () => {
     ]);
   });
 
+  test("reads top-level lazy() components with the file they load", () => {
+    const script = `const Chart = lazy(() => import("./chart.lucia"), { fallback: Spinner });\nconst x = 1;`;
+    expect(parseLuciaImports(script)).toEqual([
+      { name: "Chart", specifier: "./chart.lucia", index: 0 },
+    ]);
+  });
+
+  test("a lazy() component's file is taken from its own statement only", () => {
+    const script = `const Chart = lazy(load);\nconst Other = 1;\nconst later = import("./later.lucia");`;
+    expect(parseLuciaImports(script)).toEqual([{ name: "Chart", specifier: "", index: 0 }]);
+  });
+
   test("ignores import-looking text outside the script", () => {
     expect(scriptImports(`<p>import X from "./a.lucia"</p>`)).toEqual([]);
   });
