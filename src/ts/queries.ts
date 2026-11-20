@@ -2,12 +2,7 @@ import type * as TypeScript from "typescript";
 import { toIssues } from "./issues.ts";
 import type { TypeScriptModule } from "./load.ts";
 import { hasLocation, locationOf } from "./map.ts";
-import {
-  toCompletionDetails,
-  toCompletions,
-  toHover,
-  toSignature,
-} from "./responses.ts";
+import { toCompletionDetails, toCompletions, toHover, toSignature } from "./responses.ts";
 import type { TextRange } from "../../../shared/range.ts";
 import type {
   TsCompletion,
@@ -27,10 +22,7 @@ export interface QueryContext {
   sourceLength: number;
 }
 
-export function completionsOf(
-  context: QueryContext,
-  offset: number,
-): TsCompletion[] {
+export function completionsOf(context: QueryContext, offset: number): TsCompletion[] {
   return safe(
     () =>
       toCompletions(
@@ -70,10 +62,7 @@ export function completionDetailsOf(
   );
 }
 
-export function hoverOf(
-  context: QueryContext,
-  offset: number,
-): TsHover | undefined {
+export function hoverOf(context: QueryContext, offset: number): TsHover | undefined {
   return safe(
     () =>
       toHover(
@@ -90,23 +79,13 @@ export function issuesOf(context: QueryContext): TsIssue[] {
       ...context.service.getSyntacticDiagnostics(context.virtualPath),
       ...context.service.getSemanticDiagnostics(context.virtualPath),
     ];
-    return toIssues(
-      context.typescript,
-      diagnostics,
-      context.spans,
-      context.sourceLength,
-    );
+    return toIssues(context.typescript, diagnostics, context.spans, context.sourceLength);
   }, []);
 }
 
-export function definitionsOf(
-  context: QueryContext,
-  offset: number,
-): TsLocation[] {
+export function definitionsOf(context: QueryContext, offset: number): TsLocation[] {
   return safe(() => {
-    const infos =
-      context.service.getDefinitionAtPosition(context.virtualPath, offset) ??
-      [];
+    const infos = context.service.getDefinitionAtPosition(context.virtualPath, offset) ?? [];
     const found: TsLocation[] = [];
     for (const info of infos) {
       const location = locationOf(info.fileName, info.textSpan.start, true);
@@ -116,51 +95,26 @@ export function definitionsOf(
   }, []);
 }
 
-export function referencesOf(
-  context: QueryContext,
-  offset: number,
-): TsLocation[] {
+export function referencesOf(context: QueryContext, offset: number): TsLocation[] {
   return safe(() => {
     const found: TsLocation[] = [];
-    for (const symbol of context.service.findReferences(
-      context.virtualPath,
-      offset,
-    ) ?? []) {
+    for (const symbol of context.service.findReferences(context.virtualPath, offset) ?? []) {
       for (const reference of symbol.references) {
-        const location = locationOf(
-          reference.fileName,
-          reference.textSpan.start,
-          false,
-        );
-        if (location !== undefined && !hasLocation(found, location))
-          found.push(location);
+        const location = locationOf(reference.fileName, reference.textSpan.start, false);
+        if (location !== undefined && !hasLocation(found, location)) found.push(location);
       }
     }
     return found;
   }, []);
 }
 
-export function renameOf(
-  context: QueryContext,
-  offset: number,
-  newName: string,
-): TsEdit[] {
+export function renameOf(context: QueryContext, offset: number, newName: string): TsEdit[] {
   return safe(() => {
-    if (!context.service.getRenameInfo(context.virtualPath, offset).canRename)
-      return [];
+    if (!context.service.getRenameInfo(context.virtualPath, offset).canRename) return [];
     const locations =
-      context.service.findRenameLocations(
-        context.virtualPath,
-        offset,
-        false,
-        false,
-      ) ?? [];
+      context.service.findRenameLocations(context.virtualPath, offset, false, false) ?? [];
     return locations.flatMap((location) => {
-      const found = locationOf(
-        location.fileName,
-        location.textSpan.start,
-        false,
-      );
+      const found = locationOf(location.fileName, location.textSpan.start, false);
       if (found === undefined) return [];
       return [
         {
@@ -174,10 +128,7 @@ export function renameOf(
   }, []);
 }
 
-export function signatureOf(
-  context: QueryContext,
-  offset: number,
-): TsSignature | undefined {
+export function signatureOf(context: QueryContext, offset: number): TsSignature | undefined {
   return safe(
     () =>
       toSignature(

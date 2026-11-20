@@ -21,47 +21,29 @@ const SELECTOR: vscode.DocumentSelector = { language: "lusia" };
 const COMPLETION_TRIGGERS = ["<", " ", "@", ":", ".", "{"];
 const SIGNATURE_TRIGGERS = ["(", ","];
 const CLOSE_TRIGGER = ">";
-const CODE_ACTION_KINDS = [
-  vscode.CodeActionKind.QuickFix,
-  vscode.CodeActionKind.Refactor,
-];
+const CODE_ACTION_KINDS = [vscode.CodeActionKind.QuickFix, vscode.CodeActionKind.Refactor];
 
 export function activate(context: vscode.ExtensionContext): void {
   const diagnostics = new LusiaDiagnostics();
   context.subscriptions.push(
     diagnostics,
-    vscode.workspace.onDidOpenTextDocument((document) =>
-      diagnostics.schedule(document),
-    ),
-    vscode.workspace.onDidChangeTextDocument((event) =>
-      diagnostics.schedule(event.document),
-    ),
-    vscode.workspace.onDidCloseTextDocument((document) =>
-      diagnostics.clear(document),
-    ),
+    vscode.workspace.onDidOpenTextDocument((document) => diagnostics.schedule(document)),
+    vscode.workspace.onDidChangeTextDocument((event) => diagnostics.schedule(event.document)),
+    vscode.workspace.onDidCloseTextDocument((document) => diagnostics.clear(document)),
     vscode.languages.registerCompletionItemProvider(
       SELECTOR,
       new LusiaCompletionProvider(),
       ...COMPLETION_TRIGGERS,
     ),
     vscode.languages.registerHoverProvider(SELECTOR, new LusiaHoverProvider()),
-    vscode.languages.registerDefinitionProvider(
-      SELECTOR,
-      new LusiaDefinitionProvider(),
-    ),
-    vscode.languages.registerReferenceProvider(
-      SELECTOR,
-      new LusiaReferenceProvider(),
-    ),
+    vscode.languages.registerDefinitionProvider(SELECTOR, new LusiaDefinitionProvider()),
+    vscode.languages.registerReferenceProvider(SELECTOR, new LusiaReferenceProvider()),
     vscode.languages.registerSignatureHelpProvider(
       SELECTOR,
       new LusiaSignatureHelpProvider(),
       ...SIGNATURE_TRIGGERS,
     ),
-    vscode.languages.registerRenameProvider(
-      SELECTOR,
-      new LusiaRenameProvider(),
-    ),
+    vscode.languages.registerRenameProvider(SELECTOR, new LusiaRenameProvider()),
     vscode.languages.registerDocumentFormattingEditProvider(
       SELECTOR,
       new LusiaFormattingProvider(),
@@ -71,42 +53,21 @@ export function activate(context: vscode.ExtensionContext): void {
       new LusiaOnTypeFormattingProvider(),
       CLOSE_TRIGGER,
     ),
-    vscode.languages.registerDocumentLinkProvider(
-      SELECTOR,
-      new LusiaDocumentLinkProvider(),
-    ),
-    vscode.languages.registerDocumentSymbolProvider(
-      SELECTOR,
-      new LusiaDocumentSymbolProvider(),
-    ),
-    vscode.languages.registerFoldingRangeProvider(
-      SELECTOR,
-      new LusiaFoldingRangeProvider(),
-    ),
-    vscode.languages.registerSelectionRangeProvider(
-      SELECTOR,
-      new LusiaSelectionRangeProvider(),
-    ),
+    vscode.languages.registerDocumentLinkProvider(SELECTOR, new LusiaDocumentLinkProvider()),
+    vscode.languages.registerDocumentSymbolProvider(SELECTOR, new LusiaDocumentSymbolProvider()),
+    vscode.languages.registerFoldingRangeProvider(SELECTOR, new LusiaFoldingRangeProvider()),
+    vscode.languages.registerSelectionRangeProvider(SELECTOR, new LusiaSelectionRangeProvider()),
     vscode.languages.registerDocumentHighlightProvider(
       SELECTOR,
       new LusiaDocumentHighlightProvider(),
     ),
-    vscode.languages.registerLinkedEditingRangeProvider(
-      SELECTOR,
-      new LusiaLinkedEditingProvider(),
-    ),
+    vscode.languages.registerLinkedEditingRangeProvider(SELECTOR, new LusiaLinkedEditingProvider()),
     vscode.languages.registerColorProvider(SELECTOR, new LusiaColorProvider()),
-    vscode.languages.registerCodeActionsProvider(
-      SELECTOR,
-      new LusiaCodeActionProvider(),
-      {
-        providedCodeActionKinds: CODE_ACTION_KINDS,
-      },
-    ),
+    vscode.languages.registerCodeActionsProvider(SELECTOR, new LusiaCodeActionProvider(), {
+      providedCodeActionKinds: CODE_ACTION_KINDS,
+    }),
   );
-  vscode.workspace.textDocuments.forEach((document) =>
-    diagnostics.schedule(document),
-  );
+  vscode.workspace.textDocuments.forEach((document) => diagnostics.schedule(document));
 }
 
 export function deactivate(): void {}

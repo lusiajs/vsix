@@ -31,7 +31,9 @@ let validator: Promise<HtmlValidate> | undefined;
 
 export async function htmlDiagnostics(text: string): Promise<RegionDiagnostic[]> {
   try {
-    const report = await (await htmlValidate()).validateSource({
+    const report = await (
+      await htmlValidate()
+    ).validateSource({
       data: markupView(text),
       filename: FILENAME,
       line: 1,

@@ -62,7 +62,9 @@ describe("hoverText", () => {
 describe("offsetRange", () => {
   test("turns a language server range into document offsets", () => {
     const document = editorDocument("inmemory://a.lusia", "html", "one\ntwo");
-    expect(offsetRange(document, { start: { line: 0, character: 1 }, end: { line: 1, character: 2 } })).toEqual({
+    expect(
+      offsetRange(document, { start: { line: 0, character: 1 }, end: { line: 1, character: 2 } }),
+    ).toEqual({
       start: 1,
       end: 6,
     });

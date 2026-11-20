@@ -24,9 +24,7 @@ export function preloadTypeScript(): Promise<void> {
   if (loading !== undefined) return loading;
   loading = import("typescript")
     .then((module) => {
-      fallback =
-        (module as { default?: TypeScriptModule }).default ??
-        (module as TypeScriptModule);
+      fallback = (module as { default?: TypeScriptModule }).default ?? (module as TypeScriptModule);
     })
     .catch(() => undefined);
   return loading;

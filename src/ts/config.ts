@@ -10,22 +10,14 @@ export interface Config {
 }
 
 /** The project's own tsconfig options, with the settings a virtual noEmit file needs forced on. */
-export function compilerOptionsFor(
-  ts: TypeScriptModule,
-  fileName: string,
-): Config {
+export function compilerOptionsFor(ts: TypeScriptModule, fileName: string): Config {
   const fallback = defaults(ts);
   const directory = dirname(fileName);
   const configPath = ts.findConfigFile(directory, ts.sys.fileExists);
-  if (configPath === undefined)
-    return { options: fallback, directory, fileNames: [] };
+  if (configPath === undefined) return { options: fallback, directory, fileNames: [] };
   try {
     const read = ts.readConfigFile(configPath, ts.sys.readFile);
-    const parsed = ts.parseJsonConfigFileContent(
-      read.config ?? {},
-      ts.sys,
-      dirname(configPath),
-    );
+    const parsed = ts.parseJsonConfigFileContent(read.config ?? {}, ts.sys, dirname(configPath));
     return {
       options: {
         ...fallback,
@@ -34,9 +26,7 @@ export function compilerOptionsFor(
         allowImportingTsExtensions: true,
       },
       directory: dirname(configPath),
-      fileNames: parsed.fileNames.filter(
-        (file) => file.endsWith(".ts") || file.endsWith(".tsx"),
-      ),
+      fileNames: parsed.fileNames.filter((file) => file.endsWith(".ts") || file.endsWith(".tsx")),
     };
   } catch {
     return { options: fallback, directory, fileNames: [] };

@@ -34,9 +34,7 @@ const KINDS: Readonly<Record<string, CompletionKind>> = {
   parameter: "variable",
 };
 
-export function toCompletions(
-  info: TypeScript.CompletionInfo | undefined,
-): TsCompletion[] {
+export function toCompletions(info: TypeScript.CompletionInfo | undefined): TsCompletion[] {
   if (info === undefined) return [];
   const items: TsCompletion[] = [];
   for (const entry of info.entries) {
@@ -47,10 +45,7 @@ export function toCompletions(
       kind: completionKind(entry.kind),
       sortText: entry.sortText,
       source: entry.source,
-      range:
-        entry.replacementSpan === undefined
-          ? undefined
-          : spanRange(entry.replacementSpan),
+      range: entry.replacementSpan === undefined ? undefined : spanRange(entry.replacementSpan),
       hasAction: entry.hasAction === true,
       entryData: entry.data,
     });
@@ -109,8 +104,7 @@ export function toHover(
   const code = text(ts, quickInfo.displayParts);
   if (code === "") return undefined;
   const documentation = text(ts, quickInfo.documentation);
-  const markdown =
-    documentation === "" ? fence(code) : `${fence(code)}\n\n${documentation}`;
+  const markdown = documentation === "" ? fence(code) : `${fence(code)}\n\n${documentation}`;
   return { markdown, range: spanRange(quickInfo.textSpan) };
 }
 
@@ -144,10 +138,7 @@ function isHelper(name: string): boolean {
   return name.startsWith("__lusia") || name.startsWith("__Lusia");
 }
 
-function text(
-  ts: TypeScriptModule,
-  parts: TypeScript.SymbolDisplayPart[] | undefined,
-): string {
+function text(ts: TypeScriptModule, parts: TypeScript.SymbolDisplayPart[] | undefined): string {
   return parts === undefined ? "" : ts.displayPartsToString(parts).trim();
 }
 

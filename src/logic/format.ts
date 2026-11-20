@@ -36,7 +36,9 @@ async function configFor(
   settings: FormatSettings,
 ): Promise<Record<string, unknown>> {
   const resolved: Record<string, unknown> =
-    settings.fileName === undefined ? {} : ((await prettier.resolveConfig(settings.fileName)) ?? {});
+    settings.fileName === undefined
+      ? {}
+      : ((await prettier.resolveConfig(settings.fileName)) ?? {});
   const editor: Record<string, unknown> = {};
   if (settings.tabSize !== undefined) editor.tabWidth = settings.tabSize;
   if (settings.insertSpaces !== undefined) editor.useTabs = !settings.insertSpaces;

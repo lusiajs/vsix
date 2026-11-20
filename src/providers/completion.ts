@@ -4,16 +4,10 @@ import { scriptSymbols } from "../script-file.ts";
 import { cssCompletions } from "../logic/css.ts";
 import { htmlCompletions } from "../logic/html.ts";
 import type { CompletionKind } from "../../../shared/completion-data.ts";
-import {
-  completionsAt,
-  type CompletionResult,
-} from "../../../shared/completions.ts";
+import { completionsAt, type CompletionResult } from "../../../shared/completions.ts";
 import type { TextEdit } from "../../../shared/auto-import.ts";
 import { findApiById } from "../../../shared/api-lookup.ts";
-import {
-  apiDocsMarkdown,
-  completionMarkdown,
-} from "../../../shared/markdown.ts";
+import { apiDocsMarkdown, completionMarkdown } from "../../../shared/markdown.ts";
 import type { TsProject } from "../ts/project.ts";
 import type { TsCompletion } from "../ts/types.ts";
 import { inTsRegion, projectOf, rangeOf } from "./common.ts";
@@ -47,17 +41,12 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
   private readonly projects = new Map<string, TsProject>();
   private readonly documents = new Map<string, vscode.TextDocument>();
 
-  provideCompletionItems(
-    document: vscode.TextDocument,
-    position: vscode.Position,
-  ): TsItem[] {
+  provideCompletionItems(document: vscode.TextDocument, position: vscode.Position): TsItem[] {
     this.documents.set(document.fileName, document);
     const text = document.getText();
     const offset = document.offsetAt(position);
-    const propsOf = (name: string) =>
-      componentProps(document.fileName, text, name);
-    const symbolsOf = (specifier: string) =>
-      scriptSymbols(document.fileName, specifier);
+    const propsOf = (name: string) => componentProps(document.fileName, text, name);
+    const symbolsOf = (specifier: string) => scriptSymbols(document.fileName, specifier);
     const base = completionsAt(text, offset, propsOf, symbolsOf);
     const extra = [
       ...htmlCompletions(text, offset),
@@ -75,9 +64,7 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
     }
     const extras = extra.filter((item) => !labels.has(item.label));
     return [
-      ...base.map((item) =>
-        toItem(document, item, apiData(document, offset, item, project)),
-      ),
+      ...base.map((item) => toItem(document, item, apiData(document, offset, item, project))),
       ...tsItems,
       ...extras.map((item) => toItem(document, item)),
     ];
@@ -95,10 +82,7 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
     if (document !== undefined && details.importEdits.length > 0) {
       item.additionalTextEdits = details.importEdits.map((edit) =>
         vscode.TextEdit.replace(
-          new vscode.Range(
-            document.positionAt(edit.start),
-            document.positionAt(edit.end),
-          ),
+          new vscode.Range(document.positionAt(edit.start), document.positionAt(edit.end)),
           edit.text,
         ),
       );
@@ -107,18 +91,12 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
       (part): part is string => part !== undefined && part !== "",
     );
     if (documentation.length > 0)
-      item.documentation = new vscode.MarkdownString(
-        documentation.join("\n\n---\n\n"),
-      );
+      item.documentation = new vscode.MarkdownString(documentation.join("\n\n---\n\n"));
     return item;
   }
 }
 
-function tsItem(
-  document: vscode.TextDocument,
-  offset: number,
-  data: TsCompletion,
-): TsItem {
+function tsItem(document: vscode.TextDocument, offset: number, data: TsCompletion): TsItem {
   const item: TsItem = new vscode.CompletionItem(data.name, KINDS[data.kind]);
   item.insertText = data.insertText;
   item.sortText = data.sortText;
@@ -139,16 +117,12 @@ function toItem(
   resolveData?: TsData,
 ): TsItem {
   const item: TsItem = new vscode.CompletionItem(data.label, KINDS[data.kind]);
-  item.insertText = data.snippet
-    ? new vscode.SnippetString(data.insertText)
-    : data.insertText;
+  item.insertText = data.snippet ? new vscode.SnippetString(data.insertText) : data.insertText;
   item.detail = data.detail;
   const documentation = completionMarkdown(data);
-  if (documentation !== undefined)
-    item.documentation = new vscode.MarkdownString(documentation);
+  if (documentation !== undefined) item.documentation = new vscode.MarkdownString(documentation);
   if (data.range) item.range = rangeOf(document, data.range);
-  if (data.importEdit)
-    item.additionalTextEdits = [importEdit(document, data.importEdit)];
+  if (data.importEdit) item.additionalTextEdits = [importEdit(document, data.importEdit)];
   if (resolveData) item.data = resolveData;
   return item;
 }
@@ -171,9 +145,6 @@ function apiData(
   };
 }
 
-function importEdit(
-  document: vscode.TextDocument,
-  edit: TextEdit,
-): vscode.TextEdit {
+function importEdit(document: vscode.TextDocument, edit: TextEdit): vscode.TextEdit {
   return vscode.TextEdit.replace(rangeOf(document, edit), edit.text);
 }

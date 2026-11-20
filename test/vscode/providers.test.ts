@@ -14,14 +14,12 @@ afterAll(() => workspace.dispose());
 
 const { LusiaCompletionProvider } =
   await import("../../../editors/vscode/src/providers/completion.ts");
-const { LusiaHoverProvider } =
-  await import("../../../editors/vscode/src/providers/hover.ts");
+const { LusiaHoverProvider } = await import("../../../editors/vscode/src/providers/hover.ts");
 const { LusiaDefinitionProvider } =
   await import("../../../editors/vscode/src/providers/definition.ts");
 const { LusiaReferenceProvider } =
   await import("../../../editors/vscode/src/providers/references.ts");
-const { LusiaRenameProvider } =
-  await import("../../../editors/vscode/src/providers/rename.ts");
+const { LusiaRenameProvider } = await import("../../../editors/vscode/src/providers/rename.ts");
 const { LusiaSignatureHelpProvider } =
   await import("../../../editors/vscode/src/providers/signature.ts");
 const { LusiaOnTypeFormattingProvider } =
@@ -38,12 +36,10 @@ const { LusiaDocumentHighlightProvider } =
   await import("../../../editors/vscode/src/providers/highlights.ts");
 const { LusiaLinkedEditingProvider } =
   await import("../../../editors/vscode/src/providers/linked.ts");
-const { LusiaColorProvider } =
-  await import("../../../editors/vscode/src/providers/colors.ts");
+const { LusiaColorProvider } = await import("../../../editors/vscode/src/providers/colors.ts");
 const { LusiaCodeActionProvider } =
   await import("../../../editors/vscode/src/providers/code-actions.ts");
-const { LusiaDiagnostics } =
-  await import("../../../editors/vscode/src/diagnostics.ts");
+const { LusiaDiagnostics } = await import("../../../editors/vscode/src/diagnostics.ts");
 
 const captured = vscode.__captured;
 
@@ -85,10 +81,7 @@ describe("completion and hover wiring", () => {
   });
 
   test("resolves a TypeScript auto-import into an additional edit", () => {
-    const source = component(
-      "Auto.lusia",
-      `<script>\nconst motion = pageMo\n</script>`,
-    );
+    const source = component("Auto.lusia", `<script>\nconst motion = pageMo\n</script>`);
     const provider = mocked(new LusiaCompletionProvider());
     const offset = offsetAfter(source.text, "pageMo");
     const items = provider.provideCompletionItems(
@@ -109,10 +102,7 @@ describe("completion and hover wiring", () => {
     const offset = offsetAfter(source.text, "{row.");
     const provider = mocked(new LusiaCompletionProvider());
     const item = provider
-      .provideCompletionItems(
-        source.document,
-        source.document.positionAt(offset),
-      )
+      .provideCompletionItems(source.document, source.document.positionAt(offset))
       .find((candidate: any) => candidate.label === "count");
     const resolved = provider.resolveCompletionItem(item!);
     expect(resolved.detail).toContain("count");
@@ -162,9 +152,7 @@ describe("typed hover", () => {
   };
 
   test("shows the TypeScript block first and the reference docs below for an API name", () => {
-    const body = hoverAt(
-      APP.indexOf("import { variable") + "import { ".length + 2,
-    );
+    const body = hoverAt(APP.indexOf("import { variable") + "import { ".length + 2);
     expect(body.startsWith("```ts")).toBe(true);
     expect(body).toContain("Creates a value that updates the page");
     expect(body).not.toMatch(/^\*\*variable/);
@@ -182,13 +170,9 @@ describe("typed hover", () => {
   });
 
   test("keeps the typed block first and appends the API docs for a dotted name", () => {
-    const body = hoverAt(
-      APP.indexOf("variable.compute") + "variable.".length + 1,
-    );
+    const body = hoverAt(APP.indexOf("variable.compute") + "variable.".length + 1);
     expect(body.startsWith("```ts")).toBe(true);
-    expect(body).toContain(
-      "Creates a read-only value derived from other variables.",
-    );
+    expect(body).toContain("Creates a read-only value derived from other variables.");
     expect(body).not.toMatch(/^\*\*variable\.compute\(\)\*\*/);
   });
 
@@ -212,9 +196,7 @@ describe("typed hover", () => {
     expect(String(resolved.documentation?.value)).toContain(
       "Creates a value that updates the page",
     );
-    expect(String(resolved.documentation?.value)).not.toContain(
-      "**variable()**",
-    );
+    expect(String(resolved.documentation?.value)).not.toContain("**variable()**");
   });
 
   test("keeps the unimported-name completion and its auto-import edit", () => {
@@ -222,14 +204,9 @@ describe("typed hover", () => {
     const fileName = workspace.write("Empty.lusia", text);
     const document = fakeDocument(fileName, text);
     const provider = mocked(new LusiaCompletionProvider());
-    const items = provider.provideCompletionItems(
-      document,
-      document.positionAt(9),
-    );
+    const items = provider.provideCompletionItems(document, document.positionAt(9));
     const item = items.find((candidate: any) => candidate.label === "variable");
-    expect(item?.additionalTextEdits?.[0]?.newText).toContain(
-      'import { variable } from "lusia";',
-    );
+    expect(item?.additionalTextEdits?.[0]?.newText).toContain('import { variable } from "lusia";');
     const resolved = provider.resolveCompletionItem(item);
     expect(resolved.additionalTextEdits?.[0]?.newText).toContain(
       'import { variable } from "lusia";',
@@ -247,10 +224,7 @@ function toggle(value: number): void {}
 `;
 
 describe("script navigation wiring", () => {
-  workspace.write(
-    "util.ts",
-    "export function greet(name: string): string {\n  return name;\n}\n",
-  );
+  workspace.write("util.ts", "export function greet(name: string): string {\n  return name;\n}\n");
   const source = component("Calls.lusia", CALLS);
   const toggleStart = source.text.lastIndexOf("toggle(1)");
 
@@ -271,8 +245,7 @@ describe("script navigation wiring", () => {
     );
     expect(locations?.[0]?.uri.fsPath).toBe(source.fileName);
     expect(locations?.[0]?.range.start.line).toBe(
-      source.text.slice(0, source.text.indexOf("function toggle")).split("\n")
-        .length - 1,
+      source.text.slice(0, source.text.indexOf("function toggle")).split("\n").length - 1,
     );
   });
 
@@ -283,16 +256,8 @@ describe("script navigation wiring", () => {
       { includeDeclaration: true },
     );
     expect(locations?.length).toBeGreaterThan(1);
-    expect(
-      locations?.some(
-        (location: any) => location.uri.fsPath === source.fileName,
-      ),
-    ).toBe(true);
-    expect(
-      locations?.some((location: any) =>
-        location.uri.fsPath.endsWith("util.ts"),
-      ),
-    ).toBe(true);
+    expect(locations?.some((location: any) => location.uri.fsPath === source.fileName)).toBe(true);
+    expect(locations?.some((location: any) => location.uri.fsPath.endsWith("util.ts"))).toBe(true);
   });
 
   test("renames a markup expression into the script", () => {
@@ -303,12 +268,8 @@ describe("script navigation wiring", () => {
     );
     const changes = edit?.entries().flat() ?? [];
     expect(changes.length).toBeGreaterThanOrEqual(2);
-    expect(changes.some((change: any) => change.range.start.line === 2)).toBe(
-      true,
-    );
-    expect(changes.every((change: any) => change.newText === "welcome")).toBe(
-      true,
-    );
+    expect(changes.some((change: any) => change.range.start.line === 2)).toBe(true);
+    expect(changes.every((change: any) => change.newText === "welcome")).toBe(true);
   });
 });
 
@@ -317,21 +278,19 @@ describe("markup wiring", () => {
 
   test("closes a tag on typing", () => {
     const document = fakeDocument(join(workspace.root, "Close.lusia"), "<div>");
-    const edits = mocked(
-      new LusiaOnTypeFormattingProvider(),
-    ).provideOnTypeFormattingEdits(document, document.positionAt(5), ">", {});
+    const edits = mocked(new LusiaOnTypeFormattingProvider()).provideOnTypeFormattingEdits(
+      document,
+      document.positionAt(5),
+      ">",
+      {},
+    );
     expect(edits[0]?.newText).toBe("</div>");
     expect(edits[0]?.range.start.character).toBe(5);
   });
 
   test("resolves a relative link against the component", () => {
-    const document = fakeDocument(
-      join(workspace.root, "Links.lusia"),
-      `<a href="./page.lusia">`,
-    );
-    const links = mocked(new LusiaDocumentLinkProvider()).provideDocumentLinks(
-      document,
-    );
+    const document = fakeDocument(join(workspace.root, "Links.lusia"), `<a href="./page.lusia">`);
+    const links = mocked(new LusiaDocumentLinkProvider()).provideDocumentLinks(document);
     expect(links[0]?.target.fsPath).toBe(join(workspace.root, "page.lusia"));
     expect(links[0]?.tooltip).toBe(join(workspace.root, "page.lusia"));
   });
@@ -346,16 +305,15 @@ describe("markup wiring", () => {
   });
 
   test("highlights and links the two tag names", () => {
-    const highlights = mocked(
-      new LusiaDocumentHighlightProvider(),
-    ).provideDocumentHighlights(source.document, source.document.positionAt(2));
+    const highlights = mocked(new LusiaDocumentHighlightProvider()).provideDocumentHighlights(
+      source.document,
+      source.document.positionAt(2),
+    );
     expect(highlights?.map((highlight: any) => highlight.kind)).toEqual([
       vscode.DocumentHighlightKind.Read,
       vscode.DocumentHighlightKind.Read,
     ]);
-    const linked = mocked(
-      new LusiaLinkedEditingProvider(),
-    ).provideLinkedEditingRanges(
+    const linked = mocked(new LusiaLinkedEditingProvider()).provideLinkedEditingRanges(
       source.document,
       source.document.positionAt(2),
     );
@@ -365,9 +323,7 @@ describe("markup wiring", () => {
   test("outlines markup and style symbols", () => {
     const text = `<div><span>x</span></div>\n<style>\n.a { color: red; }\n</style>`;
     const document = fakeDocument(join(workspace.root, "Outline.lusia"), text);
-    const symbols = mocked(
-      new LusiaDocumentSymbolProvider(),
-    ).provideDocumentSymbols(document);
+    const symbols = mocked(new LusiaDocumentSymbolProvider()).provideDocumentSymbols(document);
     expect(symbols[0]?.name).toBe("div");
     expect(symbols[0]?.kind).toBe(vscode.SymbolKind.Field);
     expect(symbols.some((symbol: any) => symbol.name === ".a")).toBe(true);
@@ -376,21 +332,16 @@ describe("markup wiring", () => {
   test("folds elements and sections", () => {
     const text = `<div>\n<span>x</span>\n</div>\n<script>\nconst x = 1;\n</script>`;
     const document = fakeDocument(join(workspace.root, "Fold.lusia"), text);
-    const ranges = mocked(new LusiaFoldingRangeProvider()).provideFoldingRanges(
-      document,
-    );
-    expect(
-      ranges.some((range: any) => range.start === 0 && range.end === 1),
-    ).toBe(true);
-    expect(
-      ranges.some((range: any) => range.start === 3 && range.end === 4),
-    ).toBe(true);
+    const ranges = mocked(new LusiaFoldingRangeProvider()).provideFoldingRanges(document);
+    expect(ranges.some((range: any) => range.start === 0 && range.end === 1)).toBe(true);
+    expect(ranges.some((range: any) => range.start === 3 && range.end === 4)).toBe(true);
   });
 
   test("grows the selection from tag name to element", () => {
-    const chains = mocked(
-      new LusiaSelectionRangeProvider(),
-    ).provideSelectionRanges(source.document, [source.document.positionAt(2)]);
+    const chains = mocked(new LusiaSelectionRangeProvider()).provideSelectionRanges(
+      source.document,
+      [source.document.positionAt(2)],
+    );
     expect(chains[0]?.range.start.line).toBe(0);
     expect(chains[0]?.parent).toBeDefined();
   });
@@ -402,9 +353,7 @@ describe("style wiring", () => {
       join(workspace.root, "Colors.lusia"),
       `<style>\n$brand: #ff0000;\n.a { color: $brand; }\n</style>`,
     );
-    const colors = mocked(new LusiaColorProvider()).provideDocumentColors(
-      document,
-    );
+    const colors = mocked(new LusiaColorProvider()).provideDocumentColors(document);
     expect(colors).toHaveLength(1);
     expect(colors[0]?.color).toEqual(new vscode.Color(1, 0, 0, 1));
   });
@@ -420,9 +369,7 @@ describe("style wiring", () => {
       ),
       { diagnostics: [] },
     );
-    const rename = actions.find(
-      (action: any) => action.title === "Rename to 'color'",
-    );
+    const rename = actions.find((action: any) => action.title === "Rename to 'color'");
     expect(rename?.edit?.size).toBe(1);
   });
 });
@@ -448,9 +395,7 @@ describe("diagnostic wiring", () => {
       expect(found.every((item) => item.source === name)).toBe(true);
     }
     diagnostics.clear(source.document);
-    expect(
-      captured.collections.typescript?.get(source.document.uri),
-    ).toBeUndefined();
+    expect(captured.collections.typescript?.get(source.document.uri)).toBeUndefined();
   }, 15000);
 
   test("turns a lint finding with a fix into a code action", async () => {
@@ -461,8 +406,7 @@ describe("diagnostic wiring", () => {
     diagnostics.schedule(lint.document);
     const ready = await waitFor(() => count("lusia-lint", lint.document) > 0);
     expect(ready).toBe(true);
-    const issues =
-      captured.collections["lusia-lint"]?.get(lint.document.uri) ?? [];
+    const issues = captured.collections["lusia-lint"]?.get(lint.document.uri) ?? [];
     const diagnostic = issues[0]!;
     const actions = mocked(new LusiaCodeActionProvider()).provideCodeActions(
       lint.document,
@@ -475,10 +419,7 @@ describe("diagnostic wiring", () => {
   }, 15000);
 });
 
-async function waitFor(
-  condition: () => boolean,
-  timeout = 15000,
-): Promise<boolean> {
+async function waitFor(condition: () => boolean, timeout = 15000): Promise<boolean> {
   const start = Date.now();
   while (!condition()) {
     if (Date.now() - start > timeout) return false;
@@ -491,9 +432,6 @@ function mocked<T>(provider: T): any {
   return provider;
 }
 
-function count(
-  name: string,
-  document: ReturnType<typeof fakeDocument>,
-): number {
+function count(name: string, document: ReturnType<typeof fakeDocument>): number {
   return captured.collections[name]?.get(document.uri)?.length ?? 0;
 }
