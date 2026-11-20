@@ -1,4 +1,7 @@
-import { describe, expect, test } from "bun:test";
+import { afterAll, describe, expect, test } from "bun:test";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { formatLusia } from "../../../editors/vscode/src/logic/format.ts";
 import {
   expressionEnd,
@@ -57,6 +60,14 @@ describe("format expressions", () => {
     expect(expressionEnd(text, 0)).toBe(text.length - 1);
   });
 
+  test("round-trips text that looks like placeholder padding", () => {
+    const source = "<p>{a}~~Q</p><b>{b}Q</b>";
+    const protectedMarkup = protectExpressions(source);
+    expect(
+      restoreExpressions(protectedMarkup.text, protectedMarkup.expressions),
+    ).toBe(source);
+  });
+
   test("protects and restores expressions", () => {
     const protectedMarkup = protectExpressions(`<p>{a}</p><b x={b}>{c}</b>`);
     expect(protectedMarkup.expressions).toEqual(["{a}", "{b}", "{c}"]);
@@ -66,6 +77,41 @@ describe("format expressions", () => {
         protectedMarkup.expressions,
       ),
     ).toBe(`<p>{a}</p><b x={b}>{c}</b>`);
+  });
+});
+
+describe("format settings", () => {
+  test("uses the editor indentation when no Prettier config sets it", async () => {
+    expect(
+      await formatLusia("<div>\n<p>hi</p>\n</div>", {
+        tabSize: 4,
+        insertSpaces: true,
+      }),
+    ).toBe("<div>\n    <p>hi</p>\n</div>\n");
+    expect(
+      await formatLusia("<div>\n<p>hi</p>\n</div>", {
+        tabSize: 1,
+        insertSpaces: false,
+      }),
+    ).toBe("<div>\n\t<p>hi</p>\n</div>\n");
+  });
+
+  test("a project Prettier config wins over the editor indentation", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "lusia-format-config-"));
+    try {
+      writeFileSync(join(dir, ".prettierrc"), JSON.stringify({ tabWidth: 3 }));
+      const file = join(dir, "Card.lusia");
+      writeFileSync(file, "");
+      expect(
+        await formatLusia("<div>\n<p>hi</p>\n</div>", {
+          fileName: file,
+          tabSize: 4,
+          insertSpaces: true,
+        }),
+      ).toBe("<div>\n   <p>hi</p>\n</div>\n");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 
@@ -112,6 +158,21 @@ describe("format flow tags", () => {
     expect(
       await formatLusia(`<div><IF {a}>\n<span>x</span>\n</IF></div>`),
     ).toBe(`<div>\n  <IF {a}>\n    <span>x</span>\n  </IF>\n</div>\n`);
+  });
+
+  test("keeps a long expression attribute wrapped like the source", async () => {
+    const source = `<ol>
+  <li class="row" animate={[
+    { style: PRESET.SLIDE_UP, when: WHEN.ATTACH, duration: 300 },
+    { style: fadeOut, when: WHEN.DETACH, duration: 200 },
+  ]}>
+    <span>{task.title}</span>
+  </li>
+</ol>`;
+    const output = await formatLusia(source);
+    expect(output).toContain('<li\n    class="row"\n    animate={[');
+    expect(output).toContain("when: WHEN.ATTACH");
+    expect(await formatLusia(output)).toBe(output);
   });
 
   test("keeps a flow tag inside a paragraph on its line", async () => {
