@@ -36,6 +36,7 @@ export class Workspace {
       createLanguageHost({
         typescript,
         roots: () => [...this.roots],
+        projectFiles: config.fileNames,
         directory: config.directory,
         compilerOptions: config.options,
         files: this.files,
@@ -65,7 +66,8 @@ export class Workspace {
 
   private component(fileName: string): string | undefined {
     const shim = componentModule(fileName, this.files);
-    if (shim !== undefined) this.components.set(fileName, componentVersion(fileName));
+    if (shim !== undefined)
+      this.components.set(fileName, componentVersion(fileName));
     return shim;
   }
 }

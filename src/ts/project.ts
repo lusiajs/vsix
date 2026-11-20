@@ -85,9 +85,12 @@ export class TsProject {
     offset: number,
     name: string,
     source?: string,
+    entryData?: unknown,
   ): TsCompletionDetails | undefined {
     const context = this.context(offset);
-    return context === undefined ? undefined : completionDetailsOf(context, offset, name, source);
+    return context === undefined
+      ? undefined
+      : completionDetailsOf(context, offset, name, source, entryData);
   }
 
   hover(offset: number): TsHover | undefined {

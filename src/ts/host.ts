@@ -38,6 +38,8 @@ export interface HostOptions {
   typescript: TypeScriptModule;
   /** Every root virtual file open in the workspace. */
   roots: () => readonly string[];
+  /** The project files the tsconfig covers, so auto-import can find their symbols. */
+  projectFiles: readonly string[];
   directory: string;
   compilerOptions: TypeScript.CompilerOptions;
   files: VirtualFiles;
@@ -45,18 +47,24 @@ export interface HostOptions {
   component: (fileName: string) => string | undefined;
 }
 
-export function createLanguageHost(options: HostOptions): TypeScript.LanguageServiceHost {
+export function createLanguageHost(
+  options: HostOptions,
+): TypeScript.LanguageServiceHost {
   const { typescript: ts, files } = options;
   const moduleHost = createModuleHost(ts, files);
   return {
-    getScriptFileNames: () => [...options.roots()],
-    getScriptVersion: (fileName) => files.versionOf(fileName) ?? modifiedVersion(ts, fileName),
+    getScriptFileNames: () => [
+      ...new Set([...options.roots(), ...options.projectFiles]),
+    ],
+    getScriptVersion: (fileName) =>
+      files.versionOf(fileName) ?? modifiedVersion(ts, fileName),
     getScriptSnapshot: (fileName) => snapshot(ts, files, fileName),
     getCurrentDirectory: () => options.directory,
     getCompilationSettings: () => options.compilerOptions,
     getDefaultLibFileName: (settings) => ts.getDefaultLibFilePath(settings),
     getProjectVersion: () => files.projectVersion(),
-    fileExists: (fileName) => files.has(fileName) || ts.sys.fileExists(fileName),
+    fileExists: (fileName) =>
+      files.has(fileName) || ts.sys.fileExists(fileName),
     readFile: (fileName) => files.textOf(fileName) ?? ts.sys.readFile(fileName),
     readDirectory: ts.sys.readDirectory,
     directoryExists: ts.sys.directoryExists,
@@ -64,7 +72,9 @@ export function createLanguageHost(options: HostOptions): TypeScript.LanguageSer
     realpath: ts.sys.realpath,
     useCaseSensitiveFileNames: () => ts.sys.useCaseSensitiveFileNames,
     resolveModuleNames: (names, containing) =>
-      names.map((name) => resolveModule(ts, options, moduleHost, name, containing)),
+      names.map((name) =>
+        resolveModule(ts, options, moduleHost, name, containing),
+      ),
   };
 }
 
@@ -76,8 +86,12 @@ function resolveModule(
   containing: string,
 ): TypeScript.ResolvedModule | undefined {
   if (!isComponentImport(name)) {
-    return ts.resolveModuleName(name, containing, options.compilerOptions, moduleHost)
-      .resolvedModule;
+    return ts.resolveModuleName(
+      name,
+      containing,
+      options.compilerOptions,
+      moduleHost,
+    ).resolvedModule;
   }
   const fileName = resolve(dirname(realPathOf(containing)), name);
   const shim = options.component(fileName);
@@ -86,7 +100,9 @@ function resolveModule(
 }
 
 function isComponentImport(name: string): boolean {
-  return (name.startsWith("./") || name.startsWith("../")) && name.endsWith(".lusia");
+  return (
+    (name.startsWith("./") || name.startsWith("../")) && name.endsWith(".lusia")
+  );
 }
 
 function createModuleHost(
@@ -94,7 +110,8 @@ function createModuleHost(
   files: VirtualFiles,
 ): TypeScript.ModuleResolutionHost {
   return {
-    fileExists: (fileName) => files.has(fileName) || ts.sys.fileExists(fileName),
+    fileExists: (fileName) =>
+      files.has(fileName) || ts.sys.fileExists(fileName),
     readFile: (fileName) => files.textOf(fileName) ?? ts.sys.readFile(fileName),
     directoryExists: ts.sys.directoryExists,
     getDirectories: ts.sys.getDirectories,

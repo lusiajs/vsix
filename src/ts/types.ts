@@ -9,12 +9,23 @@ export interface TsCompletion {
   source?: string;
   range?: TextRange;
   hasAction: boolean;
+  /** TypeScript's opaque completion data, which `getCompletionEntryDetails` needs back. */
+  entryData?: unknown;
   detail?: string;
   documentation?: string;
 }
 
+export interface TsImportEdit {
+  /** Offsets in the open `.lusia` source. */
+  start: number;
+  end: number;
+  text: string;
+}
+
 export interface TsCompletionDetails extends TsCompletion {
   codeActions: number;
+  /** The text edits of the completion's code actions, such as adding a missing import. */
+  importEdits: TsImportEdit[];
 }
 
 export interface TsHover {

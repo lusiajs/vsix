@@ -2,7 +2,13 @@ import type * as TypeScript from "typescript";
 import type { CompletionKind } from "../../../shared/completion-data.ts";
 import type { TypeScriptModule } from "./load.ts";
 import { spanRange } from "./map.ts";
-import type { TsCompletion, TsCompletionDetails, TsHover, TsSignature } from "./types.ts";
+import type {
+  TsCompletion,
+  TsCompletionDetails,
+  TsHover,
+  TsImportEdit,
+  TsSignature,
+} from "./types.ts";
 
 const KINDS: Readonly<Record<string, CompletionKind>> = {
   function: "function",
@@ -28,19 +34,25 @@ const KINDS: Readonly<Record<string, CompletionKind>> = {
   parameter: "variable",
 };
 
-export function toCompletions(info: TypeScript.CompletionInfo | undefined): TsCompletion[] {
+export function toCompletions(
+  info: TypeScript.CompletionInfo | undefined,
+): TsCompletion[] {
   if (info === undefined) return [];
   const items: TsCompletion[] = [];
   for (const entry of info.entries) {
-    if (entry.hasAction || isHelper(entry.name)) continue;
+    if (isHelper(entry.name)) continue;
     items.push({
       name: entry.name,
       insertText: entry.insertText ?? entry.name,
       kind: completionKind(entry.kind),
       sortText: entry.sortText,
       source: entry.source,
-      range: entry.replacementSpan === undefined ? undefined : spanRange(entry.replacementSpan),
-      hasAction: false,
+      range:
+        entry.replacementSpan === undefined
+          ? undefined
+          : spanRange(entry.replacementSpan),
+      hasAction: entry.hasAction === true,
+      entryData: entry.data,
     });
   }
   return items;
@@ -49,6 +61,8 @@ export function toCompletions(info: TypeScript.CompletionInfo | undefined): TsCo
 export function toCompletionDetails(
   ts: TypeScriptModule,
   details: TypeScript.CompletionEntryDetails | undefined,
+  virtualPath: string,
+  entryData: unknown,
 ): TsCompletionDetails | undefined {
   if (details === undefined) return undefined;
   const codeActions = details.codeActions?.length ?? 0;
@@ -59,9 +73,32 @@ export function toCompletionDetails(
     sortText: "",
     hasAction: codeActions > 0,
     codeActions,
+    entryData,
+    importEdits: importEditsOf(details, virtualPath),
     detail: text(ts, details.displayParts),
     documentation: text(ts, details.documentation),
   };
+}
+
+/** The code action edits that belong to the open component, such as the added import. */
+function importEditsOf(
+  details: TypeScript.CompletionEntryDetails,
+  virtualPath: string,
+): TsImportEdit[] {
+  const edits: TsImportEdit[] = [];
+  for (const action of details.codeActions ?? []) {
+    for (const change of action.changes) {
+      if (change.fileName !== virtualPath) continue;
+      for (const textChange of change.textChanges) {
+        edits.push({
+          start: textChange.span.start,
+          end: textChange.span.start + textChange.span.length,
+          text: textChange.newText,
+        });
+      }
+    }
+  }
+  return edits;
 }
 
 export function toHover(
@@ -72,7 +109,8 @@ export function toHover(
   const code = text(ts, quickInfo.displayParts);
   if (code === "") return undefined;
   const documentation = text(ts, quickInfo.documentation);
-  const markdown = documentation === "" ? fence(code) : `${fence(code)}\n\n${documentation}`;
+  const markdown =
+    documentation === "" ? fence(code) : `${fence(code)}\n\n${documentation}`;
   return { markdown, range: spanRange(quickInfo.textSpan) };
 }
 
@@ -106,7 +144,10 @@ function isHelper(name: string): boolean {
   return name.startsWith("__lusia") || name.startsWith("__Lusia");
 }
 
-function text(ts: TypeScriptModule, parts: TypeScript.SymbolDisplayPart[] | undefined): string {
+function text(
+  ts: TypeScriptModule,
+  parts: TypeScript.SymbolDisplayPart[] | undefined,
+): string {
   return parts === undefined ? "" : ts.displayPartsToString(parts).trim();
 }
 
