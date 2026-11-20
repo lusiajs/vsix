@@ -1,3 +1,4 @@
+import { componentPropName } from "../../../../../../src/compiler/template/bind.ts";
 import { parseLuciaImports } from "../../imports.ts";
 import { tagAttributes } from "../attributes.ts";
 import type { LintContext, LintFinding } from "../types.ts";
@@ -13,7 +14,7 @@ export function unknownProp({ script, markup, childProps }: LintContext): LintFi
     if (!declared) continue;
     const names = new Set(declared.map((prop) => prop.name));
     for (const attribute of tagAttributes(markup, tag.index + 1 + name.length)) {
-      if (!names.has(attribute.name))
+      if (!names.has(componentPropName(attribute.name)))
         findings.push(unknownFinding(name, attribute.name, attribute.offset));
     }
   }

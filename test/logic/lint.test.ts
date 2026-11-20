@@ -146,12 +146,20 @@ describe("flow and bind lint rules", () => {
     ).toEqual([]);
   });
 
-  test("bind-target flags bind on a component tag", () => {
-    const issues = lintLucia(`${BADGE_IMPORT}<Badge bind={name} />`, PARENT);
-    expect(issues.map((issue) => issue.code)).toContain("bind-target");
+  test("bind-target passes bind on a component tag, which writes back to the variable", () => {
+    expect(codes(`${BADGE_IMPORT}<Badge bind={name} />`)).not.toContain("bind-target");
+  });
+
+  test("bind-target flags bind-element on a component tag", () => {
+    const issues = lintLucia(`${BADGE_IMPORT}<Badge bind-element={el} />`, PARENT);
     expect(issues.find((issue) => issue.code === "bind-target")?.message).toBe(
-      "bind works on elements only",
+      "bind-element works on elements only",
     );
+  });
+
+  test("unknown-prop reads bind-<prop> as the prop it binds", () => {
+    const issues = lintLucia(`${BADGE_IMPORT}<Badge bind-tone={mode} />`, PARENT);
+    expect(issues.map((issue) => [issue.code, issue.line])).toEqual([]);
   });
 
   test("bind-target passes bind-value and bind-element on any tag", () => {
