@@ -6,7 +6,7 @@ import { LusiaFormattingProvider } from "./providers/format.ts";
 import { LusiaHoverProvider } from "./providers/hover.ts";
 
 const SELECTOR: vscode.DocumentSelector = { language: "lusia" };
-const COMPLETION_TRIGGERS = ["<", " ", "@", ":"];
+const COMPLETION_TRIGGERS = ["<", " ", "@", ":", ".", "{"];
 
 export function activate(context: vscode.ExtensionContext): void {
   const diagnostics = new LusiaDiagnostics();
