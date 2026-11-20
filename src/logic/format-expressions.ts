@@ -10,8 +10,8 @@ const PLACEHOLDER_PATTERN = /LUCIAEXPR(\d+)X/g;
 const ATTRIBUTE_PLACEHOLDER = /="LUCIAEXPR(\d+)X"/g;
 const BARE_ATTRIBUTE_PLACEHOLDER = /=LUCIAEXPR(\d+)X/g;
 
-const FLOW_OPEN = /<(?:IF|ELSEIF|ELSE|EACH|FOR|CONTENT|HTML)(?=[\s/>])/y;
-const FLOW_CLOSE = /<\/(?:IF|ELSEIF|ELSE|EACH|FOR|HTML)\s*>/y;
+const FLOW_OPEN = /<(?:IF|ELSEIF|ELSE|EACH|FOR|CONTENT|HTML|FALLBACK|NOLAZY)(?=[\s/>])/y;
+const FLOW_CLOSE = /<\/(?:IF|ELSEIF|ELSE|EACH|FOR|HTML|FALLBACK)\s*>/y;
 
 /** Swaps each `{expr}` and each flow tag for a placeholder that the HTML formatter leaves alone. */
 export function protectExpressions(markup: string): ProtectedMarkup {
