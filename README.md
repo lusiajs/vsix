@@ -4,26 +4,26 @@ Editor support for `.lusia` components.
 
 ## Features
 
-| Feature          | What it does                                                                                                     |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Highlighting     | Script as TypeScript, styles as SCSS or CSS, markup as HTML, `{expr}` as TypeScript                              |
-| Completion       | Type-aware members in script and `{expr}`, Lusia API names with a details panel, `.ts` imports, markup and style |
-| Hover            | TypeScript types, API docs, dotted names, `.ts` JSDoc, components, markup and style                              |
-| Errors           | Compile errors, TypeScript errors, HTML validation and CSS/SCSS validation, each with its own source             |
-| Warnings         | Lint rules, shown with source `lusia-lint`; a finding with a fix offers a quick fix                              |
-| Go to definition | Markup tags to their component, TypeScript names, and SCSS variables or mixins across files                      |
-| References       | TypeScript and SCSS names, across files where they are imported                                                  |
-| Rename           | TypeScript names, plain HTML tags with their close tag, and SCSS members across files                            |
-| Signature help   | TypeScript calls, with the parameter documentation                                                               |
-| Auto-close       | The closing tag right after typing `>` of a plain HTML start tag                                                 |
-| Links            | `href`/`src` paths and SCSS `@use`/`@import` paths, resolved against the component file                          |
-| Outline          | Markup elements and style symbols, with folds for both and for `script`/`style` sections                         |
-| Colors           | SCSS and CSS colours, with the colour picker and its presentations                                               |
-| Code actions     | SCSS/CSS fixes and lint quick fixes                                                                              |
-| Format           | Script as TypeScript, styles as SCSS or CSS, markup as HTML. Flow tags are kept as written                       |
-| Snippets         | Component, props, child component, scoped style, `IF`, `EACH`, `FOR`, click handler, two-way input               |
+| Feature          | What it does                                                                                                                                    |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Highlighting     | Script as TypeScript, styles as SCSS or CSS, markup as HTML, `{expr}` as TypeScript                                                             |
+| Completion       | Type-aware members in script and `{expr}`, Lusia API names with a details panel, `.ts` imports, missing imports added for you, markup and style |
+| Hover            | TypeScript types, API docs, dotted names, `.ts` JSDoc, components, markup and style                                                             |
+| Errors           | Compile errors, TypeScript errors, HTML validation and CSS/SCSS validation, each with its own source                                            |
+| Warnings         | Lint rules, shown with source `lusia-lint`; a finding with a fix offers a quick fix                                                             |
+| Go to definition | Markup tags to their component, TypeScript names, and SCSS variables or mixins across files                                                     |
+| References       | TypeScript and SCSS names, across files where they are imported                                                                                 |
+| Rename           | TypeScript names, plain HTML tags with their close tag, and SCSS members across files                                                           |
+| Signature help   | TypeScript calls, with the parameter documentation                                                                                              |
+| Auto-close       | The closing tag right after typing `>` of a plain HTML start tag                                                                                |
+| Links            | `href`/`src` paths and SCSS `@use`/`@import` paths, resolved against the component file                                                         |
+| Outline          | Markup elements and style symbols, with folds for both and for `script`/`style` sections                                                        |
+| Colors           | SCSS and CSS colours, with the colour picker and its presentations                                                                              |
+| Code actions     | SCSS/CSS fixes and lint quick fixes                                                                                                             |
+| Format           | Script as TypeScript, styles as SCSS or CSS, markup as HTML. Flow tags are kept as written                                                      |
+| Snippets         | Component, props, child component, scoped style, `IF`, `EACH`, `FOR`, click handler, two-way input                                              |
 
-TypeScript features use the workspace's own TypeScript when it has one, and the copy bundled with the extension otherwise. Script sections and `{expr}` markup expressions are checked together, so a member completion or a rename also covers names that only appear in the markup. The completion details panel shows the signature, summary, bullets and example from `reference/api.ts`; a name from TypeScript shows its signature and JSDoc.
+TypeScript features use the workspace's own TypeScript when it has one, and the copy bundled with the extension otherwise. A completion for a project symbol that is not imported yet adds its import when you accept it. Script sections and `{expr}` markup expressions are checked together, so a member completion or a rename also covers names that only appear in the markup. The completion details panel shows the signature, summary, bullets and example from `reference/api.ts`; a name from TypeScript shows its signature and JSDoc.
 
 HTML validation keeps Lusia markup legal: components, flow tags, `{expr}` values and `@scoped` style are not reported. Style checks understand `@use`/`@import` from other SCSS files, so cross-file variables and mixins complete, hover, define and rename.
 
