@@ -6,7 +6,8 @@ import { htmlCompletions } from "../logic/html.ts";
 import type { CompletionKind } from "../../../shared/completion-data.ts";
 import { completionsAt, type CompletionResult } from "../../../shared/completions.ts";
 import type { TextEdit } from "../../../shared/auto-import.ts";
-import { completionMarkdown } from "../../../shared/markdown.ts";
+import { findApiById } from "../../../shared/api-lookup.ts";
+import { apiDocsMarkdown, completionMarkdown } from "../../../shared/markdown.ts";
 import type { TsProject } from "../ts/project.ts";
 import type { TsCompletion } from "../ts/types.ts";
 import { inTsRegion, projectOf, rangeOf } from "./common.ts";
@@ -26,6 +27,8 @@ interface TsData {
   offset: number;
   name: string;
   source?: string;
+  /** The reference docs to append below the TypeScript docs, when the item has an API entry. */
+  apiDocs?: string;
 }
 
 // A completion item carries its TypeScript source through the editor's resolve round trip.
@@ -47,7 +50,9 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
       ...cssCompletions(text, offset, document.fileName),
     ];
     const labels = new Set(base.map((item) => item.label));
-    const ts = inTsRegion(text, offset) ? this.tsItems(document, offset) : [];
+    const project = inTsRegion(text, offset) ? projectOf(document) : undefined;
+    if (project !== undefined) this.projects.set(document.fileName, project);
+    const ts = project?.completions(offset) ?? [];
     const tsItems: TsItem[] = [];
     for (const item of ts) {
       if (labels.has(item.name)) continue;
@@ -56,7 +61,7 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
     }
     const extras = extra.filter((item) => !labels.has(item.label));
     return [
-      ...base.map((item) => toItem(document, item)),
+      ...base.map((item) => toItem(document, item, apiData(document, offset, item, project))),
       ...tsItems,
       ...extras.map((item) => toItem(document, item)),
     ];
@@ -68,16 +73,14 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
     const details = this.projects
       .get(data.fileName)
       ?.completionDetails(data.offset, data.name, data.source);
-    if (details?.detail) item.detail = details.detail;
-    if (details?.documentation)
-      item.documentation = new vscode.MarkdownString(details.documentation);
+    if (!details) return item;
+    if (details.detail) item.detail = details.detail;
+    const documentation = [details.documentation, data.apiDocs].filter(
+      (part): part is string => part !== undefined && part !== "",
+    );
+    if (documentation.length > 0)
+      item.documentation = new vscode.MarkdownString(documentation.join("\n\n---\n\n"));
     return item;
-  }
-
-  private tsItems(document: vscode.TextDocument, offset: number): TsCompletion[] {
-    const project = projectOf(document);
-    this.projects.set(document.fileName, project);
-    return project.completions(offset);
   }
 }
 
@@ -95,15 +98,38 @@ function tsItem(document: vscode.TextDocument, offset: number, data: TsCompletio
   return item;
 }
 
-function toItem(document: vscode.TextDocument, data: CompletionResult): vscode.CompletionItem {
-  const item = new vscode.CompletionItem(data.label, KINDS[data.kind]);
+function toItem(
+  document: vscode.TextDocument,
+  data: CompletionResult,
+  resolveData?: TsData,
+): TsItem {
+  const item: TsItem = new vscode.CompletionItem(data.label, KINDS[data.kind]);
   item.insertText = data.snippet ? new vscode.SnippetString(data.insertText) : data.insertText;
   item.detail = data.detail;
   const documentation = completionMarkdown(data);
   if (documentation !== undefined) item.documentation = new vscode.MarkdownString(documentation);
   if (data.range) item.range = rangeOf(document, data.range);
   if (data.importEdit) item.additionalTextEdits = [importEdit(document, data.importEdit)];
+  if (resolveData) item.data = resolveData;
   return item;
+}
+
+/** The resolve data for an API completion item, so the TypeScript docs can replace the table docs. */
+function apiData(
+  document: vscode.TextDocument,
+  offset: number,
+  data: CompletionResult,
+  project: TsProject | undefined,
+): TsData | undefined {
+  if (project === undefined || data.entryId === undefined) return undefined;
+  const entry = findApiById(data.entryId);
+  if (!entry) return undefined;
+  return {
+    fileName: document.fileName,
+    offset,
+    name: data.label,
+    apiDocs: apiDocsMarkdown(entry),
+  };
 }
 
 function importEdit(document: vscode.TextDocument, edit: TextEdit): vscode.TextEdit {

@@ -97,6 +97,102 @@ describe("completion and hover wiring", () => {
   });
 });
 
+const APP = `<script>
+import { variable } from "lusia";
+
+interface Todo {
+  id: number;
+  title: string;
+  done: boolean;
+}
+
+const todos = variable<Todo[]>([{ id: 1, title: "Read", done: false }]);
+const doneCount = variable.compute(() => todos.value.filter((todo) => todo.done).length);
+
+function toggle(todo: Todo) {
+  todo.done = !todo.done;
+}
+</script>
+
+<EACH {todos} as={todo} key={todo.id}>
+  <span>{todo.title}</span>
+  <button onchange={() => toggle(todo)}>{todo.done ? "Done" : "Open"}</button>
+</EACH>
+`;
+
+describe("typed hover", () => {
+  const source = component("App.lusia", APP);
+  const hoverAt = (offset: number) => {
+    const result = mocked(new LusiaHoverProvider()).provideHover(
+      source.document,
+      source.document.positionAt(offset),
+    );
+    return String(result?.contents?.value ?? "");
+  };
+
+  test("shows the TypeScript block first and the reference docs below for an API name", () => {
+    const body = hoverAt(APP.indexOf("import { variable") + "import { ".length + 2);
+    expect(body.startsWith("```ts")).toBe(true);
+    expect(body).toContain("Creates a value that updates the page");
+    expect(body).not.toMatch(/^\*\*variable/);
+  });
+
+  test("shows only the typed hover for a local variable", () => {
+    const body = hoverAt(APP.indexOf("EACH {todos") + "EACH {".length + 1);
+    expect(body).toContain("Variable<Todo[]>");
+    expect(body).not.toContain("Creates a value");
+  });
+
+  test("shows the typed flow variable inside EACH", () => {
+    const body = hoverAt(APP.indexOf("{todo.title}") + 2);
+    expect(body).toContain("var todo: Todo");
+  });
+
+  test("keeps the typed block first and appends the API docs for a dotted name", () => {
+    const body = hoverAt(APP.indexOf("variable.compute") + "variable.".length + 1);
+    expect(body.startsWith("```ts")).toBe(true);
+    expect(body).toContain("Creates a read-only value derived from other variables.");
+    expect(body).not.toMatch(/^\*\*variable\.compute\(\)\*\*/);
+  });
+
+  test("keeps the reference hover for markup flow tags", () => {
+    const body = hoverAt(APP.indexOf("<EACH") + 2);
+    expect(body.startsWith("**<EACH>**")).toBe(true);
+    expect(body.startsWith("```ts")).toBe(false);
+  });
+
+  test("prefers TypeScript completion details and keeps the API docs", () => {
+    const provider = mocked(new LusiaCompletionProvider());
+    const blank = source.text.indexOf("interface Todo") - 1;
+    const items = provider.provideCompletionItems(
+      source.document,
+      source.document.positionAt(blank),
+    );
+    const item = items.find((candidate: any) => candidate.label === "variable");
+    expect(item).toBeDefined();
+    const resolved = provider.resolveCompletionItem(item);
+    expect(String(resolved.detail)).toContain("const variable");
+    expect(String(resolved.documentation?.value)).toContain(
+      "Creates a value that updates the page",
+    );
+    expect(String(resolved.documentation?.value)).not.toContain("**variable()**");
+  });
+
+  test("keeps the unimported-name completion and its auto-import edit", () => {
+    const text = "<script>\n\n</script>";
+    const fileName = workspace.write("Empty.lusia", text);
+    const document = fakeDocument(fileName, text);
+    const provider = mocked(new LusiaCompletionProvider());
+    const items = provider.provideCompletionItems(document, document.positionAt(9));
+    const item = items.find((candidate: any) => candidate.label === "variable");
+    expect(item?.additionalTextEdits?.[0]?.newText).toContain('import { variable } from "lusia";');
+    const resolved = provider.resolveCompletionItem(item);
+    expect(resolved.additionalTextEdits?.[0]?.newText).toContain(
+      'import { variable } from "lusia";',
+    );
+  });
+});
+
 const CALLS = `<script>
 import { greet } from "./util.ts";
 const hello = greet("Ada");
