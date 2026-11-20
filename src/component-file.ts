@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
-import { findComponentImport, resolveImportPath } from "./logic/imports.ts";
-import { parsePropDefs, type PropDef } from "./logic/props.ts";
+import { dirname, resolve } from "node:path";
+import { findComponentImport } from "../../shared/imports.ts";
+import { parsePropDefs, type PropDef } from "../../shared/props.ts";
 
 /** The file an imported component tag points at, if it exists on disk. */
 export function componentPath(
@@ -26,4 +27,8 @@ export function declaredProps(
 
 export function componentProps(documentPath: string, text: string, name: string): PropDef[] {
   return declaredProps(documentPath, text, name) ?? [];
+}
+
+function resolveImportPath(documentPath: string, specifier: string): string {
+  return resolve(dirname(documentPath), specifier);
 }

@@ -4,7 +4,7 @@ import {
   expressionEnd,
   protectExpressions,
   restoreExpressions,
-} from "../../../editors/vscode/src/logic/format-expressions.ts";
+} from "../../../editors/shared/format-expressions.ts";
 
 const SAMPLE = `<style scoped>
 .card{padding:1rem}

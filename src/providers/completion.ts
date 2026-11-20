@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { componentProps } from "../component-file.ts";
-import type { CompletionKind } from "../logic/completion-data.ts";
-import { completionsAt, type CompletionResult } from "../logic/completions.ts";
-import type { TextEdit } from "../logic/auto-import.ts";
+import type { CompletionKind } from "../../../shared/completion-data.ts";
+import { completionsAt, type CompletionResult } from "../../../shared/completions.ts";
+import type { TextEdit } from "../../../shared/auto-import.ts";
 
 const KINDS: Record<CompletionKind, vscode.CompletionItemKind> = {
   function: vscode.CompletionItemKind.Function,

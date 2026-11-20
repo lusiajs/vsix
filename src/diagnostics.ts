@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import { compile } from "../../../src/compiler/index.ts";
-import { lintLusia, type LintIssue } from "./logic/lint.ts";
-import { errorPosition } from "./logic/error-position.ts";
+import { lintLusia, type LintIssue } from "../../shared/lint.ts";
+import { errorPosition } from "../../shared/error-position.ts";
+import { declaredProps } from "./component-file.ts";
 
 const DEBOUNCE_MS = 300;
 const LINT_SOURCE = "lusia-lint";
@@ -44,7 +45,8 @@ export class LusiaDiagnostics implements vscode.Disposable {
 
   private check(document: vscode.TextDocument): void {
     this.checkCompile(document);
-    const issues = lintLusia(document.getText(), document.fileName);
+    const text = document.getText();
+    const issues = lintLusia(text, (name) => declaredProps(document.fileName, text, name));
     this.lints.set(
       document.uri,
       issues.map((issue) => lintDiagnostic(document, issue)),

@@ -15,5 +15,5 @@
       "@runtime/*": ["../../src/runtime/*"]
     }
   },
-  "include": ["src", "../../reference", "../../src/compiler"]
+  "include": ["src", "../shared", "../../reference", "../../src/compiler"]
 }

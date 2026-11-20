@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { componentProps } from "../component-file.ts";
-import { hoverAt } from "../logic/hover.ts";
-import { hoverMarkdown } from "../logic/markdown.ts";
+import { hoverAt } from "../../../shared/hover.ts";
+import { hoverMarkdown } from "../../../shared/markdown.ts";
 
 export class LusiaHoverProvider implements vscode.HoverProvider {
   provideHover(document: vscode.TextDocument, position: vscode.Position): vscode.Hover | undefined {

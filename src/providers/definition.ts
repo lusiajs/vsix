@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { componentPath } from "../component-file.ts";
-import { tagNameAt } from "../logic/tag.ts";
+import { tagNameAt } from "../../../shared/tag.ts";
 
 export class LusiaDefinitionProvider implements vscode.DefinitionProvider {
   provideDefinition(
