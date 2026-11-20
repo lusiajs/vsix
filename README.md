@@ -15,7 +15,7 @@ Editor support for `.lusia` components.
 | Format           | Script as TypeScript, styles as SCSS or CSS, markup as HTML. Flow tags are kept as written         |
 | Snippets         | Component, props, child component, scoped style, `IF`, `EACH`, `FOR`, click handler, two-way input |
 
-See the site Guide (https://azpepoze.github.io/luciajs/guide) for the lint rules and `reference/api.ts` for the API table.
+See the site Guide (https://azpepoze.github.io/lusia/guide) for the lint rules and `reference/api.ts` for the API table.
 
 ## Install
 
