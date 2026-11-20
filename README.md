@@ -7,8 +7,8 @@ Editor support for `.lusia` components.
 | Feature          | What it does                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------------- |
 | Highlighting     | Script as TypeScript, styles as SCSS or CSS, markup as HTML, `{expr}` as TypeScript                |
-| Completion       | Lusia API names, component tags, child props, style keywords, flow tags, events and `bind`         |
-| Hover            | API docs for names, style keywords, flow tags, events, `bind` and component tags (with props)      |
+| Completion       | Lusia API names, component tags, child props, style keywords, flow tags, events, `bind-value`      |
+| Hover            | API docs for names, style keywords, flow tags, events, `bind-value`, component tags (with props)   |
 | Errors           | Compile errors from the Lusia compiler, on open and on change                                      |
 | Warnings         | Lint rules, shown with source `lusia-lint`                                                         |
 | Go to definition | Component tag to its `.lusia` file                                                                 |

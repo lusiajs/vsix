@@ -63,9 +63,9 @@
     "body": ["<button onclick={${1:handler}}>${2:Click}</button>"]
   },
   "Lusia two-way input": {
-    "prefix": "lusia-bind",
+    "prefix": "lusia-bind-value",
     "description": "Text field linked to a variable",
-    "body": ["<input bind={${1:name}} />"]
+    "body": ["<input bind-value={${1:name}} />"]
   },
   "Lusia scoped style": {
     "prefix": "style-scoped",

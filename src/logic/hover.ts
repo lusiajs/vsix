@@ -87,7 +87,7 @@ function flowTagHover(text: string, offset: number): HoverResult | undefined {
   return undefined;
 }
 
-/** Hover for `animate`, `on<event>`, `bind`, `bind-<prop>` and `bind-element` on a plain tag. */
+/** Hover for `animate`, `on<event>`, `bind-value`, `bind-<prop>` and `bind-element` on a plain tag. */
 function plainAttributeHover(
   text: string,
   offset: number,
@@ -98,7 +98,7 @@ function plainAttributeHover(
 }
 
 function attributeHoverId(name: string): string | undefined {
-  if (name === "animate" || name === "bind" || name === "bind-element") return name;
+  if (name === "animate" || name === "bind-value" || name === "bind-element") return name;
   if (name.startsWith("bind-")) return "bind-prop";
   if (/^on[a-z]+$/.test(name)) return "event";
   return undefined;

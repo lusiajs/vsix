@@ -114,7 +114,7 @@ describe("lint rules", () => {
   });
 });
 
-describe("flow and bind lint rules", () => {
+describe("flow and bind-value lint rules", () => {
   test("flow-chain flags an ELSE with no IF before it", () => {
     const issues = lintLusia("<p>x</p>\n<ELSE>\n<p>y</p>\n</ELSE>", PARENT);
     expect(issues.map((issue) => [issue.code, issue.severity, issue.line])).toEqual([
@@ -132,22 +132,24 @@ describe("flow and bind lint rules", () => {
     expect(codes("<IF {a}>\n</IF>\n<p>gap</p>\n<ELSE>\n</ELSE>")).toEqual(["flow-chain"]);
   });
 
-  test("bind-target flags bind on a plain tag that is not a form control", () => {
-    const issues = lintLusia("<p bind={name}>x</p>", PARENT);
+  test("bind-target flags bind-value on a plain tag that is not a form control", () => {
+    const issues = lintLusia("<p bind-value={name}>x</p>", PARENT);
     expect(issues.map((issue) => [issue.code, issue.severity])).toEqual([["bind-target", "error"]]);
     expect(issues[0]?.message).toBe(
-      "bind works on input, textarea and select; use bind-<property>",
+      "bind-value works on input, textarea and select; use bind-<property>",
     );
   });
 
-  test("bind-target passes bind on input, textarea and select", () => {
+  test("bind-target passes bind-value on input, textarea and select", () => {
     expect(
-      codes("<input bind={a} /><textarea bind={b}></textarea><select bind={c}></select>"),
+      codes(
+        "<input bind-value={a} /><textarea bind-value={b}></textarea><select bind-value={c}></select>",
+      ),
     ).toEqual([]);
   });
 
-  test("bind-target passes bind on a component tag, which writes back to the variable", () => {
-    expect(codes(`${BADGE_IMPORT}<Badge bind={name} />`)).not.toContain("bind-target");
+  test("bind-target passes bind-value on a component tag, which writes back to the variable", () => {
+    expect(codes(`${BADGE_IMPORT}<Badge bind-value={name} />`)).not.toContain("bind-target");
   });
 
   test("bind-target flags bind-element on a component tag", () => {
@@ -162,8 +164,8 @@ describe("flow and bind lint rules", () => {
     expect(issues.map((issue) => [issue.code, issue.line])).toEqual([]);
   });
 
-  test("bind-target passes bind-value and bind-element on any tag", () => {
-    expect(codes("<p bind-element={el} bind-value={x}>y</p>")).toEqual([]);
+  test("bind-target passes bind-<prop> and bind-element on any tag", () => {
+    expect(codes("<p bind-element={el} bind-text-content={x}>y</p>")).toEqual([]);
   });
 
   test("scroll-numeric-line flags a numeric start or end in a file that uses WHEN.SCROLL", () => {

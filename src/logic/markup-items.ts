@@ -87,18 +87,11 @@ const BIND_ELEMENT_ITEM: CompletionItemData = {
 
 const FORM_BIND_ITEMS: CompletionItemData[] = [
   {
-    label: "bind",
-    kind: "property",
-    insertText: "bind={$1}",
-    snippet: true,
-    detail: findApiById("bind")?.summary,
-  },
-  {
     label: "bind-value",
     kind: "property",
     insertText: "bind-value={$1}",
     snippet: true,
-    detail: findApiById("bind-prop")?.summary,
+    detail: findApiById("bind-value")?.summary,
   },
   {
     label: "bind-checked",
@@ -109,7 +102,7 @@ const FORM_BIND_ITEMS: CompletionItemData[] = [
   },
 ];
 
-/** Attributes for a plain HTML tag: animate, events, bind-element, and bind on form controls. */
+/** Attributes for a plain HTML tag: animate, events, bind-element, and bind-value on form controls. */
 export function markupAttributeItems(tag: string): CompletionItemData[] {
   const common = [...MOTION_ATTRIBUTE_ITEMS, ...EVENT_ITEMS, BIND_ELEMENT_ITEM];
   return FORM_TAGS.has(tag) ? [...common, ...FORM_BIND_ITEMS] : common;

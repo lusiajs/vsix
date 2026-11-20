@@ -59,7 +59,7 @@ describe("lusia grammar with the real TypeScript grammar", () => {
   });
 });
 
-describe("flow tags, events and bind in the grammar", () => {
+describe("flow tags, events and bind-value in the grammar", () => {
   test("IF, ELSEIF, ELSE, EACH and FOR are control keywords in both open and close tags", async () => {
     const lines = await tokenizeLusia(
       "<IF {a}>\n</IF>\n<ELSEIF {b}>\n<ELSE>\n<EACH {c}>\n<FOR {n}>\n</FOR>",
@@ -93,9 +93,9 @@ describe("flow tags, events and bind in the grammar", () => {
     expect(tokenOn(lines, 0, "onclick")?.scopes).not.toContain("keyword.other.event.lusia");
   });
 
-  test("bind and bind-prop with an expression are bind keywords", async () => {
-    const lines = await tokenizeLusia("<input bind={name} bind-value={other} />");
-    expect(tokenOn(lines, 0, "bind")?.scopes).toContain("keyword.other.bind.lusia");
+  test("bind-value and bind-prop with an expression are bind keywords", async () => {
+    const lines = await tokenizeLusia("<input bind-value={name} bind-checked={other} />");
     expect(tokenOn(lines, 0, "bind-value")?.scopes).toContain("keyword.other.bind.lusia");
+    expect(tokenOn(lines, 0, "bind-checked")?.scopes).toContain("keyword.other.bind.lusia");
   });
 });

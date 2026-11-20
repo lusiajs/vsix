@@ -355,12 +355,12 @@ describe("flow and element completions", () => {
     ]);
   });
 
-  test("adds bind and bind-value on form controls", () => {
+  test("adds bind-value and bind-checked on form controls", () => {
     const text = "<input ";
     const labels = completionsAt(text, text.length, noProps).map((item) => item.label);
-    expect(labels).toContain("bind");
     expect(labels).toContain("bind-value");
     expect(labels).toContain("bind-checked");
+    expect(labels).not.toContain("bind");
   });
 
   test("the event completion inserts a handler expression", () => {

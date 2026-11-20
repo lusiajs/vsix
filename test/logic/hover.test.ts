@@ -107,14 +107,14 @@ describe("hover for markup features", () => {
     expect(apiId(hoverAt(text, text.indexOf("onclick") + 3, noProps))).toBe("event");
   });
 
-  test("shows the bind entry on bind", () => {
-    const text = "<input bind={name} />";
-    expect(apiId(hoverAt(text, text.indexOf("bind") + 1, noProps))).toBe("bind");
+  test("shows the bind-value entry on bind-value", () => {
+    const text = "<input bind-value={name} />";
+    expect(apiId(hoverAt(text, text.indexOf("bind-value") + 1, noProps))).toBe("bind-value");
   });
 
   test("shows the bind-prop entry on a dashed bind attribute", () => {
-    const text = "<input bind-value={name} />";
-    expect(apiId(hoverAt(text, text.indexOf("value") + 1, noProps))).toBe("bind-prop");
+    const text = "<input bind-checked={name} />";
+    expect(apiId(hoverAt(text, text.indexOf("checked") + 1, noProps))).toBe("bind-prop");
   });
 
   test("shows the bind-element entry on bind-element", () => {

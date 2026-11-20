@@ -51,7 +51,7 @@
       "name": "keyword.other.event.lusia"
     },
     "bind-attribute": {
-      "match": "(?<=\\s)bind(-[a-z][a-z-]*)?(?=\\s*=\\s*\\{)",
+      "match": "(?<=\\s)bind-[a-z][a-z-]*(?=\\s*=\\s*\\{)",
       "name": "keyword.other.bind.lusia"
     },
     "script": {
