@@ -25,3 +25,10 @@ describe("error position", () => {
     expect(errorPosition(new Error("boom"))).toEqual({ line: 1, column: 1, message: "boom" });
   });
 });
+
+describe("error position of a runtime error", () => {
+  test("a LuciaError with no line points at line 1, column 1", () => {
+    const error = new LuciaError("runtime bad", undefined, undefined, undefined, { code: "L2042" });
+    expect(errorPosition(error)).toEqual({ line: 1, column: 1, message: "runtime bad" });
+  });
+});
