@@ -140,6 +140,13 @@ describe("motion completions", () => {
     ]);
   });
 
+  test("offers keepSpace after when: WHEN.DETACH", () => {
+    const text = "<div animate={{ when: WHEN.DETACH, more: { ";
+    expect(completionsAt(text, text.length, noProps).map((item) => item.label)).toEqual([
+      "keepSpace",
+    ]);
+  });
+
   test("offers the HOVER keys after when: WHEN.HOVER, and the SCROLL keys after WHEN.SCROLL", () => {
     const hover = "<div animate={{ when: WHEN.HOVER, more: { ";
     const scroll = "<div animate={{ when: WHEN.SCROLL, more: { ";

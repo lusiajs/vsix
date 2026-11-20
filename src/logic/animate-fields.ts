@@ -40,7 +40,7 @@ const FIELD_ITEMS: CompletionItemData[] = [
     insertText: "more: { $1 }",
     snippet: true,
     detail:
-      "Trigger options: VIEW margin, amount, reverse; HOVER inDelay, outDelay, out, outDuration; SCROLL start, end, follow, part",
+      "Trigger options: VIEW margin, amount, reverse; HOVER inDelay, outDelay, out, outDuration; SCROLL start, end, follow, part; DETACH keepSpace",
   },
   {
     label: "midway",
@@ -140,6 +140,16 @@ const MORE_FIELDS: Record<string, CompletionItemData[]> = {
       insertText: "outDuration: $1",
       snippet: true,
       detail: "Ms for the way out (default: the item duration). Needs out",
+    },
+  ],
+  DETACH: [
+    {
+      label: "keepSpace",
+      kind: "property",
+      insertText: "keepSpace: true",
+      snippet: false,
+      detail:
+        "Keep the space the element holds until it is removed. Default false: the space closes with the leave",
     },
   ],
   SCROLL: [
