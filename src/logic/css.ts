@@ -1,5 +1,12 @@
-import { getCSSLanguageService, getSCSSLanguageService } from "vscode-css-languageservice";
-import type { CompletionItem, LanguageService } from "vscode-css-languageservice";
+// The ESM build bundles; the UMD factory hides its requires from Bun.
+import {
+  getCSSLanguageService,
+  getSCSSLanguageService,
+} from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
+import type {
+  CompletionItem,
+  LanguageService,
+} from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { CompletionResult } from "../../../shared/completions.ts";
 import type { HoverResult } from "../../../shared/hover.ts";

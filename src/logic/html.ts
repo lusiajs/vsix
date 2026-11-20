@@ -1,8 +1,9 @@
+// The ESM build bundles; the UMD factory hides its requires from Bun.
 import {
   getLanguageService,
   type CompletionItem,
   type LanguageService,
-} from "vscode-html-languageservice";
+} from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { CompletionResult } from "../../../shared/completions.ts";
 import { inExpressionAt } from "../../../shared/format-expressions.ts";
