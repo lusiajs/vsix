@@ -1,7 +1,7 @@
 {
   "name": "lusia-vscode",
   "displayName": "Lusia",
-  "description": "Syntax, completion, hover, diagnostics and navigation for Lusia .lusia components.",
+  "description": "Make .lusia files easy to write: colors, autocomplete, errors, format.",
   "version": "0.2.0",
   "publisher": "lusia",
   "engines": {
