@@ -4,6 +4,7 @@
   "description": "Make .lusia files easy to write: colors, autocomplete, errors, format.",
   "version": "0.2.0",
   "publisher": "lusia",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lusiajs/vsix.git"
@@ -86,7 +87,7 @@
     ]
   },
   "dependencies": {
-    "lusia": "^0.1.0",
+    "lusia": "^0.1.0-beta.1",
     "typescript": "5.9.3"
   }
 }
