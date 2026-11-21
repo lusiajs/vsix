@@ -84,7 +84,6 @@ export function htmlTagClose(text: string, offset: number): RegionEdit | undefin
   }
 }
 
-/** Whether the cursor is in a tag, not in the text between tags. */
 function insideTag(text: string, offset: number): boolean {
   return text.lastIndexOf("<", offset) > text.lastIndexOf(">", offset);
 }

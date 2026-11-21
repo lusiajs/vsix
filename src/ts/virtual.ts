@@ -18,10 +18,7 @@ interface Expression {
 
 const LINE_BREAKS = /^[\r\n]*$/;
 
-/**
- * The TypeScript view of a component: same length and line breaks, with the script copied and every
- * markup `{expr}` kept as an expression. Markup and style become blanks, so offsets never move.
- */
+/** Same length and line breaks; markup and style become blanks, so offsets never move. */
 export function virtualScript(source: string): VirtualScript {
   const sections = findSections(source);
   const chars = blanked(source);

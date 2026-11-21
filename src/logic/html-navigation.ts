@@ -10,7 +10,6 @@ import {
 import { offsetRange } from "./language-service.ts";
 import type { RegionEdit, RegionHighlight } from "./region-types.ts";
 
-/** The edits that rename a plain tag and its matching close tag. */
 export function htmlRename(
   text: string,
   offset: number,
@@ -40,7 +39,6 @@ export function htmlRenameRange(text: string, offset: number): TextRange | undef
   return tag ? { start: tag.start, end: tag.end } : undefined;
 }
 
-/** The open and close tag names that edit together. */
 export function htmlLinkedRanges(text: string, offset: number): TextRange[] | undefined {
   if (!editable(text, offset)) return undefined;
   const { document, parsed } = markupHtml(text);
@@ -62,7 +60,6 @@ export function htmlLinkedRanges(text: string, offset: number): TextRange[] | un
   }
 }
 
-/** Every occurrence of the tag name under the cursor. */
 export function htmlHighlights(text: string, offset: number): RegionHighlight[] {
   if (!editable(text, offset)) return [];
   const { document, parsed } = markupHtml(text);

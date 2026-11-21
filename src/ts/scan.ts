@@ -54,9 +54,7 @@ export function lineEnd(source: string, from: number): number {
   return index === -1 ? source.length : index;
 }
 
-/**
- * Where an unclosed expression stops. Markup after it is not code, so a tag ends the guess.
- */
+/** Markup after an unclosed expression is not code, so a tag ends the guess. */
 export function unclosedEnd(source: string, open: number): number {
   const stop = lineEnd(source, open + 1);
   for (let i = open + 1; i < stop; i++) {
@@ -68,7 +66,6 @@ export function unclosedEnd(source: string, open: number): number {
   return stop;
 }
 
-/** The index just past the HTML comment that starts at `start`. */
 export function commentEnd(source: string, start: number): number {
   const index = source.indexOf("-->", start + 4);
   return index === -1 ? source.length : index + 3;

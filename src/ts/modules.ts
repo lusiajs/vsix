@@ -37,10 +37,7 @@ export function componentLength(fileName: string): number | undefined {
   }
 }
 
-/**
- * Writes the child virtual file and the module a parent resolves: the default export is the
- * component itself, plus the props type the parent tooling reads.
- */
+/** Also writes the props type that the parent tooling reads. */
 export function componentModule(fileName: string, sink: VirtualSink): string | undefined {
   const text = sources.get(fileName)?.text ?? readComponent(fileName);
   if (text === undefined) return undefined;
@@ -51,7 +48,6 @@ export function componentModule(fileName: string, sink: VirtualSink): string | u
   return shimPath;
 }
 
-/** The TypeScript view of a component, with its props exported for the generated module. */
 export function componentSource(text: string): string {
   const virtual = virtualScript(text);
   return `${virtual.text}${flowDeclarations(virtual.flowNames)}${propsDeclaration(scriptOf(text))}`;

@@ -1,6 +1,5 @@
 import type { TextRange } from "../../../shared/range.ts";
 
-/** A text edit that replaces a span of a component. */
 export interface RegionEdit {
   range: TextRange;
   newText: string;

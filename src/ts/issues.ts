@@ -6,10 +6,7 @@ import type { TsIssue } from "./types.ts";
 
 const IGNORED_CODES: ReadonlySet<number> = new Set([2688, 2318, 18003, 2686, 2687]);
 
-/**
- * Diagnostics that sit inside copied code. Everything else describes blanks or the appended
- * declarations, and unresolved `.lusia` imports stay quiet until the file exists.
- */
+/** Only diagnostics inside copied code count; unresolved .lusia imports stay quiet. */
 export function toIssues(
   ts: TypeScriptModule,
   diagnostics: readonly TypeScript.Diagnostic[],

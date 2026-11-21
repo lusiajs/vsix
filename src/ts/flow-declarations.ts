@@ -2,10 +2,7 @@ import type { FlowName } from "./flow-tags.ts";
 
 const ENTITY = /^[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*$/;
 
-/**
- * Declarations for the flow names, appended after the source so every offset stays where it was.
- * A list may be a variable or a prop, hence the value unwrap before the item type.
- */
+/** Appended after the source, so offsets stay put. A list may be a variable or a prop. */
 export function flowDeclarations(names: FlowName[]): string {
   if (names.length === 0) return "";
   const lines = [

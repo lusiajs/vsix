@@ -32,7 +32,6 @@ export function spanRange(span: { start: number; length: number }): TextRange {
   return { start: span.start, end: span.start + span.length };
 }
 
-/** Whether an offset falls inside one of the mapped spans. */
 export function inSpans(offset: number, spans: readonly TextRange[]): boolean {
   return spans.some((span) => offset >= span.start && offset < span.end);
 }

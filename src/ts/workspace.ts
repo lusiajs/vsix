@@ -5,10 +5,7 @@ import { createLanguageHost, VirtualFiles } from "./host.ts";
 import { loadTypeScript, type TypeScriptModule } from "./load.ts";
 import { componentModule, componentVersion } from "./modules.ts";
 
-/**
- * One TypeScript program per tsconfig, shared by every open component, so lib files and imported
- * modules are checked once rather than once per component.
- */
+/** One TypeScript program per tsconfig, so lib files and imports are checked once. */
 export class Workspace {
   private static readonly cache = new Map<string, Workspace>();
 

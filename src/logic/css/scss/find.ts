@@ -11,13 +11,11 @@ export interface ScssMemberHit {
 
 export interface ScssToken {
   text: string;
-  /** The token in the component. */
   range: TextRange;
 }
 
 const TOKEN = /\$?[A-Za-z_][\w-]*/g;
 
-/** The word under the cursor in a style block. */
 export function scssTokenAt(
   content: string,
   contentStart: number,
@@ -31,7 +29,6 @@ export function scssTokenAt(
   };
 }
 
-/** The indexed member under the cursor, when the style names one. */
 export function scssMemberAt(
   index: ScssIndex,
   content: string,

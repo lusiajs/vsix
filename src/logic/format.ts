@@ -13,7 +13,6 @@ type Prettier = typeof import("prettier");
 
 let loaded: Promise<Prettier> | undefined;
 
-/** Formats a .lusia file with the project's Prettier config and the editor indentation. */
 export async function formatLusia(source: string, settings: FormatSettings = {}): Promise<string> {
   const prettier = await loadPrettier();
   const config = await configFor(prettier, settings);

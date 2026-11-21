@@ -22,7 +22,6 @@ export interface StyleSection {
 }
 
 export interface StyleContext extends StyleSection {
-  /** The cursor in the style document. */
   position: LspPosition;
 }
 

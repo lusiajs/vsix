@@ -13,7 +13,6 @@ export interface LspRange {
   end: LspPosition;
 }
 
-/** A language server document over a plain string. */
 export function editorDocument(uri: string, languageId: string, text: string): TextDocument {
   return TextDocument.create(uri, languageId, 1, text);
 }
@@ -46,7 +45,6 @@ export function hoverText(hover: { contents: unknown } | null | undefined): stri
   return hover ? contentsText(hover.contents) : undefined;
 }
 
-/** The document span of a language server range. */
 export function offsetRange(
   document: TextDocument,
   range: LspRange | undefined,

@@ -15,7 +15,6 @@ export interface ScssMember {
 }
 
 export interface ScssIndex {
-  /** The members the style can reach, global or namespaced. */
   members: ScssMember[];
   /** Every file the style pulls in, directly or through `@import`/`@forward`. */
   files: string[];

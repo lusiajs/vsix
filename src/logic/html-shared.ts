@@ -49,7 +49,6 @@ export function editable(text: string, offset: number): boolean {
   return regionAt(text, offset).kind === "markup" && !inExpressionAt(text, offset);
 }
 
-/** Whether the shared completion table owns the tag at the cursor. */
 export function ownedTag(text: string, offset: number): boolean {
   const tag = openTagAt(text, offset);
   if (!tag) return false;
@@ -72,7 +71,6 @@ export function isPlainTag(text: string, name: string): boolean {
   );
 }
 
-/** The tag whose name the cursor is on, in an opening or closing tag. */
 export function tagNameAt(text: string, offset: number): TagName | undefined {
   if (offset <= 0) return undefined;
   const open = text.lastIndexOf("<", offset);
@@ -84,7 +82,6 @@ export function tagNameAt(text: string, offset: number): TagName | undefined {
   return { name, start, end: start + name.length };
 }
 
-/** The name of the start tag whose `>` ends at `offset`. */
 export function startTagNameBefore(text: string, offset: number): string | undefined {
   const open = text.lastIndexOf("<", offset - 1);
   if (open === -1) return undefined;

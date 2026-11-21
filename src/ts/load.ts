@@ -8,10 +8,7 @@ const MODULE = "typescript";
 let fallback: TypeScriptModule | undefined;
 let loading: Promise<void> | undefined;
 
-/**
- * The TypeScript the editor checks a component with: the workspace's own version when it installs
- * one, else the version the extension bundles, so a project needs no TypeScript install.
- */
+/** Uses the workspace's TypeScript when it has one, else the bundled copy. */
 export function loadTypeScript(startDir: string): TypeScriptModule | undefined {
   const workspace = workspaceTypeScript(startDir);
   if (workspace !== undefined) return workspace;
