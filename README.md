@@ -10,7 +10,7 @@ Editor support for `.lusia` components: colors, completion, errors and formattin
 | ------- | ------------ |
 | Highlighting | Script, styles, markup and `{expr}` in their own colors |
 | Completion | Lusia and TypeScript names, tags, paths and snippets |
-| Hover | Types and docs for Lusia and TypeScript names |
+| Hover | For Lusia names: the declaration, what it is, an example and a table of values. For TypeScript names: types |
 | Errors and warnings | Compile, type and lint problems, with quick fixes |
 | Go to definition | Components, TypeScript names, SCSS variables and mixins |
 | Rename and references | TypeScript and SCSS names across files |
