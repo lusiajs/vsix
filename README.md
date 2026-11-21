@@ -51,6 +51,18 @@ Build the extension from a clone of this repo, then install the `.vsix` file.
 > [!TIP]
 > If a colour looks wrong, run **Developer: Inspect Editor Tokens and Scopes** on it. It shows the scope VS Code assigned.
 
+## Updating
+
+A workflow checks for new `lusiajs` versions every 6 hours. When one is out, it opens a pull request that updates `bun.lock`.
+
+| Result | Pull request |
+| ------ | ------------ |
+| Typecheck, tests and build pass | Ready for review |
+| Any check fails | Draft, with the failing check named |
+
+> [!NOTE]
+> The workflow needs the repository setting **Allow GitHub Actions to create and approve pull requests**. Find it in Settings > Actions > General.
+
 ## Develop
 
 | Command | What it does |

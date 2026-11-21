@@ -27,3 +27,6 @@ Run `bun run typecheck`, `bun run test` and `bun run build` before a commit.
 
 # 7. Commits and code
 Use Conventional Commits, one commit per logical change. Use full plain names and write no comment bloat.
+
+# 8. Update workflow opens a PR
+`update-framework.yml` opens a PR when `lusiajs` changes. Releases stay manual: a human merges the PR, bumps the version and pushes the tag.
