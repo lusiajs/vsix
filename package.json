@@ -4,6 +4,10 @@
   "description": "Make .lusia files easy to write: colors, autocomplete, errors, format.",
   "version": "0.2.0",
   "publisher": "lusia",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lusiajs/vscode.git"
+  },
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -15,10 +19,13 @@
     "onLanguage:lusia"
   ],
   "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
     "build": "bun build src/extension.ts --target node --format cjs --external vscode --external typescript --outfile dist/extension.js",
     "package": "bun run build && bunx @vscode/vsce package"
   },
   "devDependencies": {
+    "@types/bun": "latest",
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.80.0",
     "html-validate": "^11.21.1",
@@ -79,6 +86,7 @@
     ]
   },
   "dependencies": {
+    "lusia": "^0.1.0",
     "typescript": "5.9.3"
   }
 }
