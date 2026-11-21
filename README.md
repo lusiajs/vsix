@@ -30,14 +30,24 @@ Lusia names show their API docs in completion and hover. Names from TypeScript s
 
 ## Install
 
-Build the extension from a clone of the repo, then install the `.vsix` file.
+Build the extension from a clone of this repo, then install the `.vsix` file.
 
-1. From the repo root, run `bun install`.
-2. In `editors/vscode`, run `bun install`, then `bun run package`.
+1. Run `bun install`.
+2. Run `bun run package`. It builds `lusia-vscode-0.2.0.vsix`.
 3. In VS Code, open the Extensions view, then `...`, then **Install from VSIX...**.
 4. Pick `lusia-vscode-0.2.0.vsix`.
 
 > [!TIP]
 > If a colour looks wrong, run **Developer: Inspect Editor Tokens and Scopes** on it. It shows the scope VS Code assigned.
 
-To work on the extension, see [Contributing](../../CONTRIBUTING.md#vs-code-extension).
+## Develop
+
+| Command | What it does |
+| ------- | ------------ |
+| `bun install` | Install dependencies, including the `lusia` package |
+| `bun run typecheck` | Check the types |
+| `bun test` | Run the tests |
+| `bun run build` | Build `dist/extension.js` |
+| `bun run package` | Build and make the `.vsix` file |
+
+The extension uses the published [`lusia`](https://www.npmjs.com/package/lusia) package for the compiler, parser and API data.
