@@ -1,6 +1,6 @@
 import type { Options } from "prettier";
-import { formatLusia as formatLusiaSource } from "@language/format.ts";
-import { prettierParts } from "@language/prettier-parts.ts";
+import { formatLusia as formatLusiaSource } from "@language/format/format.ts";
+import { prettierParts } from "@language/format/prettier-parts.ts";
 
 /** The indentation the editor formats with, used when the Prettier config leaves it out. */
 export interface FormatSettings {

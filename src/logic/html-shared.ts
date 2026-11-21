@@ -5,11 +5,11 @@ import {
   type LanguageService,
 } from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import { inExpressionAt } from "@language/format-expressions.ts";
-import { findComponentImport } from "@language/imports.ts";
+import { inExpressionAt } from "@language/format/format-expressions.ts";
+import { findComponentImport } from "@language/parse/imports.ts";
 import { isFlowTag } from "../../../shared/markup-items.ts";
-import { regionAt } from "@language/regions.ts";
-import { openTagAt } from "@language/tag.ts";
+import { regionAt } from "@language/parse/regions.ts";
+import { openTagAt } from "@language/parse/tag.ts";
 import { editorDocument } from "./language-service.ts";
 
 export const URI = "inmemory://lusia/markup.html";

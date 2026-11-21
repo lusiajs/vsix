@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { findSections } from "@language/sections.ts";
+import { findSections } from "@language/parse/sections.ts";
 import { cssFolding } from "../logic/css.ts";
 import { htmlFolding, type RegionFolding } from "../logic/html.ts";
 

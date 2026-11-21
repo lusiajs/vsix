@@ -6,8 +6,8 @@ import {
 import type { LanguageService } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { TextRange } from "../../../../shared/range.ts";
-import { regionAt } from "@language/regions.ts";
-import { findSections, type Section } from "@language/sections.ts";
+import { regionAt } from "@language/parse/regions.ts";
+import { findSections, type Section } from "@language/parse/sections.ts";
 import { editorDocument, type LspPosition } from "../language-service.ts";
 
 export type StyleLanguage = "css" | "scss";

@@ -3,7 +3,7 @@ import type { CompletionItem } from "vscode-html-languageservice/lib/esm/htmlLan
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { CompletionResult } from "../../../shared/completions.ts";
 import type { HoverResult } from "../../../shared/hover.ts";
-import { isTagNameTyping } from "@language/tag.ts";
+import { isTagNameTyping } from "@language/parse/tag.ts";
 import {
   URI,
   editable,

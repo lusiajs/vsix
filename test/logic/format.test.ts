@@ -7,7 +7,7 @@ import {
   expressionEnd,
   protectExpressions,
   restoreExpressions,
-} from "@language/format-expressions.ts";
+} from "@language/format/format-expressions.ts";
 
 const SAMPLE = `<style scoped>
 .card{padding:1rem}

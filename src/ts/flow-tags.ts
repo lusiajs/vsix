@@ -1,4 +1,4 @@
-import type { Section } from "@language/sections.ts";
+import type { Section } from "@language/parse/sections.ts";
 import { expressionEnd, tagEnd } from "./scan.ts";
 
 export interface FlowName {

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { componentPath } from "../component-file.ts";
-import { tagNameAt } from "@language/tag.ts";
+import { tagNameAt } from "@language/parse/tag.ts";
 import { cssDefinitions } from "../logic/css.ts";
 import { inTsRegion, locationOf, projectOf, tsLocations } from "./common.ts";
 

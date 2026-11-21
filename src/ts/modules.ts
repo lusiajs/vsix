@@ -1,6 +1,6 @@
 import { basename } from "node:path";
 import { readFileSync } from "node:fs";
-import { findSections } from "@language/sections.ts";
+import { findSections } from "@language/parse/sections.ts";
 import { expressionEnd } from "./scan.ts";
 import { flowDeclarations } from "./flow-declarations.ts";
 import { virtualScript } from "./virtual.ts";

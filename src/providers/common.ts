@@ -1,8 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import * as vscode from "vscode";
-import { inExpressionAt } from "@language/format-expressions.ts";
-import { regionAt } from "@language/regions.ts";
+import { inExpressionAt } from "@language/format/format-expressions.ts";
+import { regionAt } from "@language/parse/regions.ts";
 import type { TextRange } from "../../../shared/range.ts";
 import type { CssSymbolKind } from "../logic/css.ts";
 import { TsProject } from "../ts/project.ts";

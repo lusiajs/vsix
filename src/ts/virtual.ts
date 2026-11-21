@@ -1,4 +1,4 @@
-import { findSections } from "@language/sections.ts";
+import { findSections } from "@language/parse/sections.ts";
 import { collectFlowNames, type FlowName } from "./flow-tags.ts";
 import { afterQuote, commentEnd, expressionEnd, unclosedEnd } from "./scan.ts";
 import type { TextRange } from "../../../shared/range.ts";
