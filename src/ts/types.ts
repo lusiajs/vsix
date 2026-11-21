@@ -1,5 +1,5 @@
-import type { CompletionKind } from "../../../shared/completion-data.ts";
-import type { TextRange } from "../../../shared/range.ts";
+import type { CompletionKind } from "../../../../src/editor/completion-data.ts";
+import type { TextRange } from "../../../../src/editor/range.ts";
 
 export interface TsCompletion {
   name: string;

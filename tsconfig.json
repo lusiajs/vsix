@@ -16,5 +16,5 @@
       "@language/*": ["../../src/language/*"]
     }
   },
-  "include": ["src", "../shared", "../../reference", "../../src/compiler"]
+  "include": ["src", "../../src/editor", "../../reference", "../../src/compiler"]
 }

@@ -1,5 +1,5 @@
 import type * as TypeScript from "typescript";
-import type { CompletionKind } from "../../../shared/completion-data.ts";
+import type { CompletionKind } from "../../../../src/editor/completion-data.ts";
 import type { TypeScriptModule } from "./load.ts";
 import { spanRange } from "./map.ts";
 import type {

@@ -1,5 +1,5 @@
 import { basename } from "node:path";
-import type { TextRange } from "../../../../../shared/range.ts";
+import type { TextRange } from "../../../../../../src/editor/range.ts";
 import type { CssLocation } from "../types.ts";
 import type { ScssIndex, ScssMember } from "./types.ts";
 

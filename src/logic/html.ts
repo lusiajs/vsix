@@ -1,8 +1,8 @@
 // The ESM build bundles; the UMD factory hides its requires from Bun.
 import type { CompletionItem } from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import type { CompletionResult } from "../../../shared/completions.ts";
-import type { HoverResult } from "../../../shared/hover.ts";
+import type { CompletionResult } from "../../../../src/editor/completions.ts";
+import type { HoverResult } from "../../../../src/editor/hover.ts";
 import { isTagNameTyping } from "@language/parse/tag.ts";
 import {
   URI,

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { lintLusia, type LintFix, type LintIssue } from "@language/lint/lint.ts";
 import { compile } from "../../../src/compiler/index.ts";
-import { errorPosition } from "../../shared/error-position.ts";
+import { errorPosition } from "../../../src/editor/error-position.ts";
 import { declaredProps } from "./component-file.ts";
 import { cssDiagnostics, type CssDiagnosticSeverity } from "./logic/css.ts";
 import type { RegionDiagnostic } from "./logic/html.ts";

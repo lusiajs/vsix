@@ -1,4 +1,4 @@
-import type { TextRange } from "../../../shared/range.ts";
+import type { TextRange } from "../../../../src/editor/range.ts";
 
 export interface RegionEdit {
   range: TextRange;

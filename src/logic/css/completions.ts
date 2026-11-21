@@ -1,7 +1,7 @@
 import { basename } from "node:path";
 import type { CompletionItem } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
-import type { CompletionResult } from "../../../../shared/completions.ts";
-import type { TextRange } from "../../../../shared/range.ts";
+import type { CompletionResult } from "../../../../../src/editor/completions.ts";
+import type { TextRange } from "../../../../../src/editor/range.ts";
 import { hoverText, offsetRange, toCompletionKind } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { indexMembers } from "./scss/find.ts";

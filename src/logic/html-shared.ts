@@ -7,7 +7,7 @@ import {
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { inExpressionAt } from "@language/format/format-expressions.ts";
 import { findComponentImport } from "@language/parse/imports.ts";
-import { isFlowTag } from "../../../shared/completion/markup-items.ts";
+import { isFlowTag } from "../../../../src/editor/completion/markup-items.ts";
 import { regionAt } from "@language/parse/regions.ts";
 import { openTagAt } from "@language/parse/tag.ts";
 import { editorDocument } from "./language-service.ts";

@@ -3,9 +3,9 @@ import { componentProps } from "../component-file.ts";
 import { scriptSymbols } from "../script-file.ts";
 import { cssHover } from "../logic/css.ts";
 import { htmlHover } from "../logic/html.ts";
-import { hoverAt, type HoverResult } from "../../../shared/hover.ts";
-import { apiDocsMarkdown, hoverMarkdown } from "../../../shared/markdown.ts";
-import type { TextRange } from "../../../shared/range.ts";
+import { hoverAt, type HoverResult } from "../../../../src/editor/hover.ts";
+import { apiDocsMarkdown, hoverMarkdown } from "../../../../src/editor/markdown.ts";
+import type { TextRange } from "../../../../src/editor/range.ts";
 import { inTsRegion, projectOf } from "./common.ts";
 
 export class LusiaHoverProvider implements vscode.HoverProvider {

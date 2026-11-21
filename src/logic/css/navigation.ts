@@ -1,5 +1,5 @@
 import type { Location } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
-import type { TextRange } from "../../../../shared/range.ts";
+import type { TextRange } from "../../../../../src/editor/range.ts";
 import { offsetRange } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { memberDefinition, scssMemberAt, scssOccurrences } from "./scss/find.ts";
