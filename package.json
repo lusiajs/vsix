@@ -88,7 +88,7 @@
     ]
   },
   "dependencies": {
-    "lusia": "^0.1.0-beta.1",
+    "lusiajs": "^0.1.0-beta.1",
     "typescript": "5.9.3"
   }
 }
