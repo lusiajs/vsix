@@ -5,6 +5,7 @@
   "version": "0.2.0",
   "publisher": "lusia",
   "license": "MIT",
+  "icon": "icon.png",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lusiajs/vsix.git"
