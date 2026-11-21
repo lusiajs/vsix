@@ -23,7 +23,7 @@
   "scripts": {
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "build": "bun build src/extension.ts --target node --format cjs --external vscode --external typescript --outfile dist/extension.js",
+    "build": "bun build src/extension.ts --target node --format cjs --minify --external vscode --external typescript --outfile dist/extension.js",
     "package": "bun run build && bunx @vscode/vsce package"
   },
   "devDependencies": {
