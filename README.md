@@ -54,10 +54,10 @@ Build the extension from a clone of this repo, then install the `.vsix` file.
 
 | Command | What it does |
 | ------- | ------------ |
-| `bun install` | Install dependencies, including the `lusia` package |
+| `bun install` | Install dependencies, including the `lusiajs` package |
 | `bun run typecheck` | Check the types |
 | `bun test` | Run the tests |
 | `bun run build` | Build `dist/extension.js` |
 | `bun run package` | Build and make the `.vsix` file |
 
-The extension uses the published [`lusia`](https://www.npmjs.com/package/lusia) package for the compiler, parser and API data.
+The extension uses the published [`lusiajs`](https://www.npmjs.com/package/lusiajs) package for the compiler, parser and API data.
