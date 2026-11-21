@@ -11,10 +11,10 @@ import {
   htmlSelection,
   htmlSymbols,
   htmlTagClose,
-} from "../../../editors/vscode/src/logic/html.ts";
+} from "../../src/logic/html.ts";
 
 const PAIR = `<div><span>x</span></div>`;
-const MANIFEST = new URL("../../../editors/vscode/package.json", import.meta.url);
+const MANIFEST = new URL("../../package.json", import.meta.url);
 
 describe("htmlTagClose", () => {
   test("closes a plain tag typed by hand", () => {

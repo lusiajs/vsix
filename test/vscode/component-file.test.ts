@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { join } from "node:path";
-import { componentPath } from "../../../editors/vscode/src/component-file.ts";
+import { componentPath } from "../../src/component-file.ts";
 
 const PARENT = join(import.meta.dir, "../fixtures/lint/Parent.lusia");
 const BADGE = join(import.meta.dir, "../fixtures/lint/badge.lusia");

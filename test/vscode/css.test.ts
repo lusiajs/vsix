@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cssCompletions, cssHover } from "../../../editors/vscode/src/logic/css.ts";
+import { cssCompletions, cssHover } from "../../src/logic/css.ts";
 
 /** The source without its `|` cursor marker, plus the offset that marker had. */
 function marked(source: string): { text: string; offset: number } {

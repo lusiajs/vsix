@@ -1,5 +1,5 @@
-import type { CompletionKind } from "../../../../src/editor/completion-data.ts";
-import type { TextRange } from "../../../../src/editor/range.ts";
+import type { CompletionKind } from "lusia/editor/completion-data.ts";
+import type { TextRange } from "lusia/editor/range.ts";
 
 export interface TsCompletion {
   name: string;

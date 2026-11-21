@@ -2,12 +2,12 @@ import { afterAll, describe, expect, test } from "bun:test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { formatLusia } from "../../../editors/vscode/src/logic/format.ts";
+import { formatLusia } from "../../src/logic/format.ts";
 import {
   expressionEnd,
   protectExpressions,
   restoreExpressions,
-} from "@language/format/format-expressions.ts";
+} from "lusia/language/format/format-expressions.ts";
 
 const SAMPLE = `<style scoped>
 .card{padding:1rem}

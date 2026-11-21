@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { htmlCompletions, htmlHover } from "../../../editors/vscode/src/logic/html.ts";
+import { htmlCompletions, htmlHover } from "../../src/logic/html.ts";
 
 function labels(text: string, offset: number): string[] {
   return htmlCompletions(text, offset).map((item) => item.label);

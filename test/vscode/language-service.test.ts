@@ -4,7 +4,7 @@ import {
   hoverText,
   offsetRange,
   toCompletionKind,
-} from "../../../editors/vscode/src/logic/language-service.ts";
+} from "../../src/logic/language-service.ts";
 
 describe("editorDocument", () => {
   test("maps offsets and positions both ways", () => {

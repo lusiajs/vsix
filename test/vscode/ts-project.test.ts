@@ -1,6 +1,6 @@
 import { afterAll, describe, expect, test } from "bun:test";
-import { loadTypeScript } from "../../../editors/vscode/src/ts/load.ts";
-import type { TsEdit } from "../../../editors/vscode/src/ts/types.ts";
+import { loadTypeScript } from "../../src/ts/load.ts";
+import type { TsEdit } from "../../src/ts/types.ts";
 import { after, createWorkspace } from "./ts-workspace.ts";
 
 const UTIL = `/** Greets a person by name. */

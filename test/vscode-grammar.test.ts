@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-const EXTENSION = join(import.meta.dir, "../../editors/vscode");
+const EXTENSION = join(import.meta.dir, "..");
 const GRAMMAR_PATH = join(EXTENSION, "syntaxes/lusia.tmLanguage.json");
 
 interface Rule {

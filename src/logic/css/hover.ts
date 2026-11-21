@@ -1,5 +1,5 @@
-import type { HoverResult } from "../../../../../src/editor/hover.ts";
-import type { TextRange } from "../../../../../src/editor/range.ts";
+import type { HoverResult } from "lusia/editor/hover.ts";
+import type { TextRange } from "lusia/editor/range.ts";
 import { hoverText, offsetRange } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { memberHover, scssMemberAt } from "./scss/find.ts";

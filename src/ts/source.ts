@@ -1,6 +1,6 @@
 import { flowDeclarations } from "./flow-declarations.ts";
 import { virtualScript } from "./virtual.ts";
-import type { TextRange } from "../../../../src/editor/range.ts";
+import type { TextRange } from "lusia/editor/range.ts";
 
 export interface ProjectSource {
   /** The virtual TypeScript file, with the flow declarations after the component. */

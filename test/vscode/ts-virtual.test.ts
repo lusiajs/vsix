@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { virtualScript } from "../../../editors/vscode/src/ts/virtual.ts";
+import { virtualScript } from "../../src/ts/virtual.ts";
 
 const SOURCE = `<script>
 import { variable } from "lusia";

@@ -3,8 +3,7 @@ import { createRequire } from "node:module";
 import { join } from "node:path";
 
 // The tokenizer packages live in the extension's own node_modules, so they are loaded from there.
-const REPO = join(import.meta.dir, "../../..");
-const EXTENSION = join(REPO, "editors/vscode");
+const EXTENSION = join(import.meta.dir, "../..");
 const FIXTURES = join(import.meta.dir, "../fixtures/grammars");
 const extensionRequire = createRequire(join(EXTENSION, "package.json"));
 

@@ -13,33 +13,33 @@ const workspace = createWorkspace({
 afterAll(() => workspace.dispose());
 
 const { LusiaCompletionProvider } =
-  await import("../../../editors/vscode/src/providers/completion.ts");
-const { LusiaHoverProvider } = await import("../../../editors/vscode/src/providers/hover.ts");
+  await import("../../src/providers/completion.ts");
+const { LusiaHoverProvider } = await import("../../src/providers/hover.ts");
 const { LusiaDefinitionProvider } =
-  await import("../../../editors/vscode/src/providers/definition.ts");
+  await import("../../src/providers/definition.ts");
 const { LusiaReferenceProvider } =
-  await import("../../../editors/vscode/src/providers/references.ts");
-const { LusiaRenameProvider } = await import("../../../editors/vscode/src/providers/rename.ts");
+  await import("../../src/providers/references.ts");
+const { LusiaRenameProvider } = await import("../../src/providers/rename.ts");
 const { LusiaSignatureHelpProvider } =
-  await import("../../../editors/vscode/src/providers/signature.ts");
+  await import("../../src/providers/signature.ts");
 const { LusiaOnTypeFormattingProvider } =
-  await import("../../../editors/vscode/src/providers/on-type.ts");
+  await import("../../src/providers/on-type.ts");
 const { LusiaDocumentLinkProvider } =
-  await import("../../../editors/vscode/src/providers/links.ts");
+  await import("../../src/providers/links.ts");
 const { LusiaDocumentSymbolProvider } =
-  await import("../../../editors/vscode/src/providers/symbols.ts");
+  await import("../../src/providers/symbols.ts");
 const { LusiaFoldingRangeProvider } =
-  await import("../../../editors/vscode/src/providers/folding.ts");
+  await import("../../src/providers/folding.ts");
 const { LusiaSelectionRangeProvider } =
-  await import("../../../editors/vscode/src/providers/selection.ts");
+  await import("../../src/providers/selection.ts");
 const { LusiaDocumentHighlightProvider } =
-  await import("../../../editors/vscode/src/providers/highlights.ts");
+  await import("../../src/providers/highlights.ts");
 const { LusiaLinkedEditingProvider } =
-  await import("../../../editors/vscode/src/providers/linked.ts");
-const { LusiaColorProvider } = await import("../../../editors/vscode/src/providers/colors.ts");
+  await import("../../src/providers/linked.ts");
+const { LusiaColorProvider } = await import("../../src/providers/colors.ts");
 const { LusiaCodeActionProvider } =
-  await import("../../../editors/vscode/src/providers/code-actions.ts");
-const { LusiaDiagnostics } = await import("../../../editors/vscode/src/diagnostics.ts");
+  await import("../../src/providers/code-actions.ts");
+const { LusiaDiagnostics } = await import("../../src/diagnostics.ts");
 
 const captured = vscode.__captured;
 

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { findComponentImport } from "@language/parse/imports.ts";
-import { parsePropDefs, type PropDef } from "@language/parse/props.ts";
+import { findComponentImport } from "lusia/language/parse/imports.ts";
+import { parsePropDefs, type PropDef } from "lusia/language/parse/props.ts";
 
 /** The file an imported component tag points at, if it exists on disk. */
 export function componentPath(

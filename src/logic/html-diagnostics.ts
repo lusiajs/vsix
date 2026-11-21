@@ -1,8 +1,8 @@
 import type { ConfigData, HtmlValidate, Message } from "html-validate/browser";
-import { expressionEnd } from "@language/format/format-expressions.ts";
-import { findComponentImport } from "@language/parse/imports.ts";
-import { findSections } from "@language/parse/sections.ts";
-import { isFlowTag } from "../../../../src/editor/completion/markup-items.ts";
+import { expressionEnd } from "lusia/language/format/format-expressions.ts";
+import { findComponentImport } from "lusia/language/parse/imports.ts";
+import { findSections } from "lusia/language/parse/sections.ts";
+import { isFlowTag } from "lusia/editor/completion/markup-items.ts";
 import type { RegionDiagnostic } from "./region-types.ts";
 
 const FILENAME = "component.lusia";

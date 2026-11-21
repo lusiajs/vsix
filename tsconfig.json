@@ -4,17 +4,13 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["ES2022"],
-    "types": ["node", "vscode"],
+    "types": ["node", "bun", "vscode"],
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": true,
-    "paths": {
-      "@runtime/*": ["../../src/runtime/*"],
-      "@language/*": ["../../src/language/*"]
-    }
+    "verbatimModuleSyntax": true
   },
-  "include": ["src", "../../src/editor", "../../reference", "../../src/compiler"]
+  "include": ["src", "test", "scripts"]
 }

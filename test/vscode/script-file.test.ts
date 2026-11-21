@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { clearScriptSymbolsCache, scriptSymbols } from "../../../editors/vscode/src/script-file.ts";
+import { clearScriptSymbolsCache, scriptSymbols } from "../../src/script-file.ts";
 
 const ADD = `/**
  * Adds two numbers.

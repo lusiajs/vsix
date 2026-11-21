@@ -18,7 +18,7 @@ import {
   cssRenameRange,
   cssSelection,
   cssSymbols,
-} from "../../../editors/vscode/src/logic/css.ts";
+} from "../../src/logic/css.ts";
 
 const directory = mkdtempSync(join(tmpdir(), "lusia-css-"));
 const component = join(directory, "Demo.lusia");

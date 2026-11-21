@@ -1,9 +1,10 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { TsProject } from "../../../editors/vscode/src/ts/project.ts";
+import { fileURLToPath } from "node:url";
+import { TsProject } from "../../src/ts/project.ts";
 
-const TMP = resolve(import.meta.dir, "../../../.agent/tmp");
-const RUNTIME = resolve(import.meta.dir, "../../../src/runtime/index.ts");
+const TMP = resolve(import.meta.dir, "../../.agent/tmp");
+const RUNTIME = fileURLToPath(import.meta.resolve("lusia"));
 
 export interface Workspace {
   root: string;

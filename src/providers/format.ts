@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { readIndentSetting } from "@language/format/indent-setting.ts";
+import { readIndentSetting } from "lusia/language/format/indent-setting.ts";
 import { formatLusia } from "../logic/format.ts";
 
 export class LusiaFormattingProvider

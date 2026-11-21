@@ -1,9 +1,9 @@
 // The ESM build bundles; the UMD factory hides its requires from Bun.
 import type { CompletionItem } from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import type { CompletionResult } from "../../../../src/editor/completions.ts";
-import type { HoverResult } from "../../../../src/editor/hover.ts";
-import { isTagNameTyping } from "@language/parse/tag.ts";
+import type { CompletionResult } from "lusia/editor/completions.ts";
+import type { HoverResult } from "lusia/editor/hover.ts";
+import { isTagNameTyping } from "lusia/language/parse/tag.ts";
 import {
   URI,
   editable,

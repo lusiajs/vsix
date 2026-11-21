@@ -1,5 +1,5 @@
 import { componentLength } from "./modules.ts";
-import type { TextRange } from "../../../../src/editor/range.ts";
+import type { TextRange } from "lusia/editor/range.ts";
 import type { TsLocation } from "./types.ts";
 
 const TS_SUFFIX = ".lusia.ts";
