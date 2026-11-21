@@ -10,6 +10,8 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,12 +38,15 @@ jobs:
       - name: Package the extension
         run: bunx @vscode/vsce package --no-dependencies -o "lusia-$GITHUB_REF_NAME.vsix"
 
-      - name: Publish to the VS Code Marketplace
-        run: bunx @vscode/vsce publish --no-dependencies --packagePath "lusia-$GITHUB_REF_NAME.vsix"
-        env:
-          VSCE_PAT: ${{ secrets.VSCE_PAT }}
-
       - name: Create the GitHub release
         run: gh release create "$GITHUB_REF_NAME" "lusia-$GITHUB_REF_NAME.vsix" --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}
+
+      - name: Publish to the VS Code Marketplace
+        if: env.VSCE_PAT != ''
+        run: bunx @vscode/vsce publish --no-dependencies --packagePath "lusia-$GITHUB_REF_NAME.vsix"
+
+      - name: Note when the Marketplace step is skipped
+        if: env.VSCE_PAT == ''
+        run: echo "VSCE_PAT is not set, so the Marketplace publish was skipped. The GitHub release has the .vsix."
