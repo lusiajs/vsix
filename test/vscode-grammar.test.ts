@@ -102,6 +102,20 @@ describe("Lusia VS Code grammar", () => {
       "meta.embedded.block.html",
     ]);
   });
+
+  test("> and => in TypeScript regions are not treated as unmatched brackets", () => {
+    const manifest = JSON.parse(readFileSync(join(EXTENSION, "package.json"), "utf8"));
+    const scopes = manifest.contributes.grammars[0].unbalancedBracketScopes;
+    expect(scopes).toContain("keyword.operator.relational");
+    expect(scopes).toContain("storage.type.function.arrow");
+  });
+
+  test("the > of --> is not a bracket, so bracket colouring cannot mark it red", () => {
+    const configuration = JSON.parse(
+      readFileSync(join(EXTENSION, "language-configuration.json"), "utf8"),
+    );
+    expect(configuration.brackets).not.toContainEqual(["<!--", "-->"]);
+  });
 });
 
 function findRepo(name: string): Rule {
