@@ -22,7 +22,7 @@ Editor support for `.lusia` components.
 | Format | Script, styles and markup, with the project's Prettier config. Flow tags stay as written |
 | Snippets | Component, props, child component, scoped style, `IF`, `EACH`, `FOR`, click handler and two-way input |
 
-Formatting reads the project's Prettier config (`.prettierrc` or `prettier.config.js`). The VS Code indent setting fills in `tabWidth` and `useTabs` when the config does not set them.
+Formatting reads the project's Prettier config (`.prettierrc` or `prettier.config.js`). The VS Code indent setting fills in `tabWidth` and `useTabs` when the config does not set them. Code inside `<script>` and `<style>` is indented one level; `lusia format` turns this off with `format.indentScriptAndStyle: false` in `lusia.config`.
 
 Script sections and `{expr}` values are checked together. So a completion or rename also covers names that appear only in markup.
 
