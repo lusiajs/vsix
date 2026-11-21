@@ -31,6 +31,7 @@ The extension version has the same `major.minor` as the lusia version it support
 | Code actions | SCSS and CSS fixes, and lint quick fixes |
 | Format | Script, styles and markup, with the project's Prettier config. Flow tags stay as written |
 | Snippets | Component, props, child component, scoped style, `IF`, `EACH`, `FOR`, click handler and two-way input |
+| File icon | The Lusia logo next to `.lusia` files in the Explorer and in tabs, when your icon theme has no icon for them |
 
 Formatting reads the project's Prettier config (`.prettierrc` or `prettier.config.js`). The VS Code indent setting fills in `tabWidth` and `useTabs` when the config does not set them. Code inside `<script>` and `<style>` is indented one level; `lusia format` turns this off with `format.indentScriptAndStyle: false` in `lusia.config`.
 
