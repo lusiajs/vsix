@@ -15,7 +15,12 @@ The CSS property generator is in the lusia repo (`scripts/css-properties.ts`), n
 `syntaxes/lusia.tmLanguage.json` must never show valid `.lusia` syntax as plain text.
 
 # 5. Release by tag
-Push a tag equal to the package version, such as `v0.2.0`. `release.yml` publishes to the Marketplace with `VSCE_PAT` and creates the GitHub release. The version must be plain `major.minor.patch` for the Marketplace.
+Push a tag equal to the package version, such as `v0.1.0`. `release.yml` publishes to the Marketplace with `VSCE_PAT` and creates the GitHub release.
+
+# 5a. Version follows lusia
+The extension version has the same `major.minor` as the lusia version it supports, and its own `patch`. Lusia `0.1.x` goes with extension `0.1.x`; lusia `0.2.x` goes with extension `0.2.0`. Every extension release, also one with no lusia change, bumps the patch: `0.1.0`, `0.1.1`, `0.1.2`. Never drop below the current patch when lusia moves to a new `major.minor`.
+
+The version must be plain `major.minor.patch`. The Marketplace and `vsce` reject a fourth number such as `0.1.0.1` (checked), and the Marketplace does not take pre-release suffixes such as `-beta.1`. A lusia beta (`0.1.0-beta.1`) therefore pairs with extension `0.1.x`. Say the supported lusia range in the README. Keep the `lusia` dependency in `package.json` on that range.
 
 # 6. Checks
 Run `bun run typecheck`, `bun run test` and `bun run build` before a commit.

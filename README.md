@@ -4,6 +4,14 @@
 
 Editor support for `.lusia` components.
 
+## Versions
+
+| Extension | Works with lusia |
+| --------- | ---------------- |
+| `0.1.x` | `0.1.x` (including `0.1.0-beta.1`) |
+
+The extension version has the same `major.minor` as the lusia version it supports. Its patch number grows with every extension release.
+
 ## Features
 
 | Feature | What it does |
@@ -35,9 +43,9 @@ Lusia names show their API docs in completion and hover. Names from TypeScript s
 Build the extension from a clone of this repo, then install the `.vsix` file.
 
 1. Run `bun install`.
-2. Run `bun run package`. It builds `lusia-vscode-0.2.0.vsix`.
+2. Run `bun run package`. It builds `lusia-vscode-0.1.0.vsix`.
 3. In VS Code, open the Extensions view, then `...`, then **Install from VSIX...**.
-4. Pick `lusia-vscode-0.2.0.vsix`.
+4. Pick `lusia-vscode-0.1.0.vsix`.
 
 > [!TIP]
 > If a colour looks wrong, run **Developer: Inspect Editor Tokens and Scopes** on it. It shows the scope VS Code assigned.
