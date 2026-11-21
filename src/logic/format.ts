@@ -7,6 +7,7 @@ export interface FormatSettings {
   fileName?: string;
   tabSize?: number;
   insertSpaces?: boolean;
+  indentScriptAndStyle?: boolean;
 }
 
 type Prettier = typeof import("prettier");
@@ -19,6 +20,7 @@ export async function formatLusia(source: string, settings: FormatSettings = {})
   const parts = prettierParts(
     async () => ({ format: (code, options) => prettier.format(code, options as Options) }),
     config,
+    settings.indentScriptAndStyle ?? true,
   ).parts;
   return formatLusiaSource(source, parts);
 }
