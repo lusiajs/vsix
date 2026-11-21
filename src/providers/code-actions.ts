@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import type { LintFix, LintIssue } from "lusia/language/lint/lint.ts";
+import type { LintFix, LintIssue } from "lusiajs/language/lint/lint.ts";
 import { cssCodeActions, cssDiagnostics, type CssCodeAction } from "../logic/css.ts";
 import { lintIssues } from "../diagnostics-sources.ts";
 import { rangeOf } from "./common.ts";

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { findSections } from "lusia/language/parse/sections.ts";
+import { findSections } from "lusiajs/language/parse/sections.ts";
 import { cssFolding } from "../logic/css.ts";
 import { htmlFolding, type RegionFolding } from "../logic/html.ts";
 

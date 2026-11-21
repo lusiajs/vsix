@@ -1,5 +1,5 @@
 import type { Location } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
-import type { TextRange } from "lusia/editor/range.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
 import { offsetRange } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { memberDefinition, scssMemberAt, scssOccurrences } from "./scss/find.ts";

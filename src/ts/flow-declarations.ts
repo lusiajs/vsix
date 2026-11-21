@@ -13,7 +13,7 @@ export function flowDeclarations(names: FlowName[]): string {
   for (const flow of names) {
     if (flow.kind === "number") lines.push(`declare var ${flow.name}: number;`);
     else if (flow.kind === "index")
-      lines.push(`declare var ${flow.name}: import("lusia").Variable<number>;`);
+      lines.push(`declare var ${flow.name}: import("lusiajs").Variable<number>;`);
     else lines.push(...itemDeclaration(flow, () => `__lusiaList${helper++}`));
   }
   return `\n${lines.join("\n")}\n`;

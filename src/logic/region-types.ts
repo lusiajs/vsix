@@ -1,4 +1,4 @@
-import type { TextRange } from "lusia/editor/range.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
 
 export interface RegionEdit {
   range: TextRange;

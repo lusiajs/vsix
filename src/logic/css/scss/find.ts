@@ -1,5 +1,5 @@
 import { basename } from "node:path";
-import type { TextRange } from "lusia/editor/range.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
 import type { CssLocation } from "../types.ts";
 import type { ScssIndex, ScssMember } from "./types.ts";
 

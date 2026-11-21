@@ -1,7 +1,7 @@
-import { findSections } from "lusia/language/parse/sections.ts";
+import { findSections } from "lusiajs/language/parse/sections.ts";
 import { collectFlowNames, type FlowName } from "./flow-tags.ts";
 import { afterQuote, commentEnd, expressionEnd, unclosedEnd } from "./scan.ts";
-import type { TextRange } from "lusia/editor/range.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
 
 export interface VirtualScript {
   text: string;

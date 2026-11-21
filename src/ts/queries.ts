@@ -3,7 +3,7 @@ import { toIssues } from "./issues.ts";
 import type { TypeScriptModule } from "./load.ts";
 import { hasLocation, locationOf } from "./map.ts";
 import { toCompletionDetails, toCompletions, toHover, toSignature } from "./responses.ts";
-import type { TextRange } from "lusia/editor/range.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
 import type {
   TsCompletion,
   TsCompletionDetails,

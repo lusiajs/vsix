@@ -7,13 +7,13 @@ import {
   expressionEnd,
   protectExpressions,
   restoreExpressions,
-} from "lusia/language/format/format-expressions.ts";
+} from "lusiajs/language/format/format-expressions.ts";
 
 const SAMPLE = `<style scoped>
 .card{padding:1rem}
 </style>
 <script>
-import {variable} from "lusia";
+import {variable} from "lusiajs";
 const name=variable("Ada");
 </script>
 <p class="a {name}">Hi {name.value}</p>

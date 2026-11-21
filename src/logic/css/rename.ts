@@ -1,4 +1,4 @@
-import type { TextRange } from "lusia/editor/range.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
 import { offsetRange } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { scssMemberAt, scssOccurrences, scssTokenAt } from "./scss/find.ts";

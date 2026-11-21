@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { exportedSymbols, type ScriptSymbol } from "lusia/editor/script/symbols.ts";
+import { exportedSymbols, type ScriptSymbol } from "lusiajs/editor/script/symbols.ts";
 
 const CACHE_LIMIT = 100;
 const TYPESCRIPT_EXTENSION = /\.tsx?$/;

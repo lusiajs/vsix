@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { virtualScript } from "../../src/ts/virtual.ts";
 
 const SOURCE = `<script>
-import { variable } from "lusia";
+import { variable } from "lusiajs";
 const user = { name: "Ada" };
 const count = variable(0);
 </script>

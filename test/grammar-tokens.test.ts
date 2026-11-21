@@ -3,7 +3,7 @@ import { tokenizeLusia, type Token } from "./support/tokenizer.ts";
 
 const SOURCE = [
   "<script>",
-  'import { variable } from "lusia";',
+  'import { variable } from "lusiajs";',
   'const name = variable("Ada");',
   "const greeting = variable.compute(() => `Hello, ${name.value}!`);",
   "</script>",

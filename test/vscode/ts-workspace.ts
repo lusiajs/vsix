@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { TsProject } from "../../src/ts/project.ts";
 
 const TMP = resolve(import.meta.dir, "../../.agent/tmp");
-const RUNTIME = fileURLToPath(import.meta.resolve("lusia"));
+const RUNTIME = fileURLToPath(import.meta.resolve("lusiajs"));
 
 export interface Workspace {
   root: string;
@@ -13,7 +13,7 @@ export interface Workspace {
   dispose(): void;
 }
 
-/** A throwaway Lusia workspace whose tsconfig points `lusia` at the repo runtime. */
+/** A throwaway Lusia workspace whose tsconfig points `lusiajs` at the repo runtime. */
 export function createWorkspace(files: Record<string, string> = {}): Workspace {
   mkdirSync(TMP, { recursive: true });
   const root = mkdtempSync(join(TMP, "ts-"));
@@ -29,7 +29,7 @@ export function createWorkspace(files: Record<string, string> = {}): Workspace {
         noEmit: true,
         allowImportingTsExtensions: true,
         lib: ["ESNext", "DOM", "DOM.Iterable"],
-        paths: { lusia: [RUNTIME] },
+        paths: { "lusiajs": [RUNTIME] },
       },
     }),
   );

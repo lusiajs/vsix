@@ -14,7 +14,7 @@
     "description": "Component that declares props and uses them",
     "body": [
       "<script>",
-      "import { props } from \"lusia\";",
+      "import { props } from \"lusiajs\";",
       "",
       "const { ${1:label} } = props({ ${1:label}: ${2:\"New\"} });",
       "</script>",

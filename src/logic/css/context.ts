@@ -5,9 +5,9 @@ import {
 } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import type { LanguageService } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import type { TextRange } from "lusia/editor/range.ts";
-import { regionAt } from "lusia/language/parse/regions.ts";
-import { findSections, type Section } from "lusia/language/parse/sections.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
+import { regionAt } from "lusiajs/language/parse/regions.ts";
+import { findSections, type Section } from "lusiajs/language/parse/sections.ts";
 import { editorDocument, type LspPosition } from "../language-service.ts";
 
 export type StyleLanguage = "css" | "scss";

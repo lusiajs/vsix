@@ -1,6 +1,6 @@
 import { basename } from "node:path";
 import { readFileSync } from "node:fs";
-import { findSections } from "lusia/language/parse/sections.ts";
+import { findSections } from "lusiajs/language/parse/sections.ts";
 import { expressionEnd } from "./scan.ts";
 import { flowDeclarations } from "./flow-declarations.ts";
 import { virtualScript } from "./virtual.ts";
@@ -69,7 +69,7 @@ function scriptOf(text: string): string {
 function componentShim(childPath: string): string {
   const specifier = `./${basename(childPath)}`;
   return [
-    'import type { Component } from "lusia";',
+    'import type { Component } from "lusiajs";',
     `import type { LusiaProps } from ${JSON.stringify(specifier)};`,
     "declare const component: Component & { readonly props: LusiaProps };",
     "export default component;",
@@ -83,7 +83,7 @@ function propsDeclaration(script: string): string {
   if (open === -1 || close === -1) return "\nexport type LusiaProps = {};\n";
   return [
     "",
-    'import { props as __lusiaProps } from "lusia";',
+    'import { props as __lusiaProps } from "lusiajs";',
     "type __LusiaPropValue<P> = P extends { readonly value: infer V } ? V : P;",
     `const __lusiaDefaults = (${script.slice(open, close + 1)});`,
     "const __lusiaPropsObject = __lusiaProps(__lusiaDefaults);",

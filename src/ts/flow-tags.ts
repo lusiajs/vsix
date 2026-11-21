@@ -1,4 +1,4 @@
-import type { Section } from "lusia/language/parse/sections.ts";
+import type { Section } from "lusiajs/language/parse/sections.ts";
 import { expressionEnd, tagEnd } from "./scan.ts";
 
 export interface FlowName {

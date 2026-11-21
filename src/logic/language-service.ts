@@ -1,6 +1,6 @@
 import { TextDocument } from "vscode-languageserver-textdocument";
-import type { CompletionKind } from "lusia/editor/completion-data.ts";
-import type { TextRange } from "lusia/editor/range.ts";
+import type { CompletionKind } from "lusiajs/editor/completion-data.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
 
 /** A position in a language server document, kept structural so this file needs no LSP types. */
 export interface LspPosition {

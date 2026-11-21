@@ -1,7 +1,7 @@
 import type * as TypeScript from "typescript";
 import type { TypeScriptModule } from "./load.ts";
 import { inSpans } from "./map.ts";
-import type { TextRange } from "lusia/editor/range.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
 import type { TsIssue } from "./types.ts";
 
 const IGNORED_CODES: ReadonlySet<number> = new Set([2688, 2318, 18003, 2686, 2687]);

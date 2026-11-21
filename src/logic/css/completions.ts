@@ -1,7 +1,7 @@
 import { basename } from "node:path";
 import type { CompletionItem } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
-import type { CompletionResult } from "lusia/editor/completions.ts";
-import type { TextRange } from "lusia/editor/range.ts";
+import type { CompletionResult } from "lusiajs/editor/completions.ts";
+import type { TextRange } from "lusiajs/editor/range.ts";
 import { hoverText, offsetRange, toCompletionKind } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { indexMembers } from "./scss/find.ts";

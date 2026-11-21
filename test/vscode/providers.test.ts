@@ -55,7 +55,7 @@ function offsetAfter(text: string, needle: string): number {
 }
 
 const FLOW = `<script>
-import { variable } from "lusia";
+import { variable } from "lusiajs";
 interface Row { label: string; count: number }
 const rows = variable<Row[]>([{ label: "a", count: 1 }]);
 </script>
@@ -119,7 +119,7 @@ describe("completion and hover wiring", () => {
 });
 
 const APP = `<script>
-import { variable } from "lusia";
+import { variable } from "lusiajs";
 
 interface Todo {
   id: number;
@@ -206,10 +206,10 @@ describe("typed hover", () => {
     const provider = mocked(new LusiaCompletionProvider());
     const items = provider.provideCompletionItems(document, document.positionAt(9));
     const item = items.find((candidate: any) => candidate.label === "variable");
-    expect(item?.additionalTextEdits?.[0]?.newText).toContain('import { variable } from "lusia";');
+    expect(item?.additionalTextEdits?.[0]?.newText).toContain('import { variable } from "lusiajs";');
     const resolved = provider.resolveCompletionItem(item);
     expect(resolved.additionalTextEdits?.[0]?.newText).toContain(
-      'import { variable } from "lusia";',
+      'import { variable } from "lusiajs";',
     );
   });
 });

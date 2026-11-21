@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { componentPath } from "../component-file.ts";
-import { tagNameAt } from "lusia/language/parse/tag.ts";
+import { tagNameAt } from "lusiajs/language/parse/tag.ts";
 import { cssDefinitions } from "../logic/css.ts";
 import { inTsRegion, locationOf, projectOf, tsLocations } from "./common.ts";
 

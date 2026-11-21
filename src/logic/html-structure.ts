@@ -3,7 +3,7 @@ import type {
   SelectionRange,
 } from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import { inExpressionAt } from "lusia/language/format/format-expressions.ts";
+import { inExpressionAt } from "lusiajs/language/format/format-expressions.ts";
 import { htmlService, markupDocument } from "./html-shared.ts";
 import { offsetRange } from "./language-service.ts";
 import type { RegionFolding, RegionLink, RegionSelection, RegionSymbol } from "./region-types.ts";

@@ -10,7 +10,7 @@ export function greet(name: string): { text: string; length: number } {
 `;
 
 const BADGE = `<script>
-import { props } from "lusia";
+import { props } from "lusiajs";
 const { label, size } = props({ label: "New", size: 1 });
 </script>
 <span>{label.value}</span>
@@ -29,7 +29,7 @@ describe("ts project", () => {
 
   test("infers script types and members", () => {
     const source = `<script>
-import { variable } from "lusia";
+import { variable } from "lusiajs";
 const count = variable(0);
 const user = { name: "Ada", age: 36 };
 </script>
@@ -168,7 +168,7 @@ const props: typeof Plain.props = {};
 
   test("infers EACH items, indexes and FOR counters", () => {
     const source = `<script>
-import { variable } from "lusia";
+import { variable } from "lusiajs";
 interface Row { label: string; count: number }
 const rows = variable<Row[]>([{ label: "a", count: 1 }]);
 </script>

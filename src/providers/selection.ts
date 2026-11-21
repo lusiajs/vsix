@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { regionAt } from "lusia/language/parse/regions.ts";
+import { regionAt } from "lusiajs/language/parse/regions.ts";
 import { cssSelection, type CssSelectionRange } from "../logic/css.ts";
 import { htmlSelection, type RegionSelection } from "../logic/html.ts";
 import { rangeOf } from "./common.ts";
