@@ -6,7 +6,7 @@
   "publisher": "lusia",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lusiajs/vscode.git"
+    "url": "git+https://github.com/lusiajs/vsix.git"
   },
   "engines": {
     "vscode": "^1.80.0"
