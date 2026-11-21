@@ -3,9 +3,10 @@ import { componentProps } from "../component-file.ts";
 import { scriptSymbols } from "../script-file.ts";
 import { cssHover } from "../logic/css.ts";
 import { htmlHover } from "../logic/html.ts";
-import { hoverAt, type HoverResult } from "lusiajs/editor/hover.ts";
-import { apiDocsMarkdown, hoverMarkdown } from "lusiajs/editor/markdown.ts";
+import { hoverAt } from "lusiajs/editor/hover.ts";
+import { hoverMarkdown } from "lusiajs/editor/markdown.ts";
 import type { TextRange } from "lusiajs/editor/range.ts";
+import { apiHoverMarkdown } from "../logic/api-hover.ts";
 import { inTsRegion, projectOf } from "./common.ts";
 
 export class LusiaHoverProvider implements vscode.HoverProvider {
@@ -15,20 +16,17 @@ export class LusiaHoverProvider implements vscode.HoverProvider {
     const propsOf = (name: string) => componentProps(document.fileName, text, name);
     const symbolsOf = (specifier: string) => scriptSymbols(document.fileName, specifier);
     const shared = hoverAt(text, offset, propsOf, symbolsOf);
+    if (shared?.kind === "api") {
+      return hover(apiHoverMarkdown(shared.entry), shared.range && rangeOf(document, shared.range));
+    }
     if (inTsRegion(text, offset)) {
       const typed = projectOf(document).hover(offset);
-      if (typed) return hover(withApiDocs(typed.markdown, shared), rangeOf(document, typed.range));
+      if (typed) return hover(typed.markdown, rangeOf(document, typed.range));
     }
     const result = shared ?? htmlHover(text, offset) ?? cssHover(text, offset, document.fileName);
     if (!result) return undefined;
     return hover(hoverMarkdown(result), result.range && rangeOf(document, result.range));
   }
-}
-
-/** The typed hover first, then the reference docs below it; the docs keep no title or signature. */
-function withApiDocs(markdown: string, shared: HoverResult | undefined): string {
-  if (shared?.kind !== "api") return markdown;
-  return `${markdown}\n\n---\n\n${apiDocsMarkdown(shared.entry)}`;
 }
 
 function hover(contents: string, range?: vscode.Range): vscode.Hover {

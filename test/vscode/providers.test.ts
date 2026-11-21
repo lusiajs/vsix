@@ -141,6 +141,13 @@ function toggle(todo: Todo) {
 </EACH>
 `;
 
+const EASE_APP = `<script>
+import { EASE } from "lusiajs";
+
+const land = { default: [EASE.STYLE.QUART, EASE.OUT] };
+</script>
+`;
+
 describe("typed hover", () => {
   const source = component("App.lusia", APP);
   const hoverAt = (offset: number) => {
@@ -151,11 +158,11 @@ describe("typed hover", () => {
     return String(result?.contents?.value ?? "");
   };
 
-  test("shows the TypeScript block first and the reference docs below for an API name", () => {
+  test("shows the Lusia declaration and summary for an imported API name, not the TypeScript type", () => {
     const body = hoverAt(APP.indexOf("import { variable") + "import { ".length + 2);
-    expect(body.startsWith("```ts")).toBe(true);
+    expect(body.startsWith("```ts\nvariable<T>(initial: T): Variable<T>\n```")).toBe(true);
     expect(body).toContain("Creates a value that updates the page");
-    expect(body).not.toMatch(/^\*\*variable/);
+    expect(body).not.toContain("(alias)");
   });
 
   test("shows only the typed hover for a local variable", () => {
@@ -169,17 +176,27 @@ describe("typed hover", () => {
     expect(body).toContain("var todo: Todo");
   });
 
-  test("keeps the typed block first and appends the API docs for a dotted name", () => {
+  test("shows the Lusia declaration first for a dotted name", () => {
     const body = hoverAt(APP.indexOf("variable.compute") + "variable.".length + 1);
-    expect(body.startsWith("```ts")).toBe(true);
+    expect(body.startsWith("```ts\nvariable.compute<T>(fn: () => T)")).toBe(true);
     expect(body).toContain("Creates a read-only value derived from other variables.");
-    expect(body).not.toMatch(/^\*\*variable\.compute\(\)\*\*/);
   });
 
-  test("keeps the reference hover for markup flow tags", () => {
+  test("shows the Lusia reference hover for markup flow tags", () => {
     const body = hoverAt(APP.indexOf("<EACH") + 2);
-    expect(body.startsWith("**<EACH>**")).toBe(true);
-    expect(body.startsWith("```ts")).toBe(false);
+    expect(body.startsWith("```html\n<EACH {list}")).toBe(true);
+    expect(body).toContain("Repeats its content once for each item in a list.");
+  });
+
+  test("shows the compact EASE declaration and its members table", () => {
+    const easeSource = component("Ease.lusia", EASE_APP);
+    const result = mocked(new LusiaHoverProvider()).provideHover(
+      easeSource.document,
+      easeSource.document.positionAt(EASE_APP.indexOf("EASE.OUT") + 2),
+    );
+    const body = String(result?.contents?.value ?? "");
+    expect(body.startsWith("```ts\nconst EASE: { STYLE, IN, OUT, INOUT }\n```")).toBe(true);
+    expect(body).toContain("| `STYLE.QUART` |");
   });
 
   test("prefers TypeScript completion details and keeps the API docs", () => {

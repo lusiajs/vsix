@@ -37,7 +37,7 @@ Formatting reads the project's Prettier config (`.prettierrc` or `prettier.confi
 
 Script sections and `{expr}` values are checked together. So a completion or rename also covers names that appear only in markup.
 
-Lusia names show their API docs in completion and hover. Names from TypeScript show their signature and JSDoc.
+Lusia names show their API docs in completion and hover. A hover shows the declaration, a summary, an example and, for enum-like values such as `EASE`, a members table. Names from TypeScript show their signature and JSDoc.
 
 ## Install
 
