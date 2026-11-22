@@ -346,6 +346,8 @@ export function createVscode() {
       return { dispose() {} };
     },
     textDocuments: [] as unknown[],
+    isTrusted: true,
+    getWorkspaceFolder: (_uri: unknown): { uri: { fsPath: string } } | undefined => undefined,
   };
   return {
     Position,
