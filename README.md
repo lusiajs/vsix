@@ -4,7 +4,7 @@
 
 Editor support for `.lusia` components: colors, completion, errors and formatting.
 
-Works with `lusiajs` 0.1.0-beta.3 and later 0.1 versions.
+Works with `lusiajs` and `@lusiajs/language-tools` 0.1.0-beta.6 and later 0.1 versions.
 
 ## Features
 
