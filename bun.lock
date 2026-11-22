@@ -5,7 +5,7 @@
     "": {
       "name": "lusia-vscode",
       "dependencies": {
-        "lusiajs": "^0.1.0-beta.1",
+        "lusiajs": "^0.1.0-beta.3",
         "typescript": "5.9.3",
       },
       "devDependencies": {
@@ -139,7 +139,7 @@
 
     "lodash": ["lodash@4.18.1", "", {}, "sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q=="],
 
-    "lusiajs": ["lusiajs@0.1.0-beta.1", "", { "dependencies": { "prettier": "3.10.1", "sass": "^1.80.0", "sucrase": "3.35.1" }, "bin": { "lusia": "src/cli/index.ts" } }, "sha512-UcZt6ERlq8Gpv9MVjCq090LfuQ9EpaXtq5VpiNJb/xkLl8bG01I4+QL1BbLhWq7LcmDTgnrMx9xWW8J+c2RJHQ=="],
+    "lusiajs": ["lusiajs@0.1.0-beta.3", "", { "dependencies": { "prettier": "3.10.1", "sass": "^1.80.0", "sucrase": "3.35.1" }, "peerDependencies": { "typescript": "^5.6.0" }, "optionalPeers": ["typescript"], "bin": { "lusia": "src/cli/index.ts" } }, "sha512-jESsZqQoj69nCs/K7ADxYwFhBEILF/qMOngdORF2i2urhYxJPsIj237DFUX022AapQCpyBLmxhk+BU5zppSDsQ=="],
 
     "minimatch": ["minimatch@3.1.5", "", { "dependencies": { "brace-expansion": "^1.1.7" } }, "sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w=="],
 
