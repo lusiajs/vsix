@@ -118,10 +118,9 @@ describe("format flow tags", () => {
 </EACH>
 <IF {todos.value.length > 0}>
 <p>Some</p>
-</IF>
 <ELSE>
 <p>None</p>
-</ELSE>
+</IF>
 <FOR {n} from={0} to={3}>
 <b>{n}</b>
 </FOR>
@@ -135,7 +134,6 @@ describe("format flow tags", () => {
       "<IF {todos.value.length > 0}>",
       "</IF>",
       "<ELSE>",
-      "</ELSE>",
       "<FOR {n} from={0} to={3}>",
       "</FOR>",
     ]) {
