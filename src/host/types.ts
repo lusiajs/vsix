@@ -22,6 +22,21 @@ import type * as parseSections from "lusiajs/language/parse/sections.ts";
 import type * as parseTag from "lusiajs/language/parse/tag.ts";
 import type * as runtime from "lusiajs";
 
+export interface SemanticToken {
+  line: number;
+  character: number;
+  length: number;
+  type: string;
+  modifiers: string[];
+}
+
+/** Added in later language tools; older tools do not export it. */
+export interface SemanticTokensNamespace {
+  semanticTokens(source: string): SemanticToken[];
+  TOKEN_TYPES: readonly string[];
+  TOKEN_MODIFIERS: readonly string[];
+}
+
 /** The namespaces the language tools export, typed from the lusiajs modules they wrap. */
 export interface LusiaHost {
   range: typeof range;
@@ -47,7 +62,12 @@ export interface LusiaHost {
   compiler: typeof compiler;
   api: typeof api;
   runtime: typeof runtime;
+  semanticTokens?: SemanticTokensNamespace;
 }
+
+export const OPTIONAL_HOST_NAMESPACES = [
+  "semanticTokens",
+] as const satisfies readonly (keyof LusiaHost)[];
 
 export const HOST_NAMESPACES = [
   "range",

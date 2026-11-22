@@ -7,7 +7,7 @@ import { locatePackage } from "./locate.ts";
 import { entryPathOf, readManifest } from "./manifest.ts";
 import { reportHost, resetReports } from "./report.ts";
 import type { HostFailure, HostResult } from "./result.ts";
-import { HOST_NAMESPACES, type LusiaHost } from "./types.ts";
+import { HOST_NAMESPACES, OPTIONAL_HOST_NAMESPACES, type LusiaHost } from "./types.ts";
 
 type ImportOutcome =
   { ok: true; host: LusiaHost; loadMs: number } | { ok: false; failure: HostFailure };
@@ -96,7 +96,8 @@ async function importEntry(entryPath: string, toolsVersion: string): Promise<Imp
       const error = new Error(`missing namespaces: ${missing.join(", ")}`);
       return { ok: false, failure: { cause: "importFailed", entryPath, toolsVersion, error } };
     }
-    const namespaces = Object.fromEntries(HOST_NAMESPACES.map((name) => [name, module[name]]));
+    const names = [...HOST_NAMESPACES, ...OPTIONAL_HOST_NAMESPACES];
+    const namespaces = Object.fromEntries(names.map((name) => [name, module[name]]));
     const host = namespaces as unknown as LusiaHost;
     return { ok: true, host, loadMs: performance.now() - started };
   } catch (error) {

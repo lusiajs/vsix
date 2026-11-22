@@ -14,6 +14,10 @@ import { LusiaOnTypeFormattingProvider } from "./providers/on-type.ts";
 import { LusiaReferenceProvider } from "./providers/references.ts";
 import { LusiaRenameProvider } from "./providers/rename.ts";
 import { LusiaSelectionRangeProvider } from "./providers/selection.ts";
+import {
+  LusiaSemanticTokensProvider,
+  SEMANTIC_TOKENS_LEGEND,
+} from "./providers/semantic-tokens.ts";
 import { LusiaSignatureHelpProvider } from "./providers/signature.ts";
 import { LusiaDocumentSymbolProvider } from "./providers/symbols.ts";
 import { hostFor, resetHost } from "./host/load-host.ts";
@@ -76,6 +80,11 @@ export function activate(context: vscode.ExtensionContext): void {
     ),
     vscode.languages.registerLinkedEditingRangeProvider(SELECTOR, new LusiaLinkedEditingProvider()),
     vscode.languages.registerColorProvider(SELECTOR, new LusiaColorProvider()),
+    vscode.languages.registerDocumentSemanticTokensProvider(
+      SELECTOR,
+      new LusiaSemanticTokensProvider(),
+      SEMANTIC_TOKENS_LEGEND,
+    ),
     vscode.languages.registerCodeActionsProvider(SELECTOR, new LusiaCodeActionProvider(), {
       providedCodeActionKinds: CODE_ACTION_KINDS,
     }),

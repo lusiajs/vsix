@@ -8,7 +8,7 @@ Editor support for `.lusia` components: colors, completion, errors and formattin
 
 | Feature | What you get |
 | ------- | ------------ |
-| Highlighting | Script, styles, markup and `{expr}` in their own colors |
+| Highlighting | Script, styles, markup and `{expr}` in their own colors. Components, flow tags and events are colored from the project's tools when they support it |
 | Completion | Lusia and TypeScript names, tags, paths and snippets |
 | Hover | For Lusia names: the declaration, what it is, an example and a table of values. For TypeScript names: types |
 | Errors and warnings | Compile, type and lint problems, with quick fixes |

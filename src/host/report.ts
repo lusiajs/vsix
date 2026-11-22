@@ -21,6 +21,15 @@ export function hideStatus(): void {
   statusItem().hide();
 }
 
+/** Logs once that the tools cannot color markup, so the grammar colors it instead. */
+export function reportNoSemanticTokens(): void {
+  if (!once("noSemanticTokens")) return;
+  log([
+    "Language tools have no semanticTokens; Lusia colors fall back to the grammar.",
+    "  Update the tools to color components and flow tags from the project.",
+  ]);
+}
+
 /** Logs the result, updates the status bar, and warns once per project and cause. */
 export function reportHost(result: HostResult, document: vscode.TextDocument): void {
   if (result.ok) {

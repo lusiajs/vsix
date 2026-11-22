@@ -76,6 +76,27 @@ describe("loading the language host", () => {
     expect(result.host.range).toEqual({});
   });
 
+  test("keeps the optional semanticTokens namespace when the tools export it", async () => {
+    const { root, document } = project();
+    const exports = HOST_NAMESPACES.map((name) => `export const ${name} = {};`).join("\n");
+    installTools(root, {
+      source: `export const EDITOR_API_VERSION = 1;\n${exports}\nexport const semanticTokens = { semanticTokens: () => [] };\n`,
+    });
+    const result = await hostResultFor(document);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(typeof result.host.semanticTokens?.semanticTokens).toBe("function");
+  });
+
+  test("loads without semanticTokens when the tools do not export it", async () => {
+    const { root, document } = project();
+    installTools(root);
+    const result = await hostResultFor(document);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.host.semanticTokens).toBeUndefined();
+  });
+
   test("reports every searched path when the language tools are not installed", async () => {
     const { root, document } = project();
     const result = await hostResultFor(document);

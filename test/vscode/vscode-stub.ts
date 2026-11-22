@@ -147,6 +147,20 @@ export class Color {
   ) {}
 }
 
+export class SemanticTokensLegend {
+  constructor(
+    readonly tokenTypes: string[],
+    readonly tokenModifiers: string[],
+  ) {}
+}
+
+export class SemanticTokens {
+  constructor(
+    readonly data: Uint32Array,
+    readonly resultId?: string,
+  ) {}
+}
+
 export class ColorInformation {
   constructor(
     readonly range: Range,
@@ -287,6 +301,7 @@ export interface Captured {
   linked?: any;
   colors?: any;
   codeActions?: any;
+  semanticTokens?: any;
   change?: (event: { document: any }) => void;
   close?: (document: any) => void;
 }
@@ -331,6 +346,10 @@ export function createVscode() {
     registerLinkedEditingRangeProvider: register("linked"),
     registerColorProvider: register("colors"),
     registerCodeActionsProvider: register("codeActions"),
+    registerDocumentSemanticTokensProvider: register("semanticTokens"),
+  };
+  const window = {
+    createOutputChannel: (_name: string) => ({ appendLine() {}, show() {}, dispose() {} }),
   };
   const workspace = {
     onDidOpenTextDocument: (callback: (document: any) => void) => {
@@ -381,7 +400,10 @@ export function createVscode() {
     WorkspaceEdit,
     Uri,
     languages,
+    window,
     workspace,
+    SemanticTokens,
+    SemanticTokensLegend,
     __captured: captured,
   };
 }

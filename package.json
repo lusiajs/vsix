@@ -91,6 +91,20 @@
         "path": "./snippets/lusia.json"
       }
     ],
+    "semanticTokenScopes": [
+      {
+        "language": "lusia",
+        "semanticHighlighting": true,
+        "scopes": {
+          "keyword": ["keyword.control.flow.lusia"],
+          "decorator": ["keyword.other.bind.lusia", "keyword.other.animate.lusia"],
+          "event": ["keyword.other.event.lusia"],
+          "parameter": ["entity.other.attribute-name.html"],
+          "class": ["entity.name.tag.html"],
+          "enumMember": ["variable.other.enummember"]
+        }
+      }
+    ],
     "commands": [
       {
         "command": "lusia.reloadHost",
