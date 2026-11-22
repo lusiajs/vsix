@@ -1,4 +1,5 @@
 import type { TextRange } from "lusiajs/editor/range.ts";
+import type { LusiaHost } from "../../host/types.ts";
 import { offsetRange } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { scssMemberAt, scssOccurrences, scssTokenAt } from "./scss/find.ts";
@@ -8,12 +9,13 @@ import type { ScssMember } from "./scss/types.ts";
 import type { CssFileEdit, CssTextEdit } from "./types.ts";
 
 export function cssRenameRange(
+  host: LusiaHost,
   text: string,
   offset: number,
   fileName?: string,
 ): TextRange | undefined {
   try {
-    const style = styleContextAt(text, offset);
+    const style = styleContextAt(host, text, offset);
     if (!style) return undefined;
     const official = officialRange(style);
     if (official) return official;
@@ -24,13 +26,14 @@ export function cssRenameRange(
 }
 
 export function cssRename(
+  host: LusiaHost,
   text: string,
   offset: number,
   newName: string,
   fileName?: string,
 ): CssFileEdit[] | undefined {
   try {
-    const style = styleContextAt(text, offset);
+    const style = styleContextAt(host, text, offset);
     if (!style || newName === "") return undefined;
     const index = style.language === "scss" ? buildScssIndex(fileName, style.content) : undefined;
     const hit = index

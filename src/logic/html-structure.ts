@@ -3,13 +3,13 @@ import type {
   SelectionRange,
 } from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import { inExpressionAt } from "lusiajs/language/format/format-expressions.ts";
+import type { LusiaHost } from "../host/types.ts";
 import { htmlService, markupDocument } from "./html-shared.ts";
 import { offsetRange } from "./language-service.ts";
 import type { RegionFolding, RegionLink, RegionSelection, RegionSymbol } from "./region-types.ts";
 
 /** Static `href`/`src`-style references in the markup. */
-export function htmlLinks(text: string): RegionLink[] {
+export function htmlLinks(host: LusiaHost, text: string): RegionLink[] {
   const document = markupDocument(text);
   try {
     const links = htmlService().findDocumentLinks(document, {
@@ -19,7 +19,7 @@ export function htmlLinks(text: string): RegionLink[] {
     for (const link of links) {
       const range = offsetRange(document, link.range);
       if (!range || link.target === undefined) continue;
-      if (inExpression(text, range)) continue;
+      if (inExpression(host, text, range)) continue;
       const raw = text.slice(range.start, range.end);
       results.push({ range, target: raw.startsWith("#") ? raw : link.target });
     }
@@ -57,7 +57,7 @@ export function htmlFolding(text: string): RegionFolding[] {
   }
 }
 
-export function htmlSelection(text: string, offsets: number[]): RegionSelection[] {
+export function htmlSelection(host: LusiaHost, text: string, offsets: number[]): RegionSelection[] {
   if (offsets.length === 0) return [];
   const document = markupDocument(text);
   try {
@@ -76,8 +76,14 @@ export function htmlSelection(text: string, offsets: number[]): RegionSelection[
 }
 
 /** A range stays out of links when it is the value of a `{...}` expression. */
-function inExpression(text: string, range: { start: number; end: number }): boolean {
-  return text.charAt(range.start) === "{" || inExpressionAt(text, range.start);
+function inExpression(
+  host: LusiaHost,
+  text: string,
+  range: { start: number; end: number },
+): boolean {
+  return (
+    text.charAt(range.start) === "{" || host.formatExpressions.inExpressionAt(text, range.start)
+  );
 }
 
 function regionSymbol(document: TextDocument, symbol: DocumentSymbol): RegionSymbol[] {

@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
-import { lintLusia, type LintFix, type LintIssue } from "lusiajs/language/lint/lint.ts";
-import { compile } from "lusiajs/compiler";
-import { errorPosition } from "lusiajs/editor/error-position.ts";
+import type { LintFix, LintIssue } from "lusiajs/language/lint/lint.ts";
+import type { LusiaHost } from "./host/types.ts";
 import { declaredProps } from "./component-file.ts";
 import { cssDiagnostics, type CssDiagnosticSeverity } from "./logic/css.ts";
 import type { RegionDiagnostic } from "./logic/html.ts";
@@ -18,28 +17,37 @@ const SEVERITIES: Record<CssDiagnosticSeverity, vscode.DiagnosticSeverity> = {
   hint: vscode.DiagnosticSeverity.Hint,
 };
 
-export function compileDiagnostics(document: vscode.TextDocument): vscode.Diagnostic[] {
+export function compileDiagnostics(
+  host: LusiaHost,
+  document: vscode.TextDocument,
+): vscode.Diagnostic[] {
   try {
-    compile(document.getText(), document.fileName);
+    host.compiler.compile(document.getText(), document.fileName);
     return [];
   } catch (error) {
-    const { line, column, message } = errorPosition(error);
+    const { line, column, message } = host.errorPosition.errorPosition(error);
     const range = lineRange(document, line - 1, column - 1);
     return [diagnostic(range, message, vscode.DiagnosticSeverity.Error, "lusia")];
   }
 }
 
-export function lintIssues(document: vscode.TextDocument): LintIssue[] {
+export function lintIssues(host: LusiaHost, document: vscode.TextDocument): LintIssue[] {
   const text = document.getText();
-  return lintLusia(text, (name) => declaredProps(document.fileName, text, name));
+  return host.lint.lintLusia(text, (name) => declaredProps(host, document.fileName, text, name));
 }
 
-export function lintDiagnostics(document: vscode.TextDocument): vscode.Diagnostic[] {
-  return lintIssues(document).map((issue) => lintDiagnostic(document, issue));
+export function lintDiagnostics(
+  host: LusiaHost,
+  document: vscode.TextDocument,
+): vscode.Diagnostic[] {
+  return lintIssues(host, document).map((issue) => lintDiagnostic(document, issue));
 }
 
-export function typeScriptDiagnostics(document: vscode.TextDocument): vscode.Diagnostic[] {
-  const project = TsProject.open(document.fileName, document.getText());
+export function typeScriptDiagnostics(
+  host: LusiaHost,
+  document: vscode.TextDocument,
+): vscode.Diagnostic[] {
+  const project = TsProject.open(host, document.fileName, document.getText());
   return project
     .diagnostics()
     .map((issue) =>
@@ -57,8 +65,11 @@ export function typeScriptDiagnostics(document: vscode.TextDocument): vscode.Dia
     );
 }
 
-export function cssSourceDiagnostics(document: vscode.TextDocument): vscode.Diagnostic[] {
-  return cssDiagnostics(document.getText()).map((item) =>
+export function cssSourceDiagnostics(
+  host: LusiaHost,
+  document: vscode.TextDocument,
+): vscode.Diagnostic[] {
+  return cssDiagnostics(host, document.getText()).map((item) =>
     fromOffsets(
       document,
       item.range.start,

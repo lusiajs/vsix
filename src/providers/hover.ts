@@ -3,29 +3,39 @@ import { componentProps } from "../component-file.ts";
 import { scriptSymbols } from "../script-file.ts";
 import { cssHover } from "../logic/css.ts";
 import { htmlHover } from "../logic/html.ts";
-import { hoverAt } from "lusiajs/editor/hover.ts";
-import { hoverMarkdown } from "lusiajs/editor/markdown.ts";
 import type { TextRange } from "lusiajs/editor/range.ts";
 import { apiHoverMarkdown } from "../logic/api-hover.ts";
+import { hostFor, type HostSource } from "../host/source.ts";
 import { inTsRegion, projectOf } from "./common.ts";
 
 export class LusiaHoverProvider implements vscode.HoverProvider {
-  provideHover(document: vscode.TextDocument, position: vscode.Position): vscode.Hover | undefined {
+  constructor(private readonly hosts: HostSource = hostFor) {}
+
+  async provideHover(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+  ): Promise<vscode.Hover | undefined> {
+    const host = await this.hosts(document);
+    if (!host) return undefined;
     const text = document.getText();
     const offset = document.offsetAt(position);
-    const propsOf = (name: string) => componentProps(document.fileName, text, name);
-    const symbolsOf = (specifier: string) => scriptSymbols(document.fileName, specifier);
-    const shared = hoverAt(text, offset, propsOf, symbolsOf);
+    const propsOf = (name: string) => componentProps(host, document.fileName, text, name);
+    const symbolsOf = (specifier: string) => scriptSymbols(host, document.fileName, specifier);
+    const shared = host.hover.hoverAt(text, offset, propsOf, symbolsOf);
     if (shared?.kind === "api") {
       return hover(apiHoverMarkdown(shared.entry), shared.range && rangeOf(document, shared.range));
     }
-    if (inTsRegion(text, offset)) {
-      const typed = projectOf(document).hover(offset);
+    if (inTsRegion(host, text, offset)) {
+      const typed = projectOf(host, document).hover(offset);
       if (typed) return hover(typed.markdown, rangeOf(document, typed.range));
     }
-    const result = shared ?? htmlHover(text, offset) ?? cssHover(text, offset, document.fileName);
+    const result =
+      shared ?? htmlHover(host, text, offset) ?? cssHover(host, text, offset, document.fileName);
     if (!result) return undefined;
-    return hover(hoverMarkdown(result), result.range && rangeOf(document, result.range));
+    return hover(
+      host.markdown.hoverMarkdown(result),
+      result.range && rangeOf(document, result.range),
+    );
   }
 }
 

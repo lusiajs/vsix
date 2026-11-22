@@ -2,23 +2,30 @@ import * as vscode from "vscode";
 import type { LintFix, LintIssue } from "lusiajs/language/lint/lint.ts";
 import { cssCodeActions, cssDiagnostics, type CssCodeAction } from "../logic/css.ts";
 import { lintIssues } from "../diagnostics-sources.ts";
+import { hostFor, type HostSource } from "../host/source.ts";
+import type { LusiaHost } from "../host/types.ts";
 import { rangeOf } from "./common.ts";
 
 export class LusiaCodeActionProvider implements vscode.CodeActionProvider {
-  provideCodeActions(
+  constructor(private readonly hosts: HostSource = hostFor) {}
+
+  async provideCodeActions(
     document: vscode.TextDocument,
     range: vscode.Range,
     context: vscode.CodeActionContext,
-  ): vscode.CodeAction[] {
+  ): Promise<vscode.CodeAction[] | undefined> {
+    const host = await this.hosts(document);
+    if (!host) return undefined;
     const text = document.getText();
     return [
       ...cssCodeActions(
+        host,
         text,
         document.offsetAt(range.start),
         document.offsetAt(range.end),
-        cssDiagnostics(text),
+        cssDiagnostics(host, text),
       ).map((action) => cssAction(document, action)),
-      ...lintActions(document, context.diagnostics),
+      ...lintActions(host, document, context.diagnostics),
     ];
   }
 }
@@ -36,6 +43,7 @@ function cssAction(document: vscode.TextDocument, action: CssCodeAction): vscode
 
 /** The editor may hand diagnostics back without extra fields, so the fix is looked up again. */
 function lintActions(
+  host: LusiaHost,
   document: vscode.TextDocument,
   diagnostics: readonly vscode.Diagnostic[],
 ): vscode.CodeAction[] {
@@ -44,7 +52,7 @@ function lintActions(
     const attached = (diagnostic as vscode.Diagnostic & { data?: LintFix }).data;
     if (attached !== undefined) return attached;
     if (diagnostic.source !== "lusia-lint") return undefined;
-    issues ??= lintIssues(document).filter((issue) => issue.fix !== undefined);
+    issues ??= lintIssues(host, document).filter((issue) => issue.fix !== undefined);
     return issues.find((issue) => sameIssue(issue, diagnostic))?.fix;
   };
   const actions: vscode.CodeAction[] = [];

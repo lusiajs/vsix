@@ -1,12 +1,13 @@
 import { describe, expect, test } from "bun:test";
 import { htmlCompletions, htmlHover } from "../../src/logic/html.ts";
+import { realHost } from "../support/real-host.ts";
 
 function labels(text: string, offset: number): string[] {
-  return htmlCompletions(text, offset).map((item) => item.label);
+  return htmlCompletions(realHost, text, offset).map((item) => item.label);
 }
 
 function markdownOf(text: string, offset: number) {
-  const hover = htmlHover(text, offset);
+  const hover = htmlHover(realHost, text, offset);
   return hover?.kind === "markdown" ? hover : undefined;
 }
 
@@ -27,7 +28,7 @@ describe("htmlCompletions", () => {
   });
 
   test("returns a snippet and a range over the typed word", () => {
-    const item = htmlCompletions("<div cl", 7).find((entry) => entry.label === "class");
+    const item = htmlCompletions(realHost, "<div cl", 7).find((entry) => entry.label === "class");
     expect(item).toBeDefined();
     expect(item?.snippet).toBe(true);
     expect(item?.range).toEqual({ start: 5, end: 7 });
@@ -35,19 +36,19 @@ describe("htmlCompletions", () => {
   });
 
   test("stays out of script and style content", () => {
-    expect(htmlCompletions("<script>const x = 1;</script>", 12)).toEqual([]);
-    expect(htmlCompletions("<style>.a { color: red; }</style>", 12)).toEqual([]);
+    expect(htmlCompletions(realHost, "<script>const x = 1;</script>", 12)).toEqual([]);
+    expect(htmlCompletions(realHost, "<style>.a { color: red; }</style>", 12)).toEqual([]);
   });
 
   test("stays out of an expression", () => {
     const text = "<div class={count}>";
-    expect(htmlCompletions(text, text.indexOf("count") + 2)).toEqual([]);
+    expect(htmlCompletions(realHost, text, text.indexOf("count") + 2)).toEqual([]);
   });
 
   test("leaves tags the shared completion table owns to it", () => {
-    expect(htmlCompletions(COMPONENT, COMPONENT.length)).toEqual([]);
-    expect(htmlCompletions("<IF ", 4)).toEqual([]);
-    expect(htmlCompletions("<style ", 7)).toEqual([]);
+    expect(htmlCompletions(realHost, COMPONENT, COMPONENT.length)).toEqual([]);
+    expect(htmlCompletions(realHost, "<IF ", 4)).toEqual([]);
+    expect(htmlCompletions(realHost, "<style ", 7)).toEqual([]);
   });
 });
 
@@ -65,7 +66,7 @@ describe("htmlHover", () => {
   });
 
   test("returns nothing outside markup or in text between tags", () => {
-    expect(htmlHover("<script>const x = 1;</script>", 12)).toBeUndefined();
-    expect(htmlHover(markup, markup.indexOf("hello") + 2)).toBeUndefined();
+    expect(htmlHover(realHost, "<script>const x = 1;</script>", 12)).toBeUndefined();
+    expect(htmlHover(realHost, markup, markup.indexOf("hello") + 2)).toBeUndefined();
   });
 });

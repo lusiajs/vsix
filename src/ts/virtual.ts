@@ -1,4 +1,5 @@
-import { findSections } from "lusiajs/language/parse/sections.ts";
+import type { Section } from "lusiajs/language/parse/sections.ts";
+import type { LusiaHost } from "../host/types.ts";
 import { collectFlowNames, type FlowName } from "./flow-tags.ts";
 import { afterQuote, commentEnd, expressionEnd, unclosedEnd } from "./scan.ts";
 import type { TextRange } from "lusiajs/editor/range.ts";
@@ -19,8 +20,8 @@ interface Expression {
 const LINE_BREAKS = /^[\r\n]*$/;
 
 /** Same length and line breaks; markup and style become blanks, so offsets never move. */
-export function virtualScript(source: string): VirtualScript {
-  const sections = findSections(source);
+export function virtualScript(host: LusiaHost, source: string): VirtualScript {
+  const sections = host.parseSections.findSections(source);
   const chars = blanked(source);
   const scriptSpans = sections
     .filter((section) => section.kind === "script")
@@ -51,10 +52,7 @@ function copy(chars: string[], source: string, from: number, to: number): void {
   for (let i = from; i < to; i++) chars[i] = source.charAt(i);
 }
 
-function collectExpressions(
-  source: string,
-  sections: ReturnType<typeof findSections>,
-): Expression[] {
+function collectExpressions(source: string, sections: Section[]): Expression[] {
   const expressions: Expression[] = [];
   let section = 0;
   let inTag = false;

@@ -4,12 +4,12 @@ import { scriptSymbols } from "../script-file.ts";
 import { cssCompletions } from "../logic/css.ts";
 import { htmlCompletions } from "../logic/html.ts";
 import type { CompletionKind } from "lusiajs/editor/completion-data.ts";
-import { completionsAt, type CompletionResult } from "lusiajs/editor/completions.ts";
+import type { CompletionResult } from "lusiajs/editor/completions.ts";
 import type { TextEdit } from "lusiajs/editor/auto-import.ts";
-import { findApiById } from "lusiajs/editor/api-lookup.ts";
-import { apiDocsMarkdown, completionMarkdown } from "lusiajs/editor/markdown.ts";
 import type { TsProject } from "../ts/project.ts";
 import type { TsCompletion } from "../ts/types.ts";
+import { hostFor, type HostSource } from "../host/source.ts";
+import type { LusiaHost } from "../host/types.ts";
 import { inTsRegion, projectOf, rangeOf } from "./common.ts";
 
 const KINDS: Record<CompletionKind, vscode.CompletionItemKind> = {
@@ -41,19 +41,26 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
   private readonly projects = new Map<string, TsProject>();
   private readonly documents = new Map<string, vscode.TextDocument>();
 
-  provideCompletionItems(document: vscode.TextDocument, position: vscode.Position): TsItem[] {
+  constructor(private readonly hosts: HostSource = hostFor) {}
+
+  async provideCompletionItems(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+  ): Promise<TsItem[] | undefined> {
+    const host = await this.hosts(document);
+    if (!host) return undefined;
     this.documents.set(document.fileName, document);
     const text = document.getText();
     const offset = document.offsetAt(position);
-    const propsOf = (name: string) => componentProps(document.fileName, text, name);
-    const symbolsOf = (specifier: string) => scriptSymbols(document.fileName, specifier);
-    const base = completionsAt(text, offset, propsOf, symbolsOf);
+    const propsOf = (name: string) => componentProps(host, document.fileName, text, name);
+    const symbolsOf = (specifier: string) => scriptSymbols(host, document.fileName, specifier);
+    const base = host.completions.completionsAt(text, offset, propsOf, symbolsOf);
     const extra = [
-      ...htmlCompletions(text, offset),
-      ...cssCompletions(text, offset, document.fileName),
+      ...htmlCompletions(host, text, offset),
+      ...cssCompletions(host, text, offset, document.fileName),
     ];
     const labels = new Set(base.map((item) => item.label));
-    const project = inTsRegion(text, offset) ? projectOf(document) : undefined;
+    const project = inTsRegion(host, text, offset) ? projectOf(host, document) : undefined;
     if (project !== undefined) this.projects.set(document.fileName, project);
     const ts = project?.completions(offset) ?? [];
     const tsItems: TsItem[] = [];
@@ -64,9 +71,11 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
     }
     const extras = extra.filter((item) => !labels.has(item.label));
     return [
-      ...base.map((item) => toItem(document, item, apiData(document, offset, item, project))),
+      ...base.map((item) =>
+        toItem(host, document, item, apiData(host, document, offset, item, project)),
+      ),
       ...tsItems,
-      ...extras.map((item) => toItem(document, item)),
+      ...extras.map((item) => toItem(host, document, item)),
     ];
   }
 
@@ -112,6 +121,7 @@ function tsItem(document: vscode.TextDocument, offset: number, data: TsCompletio
 }
 
 function toItem(
+  host: LusiaHost,
   document: vscode.TextDocument,
   data: CompletionResult,
   resolveData?: TsData,
@@ -119,7 +129,7 @@ function toItem(
   const item: TsItem = new vscode.CompletionItem(data.label, KINDS[data.kind]);
   item.insertText = data.snippet ? new vscode.SnippetString(data.insertText) : data.insertText;
   item.detail = data.detail;
-  const documentation = completionMarkdown(data);
+  const documentation = host.markdown.completionMarkdown(data);
   if (documentation !== undefined) item.documentation = new vscode.MarkdownString(documentation);
   if (data.range) item.range = rangeOf(document, data.range);
   if (data.importEdit) item.additionalTextEdits = [importEdit(document, data.importEdit)];
@@ -129,19 +139,20 @@ function toItem(
 
 /** The resolve data for an API completion item, so the TypeScript docs can replace the table docs. */
 function apiData(
+  host: LusiaHost,
   document: vscode.TextDocument,
   offset: number,
   data: CompletionResult,
   project: TsProject | undefined,
 ): TsData | undefined {
   if (project === undefined || data.entryId === undefined) return undefined;
-  const entry = findApiById(data.entryId);
+  const entry = host.apiLookup.findApiById(data.entryId);
   if (!entry) return undefined;
   return {
     fileName: document.fileName,
     offset,
     name: data.label,
-    apiDocs: apiDocsMarkdown(entry),
+    apiDocs: host.markdown.apiDocsMarkdown(entry),
   };
 }
 

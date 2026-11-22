@@ -2,6 +2,7 @@ import type {
   DocumentSymbol,
   FoldingRange,
 } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
+import type { LusiaHost } from "../../host/types.ts";
 import { offsetRange } from "../language-service.ts";
 import { shift, styleSections, type StyleSection } from "./context.ts";
 import { parseDirectives, resolveScssModule } from "./scss/parse.ts";
@@ -16,10 +17,10 @@ const SYMBOL_KINDS: Record<number, CssSymbolKind> = {
   14: "variable",
 };
 
-export function cssLinks(text: string, fileName?: string): CssLink[] {
+export function cssLinks(host: LusiaHost, text: string, fileName?: string): CssLink[] {
   if (!fileName) return [];
   const links: CssLink[] = [];
-  for (const style of styleSections(text)) {
+  for (const style of styleSections(host, text)) {
     for (const directive of parseDirectives(style.content)) {
       for (const path of directive.paths) {
         const resolved = resolveScssModule(fileName, path.value);
@@ -37,9 +38,9 @@ export function cssLinks(text: string, fileName?: string): CssLink[] {
   return links;
 }
 
-export function cssSymbols(text: string): CssSymbol[] {
+export function cssSymbols(host: LusiaHost, text: string): CssSymbol[] {
   const symbols: CssSymbol[] = [];
-  for (const style of styleSections(text)) {
+  for (const style of styleSections(host, text)) {
     try {
       const stylesheet = style.service.parseStylesheet(style.document);
       const list = style.service.findDocumentSymbols2(style.document, stylesheet);
@@ -54,9 +55,9 @@ export function cssSymbols(text: string): CssSymbol[] {
   return symbols;
 }
 
-export function cssFolding(text: string): CssFoldingRange[] {
+export function cssFolding(host: LusiaHost, text: string): CssFoldingRange[] {
   const ranges: CssFoldingRange[] = [];
-  for (const style of styleSections(text)) {
+  for (const style of styleSections(host, text)) {
     let list: FoldingRange[] = [];
     try {
       list = style.service.getFoldingRanges(style.document, {});

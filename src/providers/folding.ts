@@ -1,17 +1,26 @@
 import * as vscode from "vscode";
-import { findSections } from "lusiajs/language/parse/sections.ts";
+import type { Section } from "lusiajs/language/parse/sections.ts";
 import { cssFolding } from "../logic/css.ts";
 import { htmlFolding, type RegionFolding } from "../logic/html.ts";
+import { hostFor, type HostSource } from "../host/source.ts";
 
 export class LusiaFoldingRangeProvider implements vscode.FoldingRangeProvider {
-  provideFoldingRanges(document: vscode.TextDocument): vscode.FoldingRange[] {
+  constructor(private readonly hosts: HostSource = hostFor) {}
+
+  async provideFoldingRanges(document: vscode.TextDocument): Promise<vscode.FoldingRange[]> {
+    const host = await this.hosts(document);
+    if (!host) return [];
     const text = document.getText();
     return [
       ...htmlFolding(text).map(
         (fold) => new vscode.FoldingRange(fold.startLine, fold.endLine, kindOf(fold.kind)),
       ),
-      ...cssFolding(text).flatMap((fold) => offsetRange(document, fold.start, fold.end, fold.kind)),
-      ...findSections(text).flatMap((section) => sectionRange(document, section)),
+      ...cssFolding(host, text).flatMap((fold) =>
+        offsetRange(document, fold.start, fold.end, fold.kind),
+      ),
+      ...host.parseSections
+        .findSections(text)
+        .flatMap((section) => sectionRange(document, section)),
     ];
   }
 }
@@ -29,7 +38,7 @@ function offsetRange(
 
 function sectionRange(
   document: vscode.TextDocument,
-  section: { openStart: number; end: number },
+  section: Pick<Section, "openStart" | "end">,
 ): vscode.FoldingRange[] {
   const startLine = document.positionAt(section.openStart).line;
   const endLine = document.positionAt(section.end).line;

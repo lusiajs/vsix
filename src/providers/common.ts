@@ -1,9 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import * as vscode from "vscode";
-import { inExpressionAt } from "lusiajs/language/format/format-expressions.ts";
-import { regionAt } from "lusiajs/language/parse/regions.ts";
 import type { TextRange } from "lusiajs/editor/range.ts";
+import type { LusiaHost } from "../host/types.ts";
 import type { CssSymbolKind } from "../logic/css.ts";
 import { TsProject } from "../ts/project.ts";
 import type { TsLocation } from "../ts/types.ts";
@@ -11,15 +10,15 @@ import type { TsLocation } from "../ts/types.ts";
 const WORD_CHAR = /[\w$]/;
 
 /** Whether the cursor is in a script section or a `{...}` markup expression. */
-export function inTsRegion(text: string, offset: number): boolean {
-  const region = regionAt(text, offset);
+export function inTsRegion(host: LusiaHost, text: string, offset: number): boolean {
+  const region = host.parseRegions.regionAt(text, offset);
   if (region.kind === "style") return false;
   if (region.kind === "script") return true;
-  return inExpressionAt(text, offset);
+  return host.formatExpressions.inExpressionAt(text, offset);
 }
 
-export function projectOf(document: vscode.TextDocument): TsProject {
-  return TsProject.open(document.fileName, document.getText());
+export function projectOf(host: LusiaHost, document: vscode.TextDocument): TsProject {
+  return TsProject.open(host, document.fileName, document.getText());
 }
 
 export function rangeOf(document: vscode.TextDocument, range: TextRange): vscode.Range {

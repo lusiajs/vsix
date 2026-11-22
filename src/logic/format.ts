@@ -1,6 +1,5 @@
 import type { Options } from "prettier";
-import { formatLusia as formatLusiaSource } from "lusiajs/language/format/format.ts";
-import { prettierParts } from "lusiajs/language/format/prettier-parts.ts";
+import type { LusiaHost } from "../host/types.ts";
 
 /** The indentation the editor formats with, used when the Prettier config leaves it out. */
 export interface FormatSettings {
@@ -14,15 +13,19 @@ type Prettier = typeof import("prettier");
 
 let loaded: Promise<Prettier> | undefined;
 
-export async function formatLusia(source: string, settings: FormatSettings = {}): Promise<string> {
+export async function formatLusia(
+  host: LusiaHost,
+  source: string,
+  settings: FormatSettings = {},
+): Promise<string> {
   const prettier = await loadPrettier();
   const config = await configFor(prettier, settings);
-  const parts = prettierParts(
+  const parts = host.prettierParts.prettierParts(
     async () => ({ format: (code, options) => prettier.format(code, options as Options) }),
     config,
     settings.indentScriptAndStyle ?? true,
   ).parts;
-  return formatLusiaSource(source, parts);
+  return host.format.formatLusia(source, parts);
 }
 
 // Prettier is large, so it loads on the first format, not when the extension starts.
