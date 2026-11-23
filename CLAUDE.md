@@ -33,3 +33,6 @@ Use Conventional Commits, one commit per logical change. Use full plain names an
 
 # 9. Indent script and style
 Indent the code inside `<script>` and `<style>` of a `.lusia` file by 2 spaces, in source files, templates and every example. The framework allows flush-left code, but this is the house style. Full example: `docs/CLAUDE.md` rule 11.
+
+# 10. Branches
+Work from `main`. Only `main` and `dev` stay long-lived. Delete a branch once it is merged.
