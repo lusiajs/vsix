@@ -1,13 +1,19 @@
 import type { HoverResult } from "lusiajs/editor/hover.ts";
 import type { TextRange } from "lusiajs/editor/range.ts";
+import type { LusiaHost } from "../../host/types.ts";
 import { hoverText, offsetRange } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { memberHover, scssMemberAt } from "./scss/find.ts";
 import { buildScssIndex } from "./scss/index.ts";
 
-export function cssHover(text: string, offset: number, fileName?: string): HoverResult | undefined {
+export function cssHover(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+  fileName?: string,
+): HoverResult | undefined {
   try {
-    const style = styleContextAt(text, offset);
+    const style = styleContextAt(host, text, offset);
     if (!style) return undefined;
     const official = officialHover(style);
     const hit = memberAt(style, fileName, offset);

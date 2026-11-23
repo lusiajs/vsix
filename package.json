@@ -2,7 +2,7 @@
   "name": "lusia-vscode",
   "displayName": "Lusia",
   "description": "Make .lusia files easy to write: colors, autocomplete, errors, format.",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "publisher": "lusia",
   "license": "MIT",
   "icon": "icon.png",
@@ -23,10 +23,11 @@
   "scripts": {
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "build": "bun build src/extension.ts --target node --format cjs --minify --external vscode --external typescript --outfile dist/extension.js",
+    "build": "bun build src/extension.ts --target node --format cjs --minify --external vscode --external typescript --external lusiajs --outfile dist/extension.js",
     "package": "bun run build && bunx @vscode/vsce package"
   },
   "devDependencies": {
+    "lusiajs": "^0.1.0-beta.6",
     "@types/bun": "latest",
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.80.0",
@@ -89,10 +90,29 @@
         "language": "lusia",
         "path": "./snippets/lusia.json"
       }
+    ],
+    "semanticTokenScopes": [
+      {
+        "language": "lusia",
+        "semanticHighlighting": true,
+        "scopes": {
+          "keyword": ["keyword.control.flow.lusia"],
+          "decorator": ["keyword.other.bind.lusia", "keyword.other.animate.lusia"],
+          "event": ["keyword.other.event.lusia"],
+          "parameter": ["entity.other.attribute-name.html"],
+          "class": ["entity.name.tag.html"],
+          "enumMember": ["variable.other.enummember"]
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "lusia.reloadHost",
+        "title": "Lusia: Reload language host"
+      }
     ]
   },
   "dependencies": {
-    "lusiajs": "^0.1.0-beta.1",
     "typescript": "5.9.3"
   }
 }

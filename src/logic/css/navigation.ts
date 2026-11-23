@@ -1,5 +1,6 @@
 import type { Location } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import type { TextRange } from "lusiajs/editor/range.ts";
+import type { LusiaHost } from "../../host/types.ts";
 import { offsetRange } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { memberDefinition, scssMemberAt, scssOccurrences } from "./scss/find.ts";
@@ -7,9 +8,14 @@ import { buildScssIndex } from "./scss/index.ts";
 import { readScssFile } from "./scss/parse.ts";
 import type { CssLocation } from "./types.ts";
 
-export function cssDefinitions(text: string, offset: number, fileName?: string): CssLocation[] {
+export function cssDefinitions(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+  fileName?: string,
+): CssLocation[] {
   try {
-    const style = styleContextAt(text, offset);
+    const style = styleContextAt(host, text, offset);
     if (!style) return [];
     const official = officialDefinitions(style);
     if (official.length > 0) return official;
@@ -20,9 +26,14 @@ export function cssDefinitions(text: string, offset: number, fileName?: string):
   }
 }
 
-export function cssReferences(text: string, offset: number, fileName?: string): CssLocation[] {
+export function cssReferences(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+  fileName?: string,
+): CssLocation[] {
   try {
-    const style = styleContextAt(text, offset);
+    const style = styleContextAt(host, text, offset);
     if (!style) return [];
     const locations = officialReferences(style);
     const index = style.language === "scss" ? buildScssIndex(fileName, style.content) : undefined;
@@ -48,9 +59,9 @@ export function cssReferences(text: string, offset: number, fileName?: string): 
   }
 }
 
-export function cssHighlights(text: string, offset: number): TextRange[] {
+export function cssHighlights(host: LusiaHost, text: string, offset: number): TextRange[] {
   try {
-    const style = styleContextAt(text, offset);
+    const style = styleContextAt(host, text, offset);
     if (!style) return [];
     const stylesheet = style.service.parseStylesheet(style.document);
     return style.service

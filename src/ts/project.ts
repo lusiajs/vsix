@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import type { LusiaHost } from "../host/types.ts";
 import { forgetSource, rememberSource } from "./modules.ts";
 import {
   completionDetailsOf,
@@ -27,14 +28,14 @@ import { Workspace } from "./workspace.ts";
 export class TsProject {
   private static readonly cache = new Map<string, TsProject>();
 
-  static open(fileName: string, text: string): TsProject {
+  static open(host: LusiaHost, fileName: string, text: string): TsProject {
     const realPath = resolve(fileName);
     const cached = TsProject.cache.get(realPath);
-    if (cached) {
+    if (cached?.host === host) {
       cached.update(text);
       return cached;
     }
-    const project = new TsProject(realPath, text);
+    const project = new TsProject(host, realPath, text);
     TsProject.cache.set(realPath, project);
     return project;
   }
@@ -48,6 +49,7 @@ export class TsProject {
     forgetSource(realPath);
   }
 
+  readonly host: LusiaHost;
   private readonly realPath: string;
   private readonly virtualPath: string;
   private readonly workspace: Workspace | undefined;
@@ -55,14 +57,15 @@ export class TsProject {
   private sourceLength: number;
   private source: ProjectSource;
 
-  private constructor(realPath: string, text: string) {
+  private constructor(host: LusiaHost, realPath: string, text: string) {
+    this.host = host;
     this.realPath = realPath;
     this.virtualPath = `${realPath}.ts`;
     this.text = text;
     this.sourceLength = text.length;
     rememberSource(realPath, text);
-    this.source = projectSource(text);
-    this.workspace = Workspace.for(realPath);
+    this.source = projectSource(host, text);
+    this.workspace = Workspace.for(host, realPath);
     this.workspace?.files.set(this.virtualPath, this.source.text);
     this.workspace?.addRoot(this.virtualPath);
   }
@@ -72,7 +75,7 @@ export class TsProject {
     this.text = text;
     this.sourceLength = text.length;
     rememberSource(this.realPath, text);
-    this.source = projectSource(text);
+    this.source = projectSource(this.host, text);
     this.workspace?.files.set(this.virtualPath, this.source.text);
   }
 

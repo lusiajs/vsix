@@ -2,19 +2,25 @@ import { resolve } from "node:path";
 import * as vscode from "vscode";
 import { cssRename, cssRenameRange, type CssFileEdit } from "../logic/css.ts";
 import { htmlRename, htmlRenameRange } from "../logic/html.ts";
+import { hostFor, type HostSource } from "../host/source.ts";
+import type { LusiaHost } from "../host/types.ts";
 import { inTsRegion, positionIn, projectOf, rangeOf, wordRangeAt } from "./common.ts";
 
 export class LusiaRenameProvider implements vscode.RenameProvider {
-  provideRenameEdits(
+  constructor(private readonly hosts: HostSource = hostFor) {}
+
+  async provideRenameEdits(
     document: vscode.TextDocument,
     position: vscode.Position,
     newName: string,
-  ): vscode.WorkspaceEdit | undefined {
+  ): Promise<vscode.WorkspaceEdit | undefined> {
+    const host = await this.hosts(document);
+    if (!host) return undefined;
     const text = document.getText();
     const offset = document.offsetAt(position);
     const edit = new vscode.WorkspaceEdit();
-    if (inTsRegion(text, offset)) {
-      for (const change of projectOf(document).rename(offset, newName)) {
+    if (inTsRegion(host, text, offset)) {
+      for (const change of projectOf(host, document).rename(offset, newName)) {
         edit.replace(
           uriOf(document, change.fileName),
           rangeIn(document, change.fileName, change.start, change.end),
@@ -22,42 +28,45 @@ export class LusiaRenameProvider implements vscode.RenameProvider {
         );
       }
     } else {
-      addMarkup(document, edit, text, offset, newName);
+      addMarkup(host, document, edit, text, offset, newName);
     }
     return edit.size > 0 ? edit : undefined;
   }
 
-  prepareRename(
+  async prepareRename(
     document: vscode.TextDocument,
     position: vscode.Position,
-  ): vscode.Range | { range: vscode.Range; placeholder: string } | undefined {
+  ): Promise<vscode.Range | { range: vscode.Range; placeholder: string } | undefined> {
+    const host = await this.hosts(document);
+    if (!host) return undefined;
     const text = document.getText();
     const offset = document.offsetAt(position);
-    if (inTsRegion(text, offset)) {
+    if (inTsRegion(host, text, offset)) {
       const word = wordRangeAt(text, offset);
       return word === undefined ? undefined : placeholder(document, text, word);
     }
-    const markup = htmlRenameRange(text, offset);
+    const markup = htmlRenameRange(host, text, offset);
     if (markup) return placeholder(document, text, markup);
-    const style = cssRenameRange(text, offset, document.fileName);
+    const style = cssRenameRange(host, text, offset, document.fileName);
     return style === undefined ? undefined : placeholder(document, text, style);
   }
 }
 
 function addMarkup(
+  host: LusiaHost,
   document: vscode.TextDocument,
   edit: vscode.WorkspaceEdit,
   text: string,
   offset: number,
   newName: string,
 ): void {
-  const markup = htmlRename(text, offset, newName);
+  const markup = htmlRename(host, text, offset, newName);
   if (markup) {
     for (const change of markup)
       edit.replace(document.uri, rangeOf(document, change.range), change.newText);
     return;
   }
-  for (const file of cssRename(text, offset, newName, document.fileName) ?? []) {
+  for (const file of cssRename(host, text, offset, newName, document.fileName) ?? []) {
     addCssFile(document, edit, file);
   }
 }

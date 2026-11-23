@@ -1,10 +1,9 @@
-import { afterAll, describe, expect, mock, test } from "bun:test";
+import { afterAll, describe, expect, test } from "bun:test";
 import { join } from "node:path";
+import { realHosts } from "../support/real-host.ts";
 import { createWorkspace } from "./ts-workspace.ts";
-import { createVscode, fakeDocument } from "./vscode-stub.ts";
-
-const vscode = createVscode();
-mock.module("vscode", () => vscode);
+import { vscode } from "./mock-vscode.ts";
+import { fakeDocument } from "./vscode-stub.ts";
 
 const workspace = createWorkspace({
   "motion.ts":
@@ -12,33 +11,21 @@ const workspace = createWorkspace({
 });
 afterAll(() => workspace.dispose());
 
-const { LusiaCompletionProvider } =
-  await import("../../src/providers/completion.ts");
+const { LusiaCompletionProvider } = await import("../../src/providers/completion.ts");
 const { LusiaHoverProvider } = await import("../../src/providers/hover.ts");
-const { LusiaDefinitionProvider } =
-  await import("../../src/providers/definition.ts");
-const { LusiaReferenceProvider } =
-  await import("../../src/providers/references.ts");
+const { LusiaDefinitionProvider } = await import("../../src/providers/definition.ts");
+const { LusiaReferenceProvider } = await import("../../src/providers/references.ts");
 const { LusiaRenameProvider } = await import("../../src/providers/rename.ts");
-const { LusiaSignatureHelpProvider } =
-  await import("../../src/providers/signature.ts");
-const { LusiaOnTypeFormattingProvider } =
-  await import("../../src/providers/on-type.ts");
-const { LusiaDocumentLinkProvider } =
-  await import("../../src/providers/links.ts");
-const { LusiaDocumentSymbolProvider } =
-  await import("../../src/providers/symbols.ts");
-const { LusiaFoldingRangeProvider } =
-  await import("../../src/providers/folding.ts");
-const { LusiaSelectionRangeProvider } =
-  await import("../../src/providers/selection.ts");
-const { LusiaDocumentHighlightProvider } =
-  await import("../../src/providers/highlights.ts");
-const { LusiaLinkedEditingProvider } =
-  await import("../../src/providers/linked.ts");
+const { LusiaSignatureHelpProvider } = await import("../../src/providers/signature.ts");
+const { LusiaOnTypeFormattingProvider } = await import("../../src/providers/on-type.ts");
+const { LusiaDocumentLinkProvider } = await import("../../src/providers/links.ts");
+const { LusiaDocumentSymbolProvider } = await import("../../src/providers/symbols.ts");
+const { LusiaFoldingRangeProvider } = await import("../../src/providers/folding.ts");
+const { LusiaSelectionRangeProvider } = await import("../../src/providers/selection.ts");
+const { LusiaDocumentHighlightProvider } = await import("../../src/providers/highlights.ts");
+const { LusiaLinkedEditingProvider } = await import("../../src/providers/linked.ts");
 const { LusiaColorProvider } = await import("../../src/providers/colors.ts");
-const { LusiaCodeActionProvider } =
-  await import("../../src/providers/code-actions.ts");
+const { LusiaCodeActionProvider } = await import("../../src/providers/code-actions.ts");
 const { LusiaDiagnostics } = await import("../../src/diagnostics.ts");
 
 const captured = vscode.__captured;
@@ -67,9 +54,9 @@ const rows = variable<Row[]>([{ label: "a", count: 1 }]);
 describe("completion and hover wiring", () => {
   const source = component("Flow.lusia", FLOW);
 
-  test("adds TypeScript members in a flow expression", () => {
+  test("adds TypeScript members in a flow expression", async () => {
     const offset = offsetAfter(source.text, "{row.");
-    const items = mocked(new LusiaCompletionProvider()).provideCompletionItems(
+    const items = await mocked(new LusiaCompletionProvider(realHosts)).provideCompletionItems(
       source.document,
       source.document.positionAt(offset),
     );
@@ -80,11 +67,11 @@ describe("completion and hover wiring", () => {
     expect(count?.kind).toBe(vscode.CompletionItemKind.Property);
   });
 
-  test("resolves a TypeScript auto-import into an additional edit", () => {
+  test("resolves a TypeScript auto-import into an additional edit", async () => {
     const source = component("Auto.lusia", `<script>\nconst motion = pageMo\n</script>`);
-    const provider = mocked(new LusiaCompletionProvider());
+    const provider = mocked(new LusiaCompletionProvider(realHosts));
     const offset = offsetAfter(source.text, "pageMo");
-    const items = provider.provideCompletionItems(
+    const items = await provider.provideCompletionItems(
       source.document,
       source.document.positionAt(offset),
     );
@@ -98,18 +85,20 @@ describe("completion and hover wiring", () => {
     );
   });
 
-  test("resolves a TypeScript completion to its documentation", () => {
+  test("resolves a TypeScript completion to its documentation", async () => {
     const offset = offsetAfter(source.text, "{row.");
-    const provider = mocked(new LusiaCompletionProvider());
-    const item = provider
-      .provideCompletionItems(source.document, source.document.positionAt(offset))
-      .find((candidate: any) => candidate.label === "count");
+    const provider = mocked(new LusiaCompletionProvider(realHosts));
+    const items = await provider.provideCompletionItems(
+      source.document,
+      source.document.positionAt(offset),
+    );
+    const item = items.find((candidate: any) => candidate.label === "count");
     const resolved = provider.resolveCompletionItem(item!);
     expect(resolved.detail).toContain("count");
   });
 
-  test("hovers the variable behind a markup expression", () => {
-    const hover = mocked(new LusiaHoverProvider()).provideHover(
+  test("hovers the variable behind a markup expression", async () => {
+    const hover = await mocked(new LusiaHoverProvider(realHosts)).provideHover(
       source.document,
       source.document.positionAt(source.text.indexOf("{rows") + 2),
     );
@@ -150,47 +139,47 @@ const land = { default: [EASE.STYLE.QUART, EASE.OUT] };
 
 describe("typed hover", () => {
   const source = component("App.lusia", APP);
-  const hoverAt = (offset: number) => {
-    const result = mocked(new LusiaHoverProvider()).provideHover(
+  const hoverAt = async (offset: number) => {
+    const result = await mocked(new LusiaHoverProvider(realHosts)).provideHover(
       source.document,
       source.document.positionAt(offset),
     );
     return String(result?.contents?.value ?? "");
   };
 
-  test("shows the Lusia declaration and summary for an imported API name, not the TypeScript type", () => {
-    const body = hoverAt(APP.indexOf("import { variable") + "import { ".length + 2);
+  test("shows the Lusia declaration and summary for an imported API name, not the TypeScript type", async () => {
+    const body = await hoverAt(APP.indexOf("import { variable") + "import { ".length + 2);
     expect(body.startsWith("```ts\nvariable<T>(initial: T): Variable<T>\n```")).toBe(true);
     expect(body).toContain("Creates a value that updates the page");
     expect(body).not.toContain("(alias)");
   });
 
-  test("shows only the typed hover for a local variable", () => {
-    const body = hoverAt(APP.indexOf("EACH {todos") + "EACH {".length + 1);
+  test("shows only the typed hover for a local variable", async () => {
+    const body = await hoverAt(APP.indexOf("EACH {todos") + "EACH {".length + 1);
     expect(body).toContain("Variable<Todo[]>");
     expect(body).not.toContain("Creates a value");
   });
 
-  test("shows the typed flow variable inside EACH", () => {
-    const body = hoverAt(APP.indexOf("{todo.title}") + 2);
+  test("shows the typed flow variable inside EACH", async () => {
+    const body = await hoverAt(APP.indexOf("{todo.title}") + 2);
     expect(body).toContain("var todo: Todo");
   });
 
-  test("shows the Lusia declaration first for a dotted name", () => {
-    const body = hoverAt(APP.indexOf("variable.compute") + "variable.".length + 1);
+  test("shows the Lusia declaration first for a dotted name", async () => {
+    const body = await hoverAt(APP.indexOf("variable.compute") + "variable.".length + 1);
     expect(body.startsWith("```ts\nvariable.compute<T>(fn: () => T)")).toBe(true);
     expect(body).toContain("Creates a read-only value derived from other variables.");
   });
 
-  test("shows the Lusia reference hover for markup flow tags", () => {
-    const body = hoverAt(APP.indexOf("<EACH") + 2);
+  test("shows the Lusia reference hover for markup flow tags", async () => {
+    const body = await hoverAt(APP.indexOf("<EACH") + 2);
     expect(body.startsWith("```html\n<EACH {list}")).toBe(true);
     expect(body).toContain("Repeats its content once for each item in a list.");
   });
 
-  test("shows the compact EASE declaration and its members table", () => {
+  test("shows the compact EASE declaration and its members table", async () => {
     const easeSource = component("Ease.lusia", EASE_APP);
-    const result = mocked(new LusiaHoverProvider()).provideHover(
+    const result = await mocked(new LusiaHoverProvider(realHosts)).provideHover(
       easeSource.document,
       easeSource.document.positionAt(EASE_APP.indexOf("EASE.OUT") + 2),
     );
@@ -199,10 +188,10 @@ describe("typed hover", () => {
     expect(body).toContain("| `STYLE.QUART` |");
   });
 
-  test("prefers TypeScript completion details and keeps the API docs", () => {
-    const provider = mocked(new LusiaCompletionProvider());
+  test("prefers TypeScript completion details and keeps the API docs", async () => {
+    const provider = mocked(new LusiaCompletionProvider(realHosts));
     const blank = source.text.indexOf("interface Todo") - 1;
-    const items = provider.provideCompletionItems(
+    const items = await provider.provideCompletionItems(
       source.document,
       source.document.positionAt(blank),
     );
@@ -216,14 +205,16 @@ describe("typed hover", () => {
     expect(String(resolved.documentation?.value)).not.toContain("**variable()**");
   });
 
-  test("keeps the unimported-name completion and its auto-import edit", () => {
+  test("keeps the unimported-name completion and its auto-import edit", async () => {
     const text = "<script>\n\n</script>";
     const fileName = workspace.write("Empty.lusia", text);
     const document = fakeDocument(fileName, text);
-    const provider = mocked(new LusiaCompletionProvider());
-    const items = provider.provideCompletionItems(document, document.positionAt(9));
+    const provider = mocked(new LusiaCompletionProvider(realHosts));
+    const items = await provider.provideCompletionItems(document, document.positionAt(9));
     const item = items.find((candidate: any) => candidate.label === "variable");
-    expect(item?.additionalTextEdits?.[0]?.newText).toContain('import { variable } from "lusiajs";');
+    expect(item?.additionalTextEdits?.[0]?.newText).toContain(
+      'import { variable } from "lusiajs";',
+    );
     const resolved = provider.resolveCompletionItem(item);
     expect(resolved.additionalTextEdits?.[0]?.newText).toContain(
       'import { variable } from "lusiajs";',
@@ -245,9 +236,9 @@ describe("script navigation wiring", () => {
   const source = component("Calls.lusia", CALLS);
   const toggleStart = source.text.lastIndexOf("toggle(1)");
 
-  test("helps with signature arguments", () => {
+  test("helps with signature arguments", async () => {
     const offset = source.text.lastIndexOf("toggle(") + "toggle(".length;
-    const help = mocked(new LusiaSignatureHelpProvider()).provideSignatureHelp(
+    const help = await mocked(new LusiaSignatureHelpProvider(realHosts)).provideSignatureHelp(
       source.document,
       source.document.positionAt(offset),
     );
@@ -255,8 +246,8 @@ describe("script navigation wiring", () => {
     expect(help?.activeParameter).toBe(0);
   });
 
-  test("defines a markup call in the script", () => {
-    const locations = mocked(new LusiaDefinitionProvider()).provideDefinition(
+  test("defines a markup call in the script", async () => {
+    const locations = await mocked(new LusiaDefinitionProvider(realHosts)).provideDefinition(
       source.document,
       source.document.positionAt(toggleStart),
     );
@@ -266,8 +257,8 @@ describe("script navigation wiring", () => {
     );
   });
 
-  test("finds references across script and markup", () => {
-    const locations = mocked(new LusiaReferenceProvider()).provideReferences(
+  test("finds references across script and markup", async () => {
+    const locations = await mocked(new LusiaReferenceProvider(realHosts)).provideReferences(
       source.document,
       source.document.positionAt(source.text.indexOf("greet(")),
       { includeDeclaration: true },
@@ -277,8 +268,8 @@ describe("script navigation wiring", () => {
     expect(locations?.some((location: any) => location.uri.fsPath.endsWith("util.ts"))).toBe(true);
   });
 
-  test("renames a markup expression into the script", () => {
-    const edit = mocked(new LusiaRenameProvider()).provideRenameEdits(
+  test("renames a markup expression into the script", async () => {
+    const edit = await mocked(new LusiaRenameProvider(realHosts)).provideRenameEdits(
       source.document,
       source.document.positionAt(offsetAfter(source.text, "<p>{greet")),
       "welcome",
@@ -293,27 +284,26 @@ describe("script navigation wiring", () => {
 describe("markup wiring", () => {
   const source = component("Markup.lusia", "<div><span>x</span></div>");
 
-  test("closes a tag on typing", () => {
+  test("closes a tag on typing", async () => {
     const document = fakeDocument(join(workspace.root, "Close.lusia"), "<div>");
-    const edits = mocked(new LusiaOnTypeFormattingProvider()).provideOnTypeFormattingEdits(
-      document,
-      document.positionAt(5),
-      ">",
-      {},
-    );
+    const edits = await mocked(
+      new LusiaOnTypeFormattingProvider(realHosts),
+    ).provideOnTypeFormattingEdits(document, document.positionAt(5), ">", {});
     expect(edits[0]?.newText).toBe("</div>");
     expect(edits[0]?.range.start.character).toBe(5);
   });
 
-  test("resolves a relative link against the component", () => {
+  test("resolves a relative link against the component", async () => {
     const document = fakeDocument(join(workspace.root, "Links.lusia"), `<a href="./page.lusia">`);
-    const links = mocked(new LusiaDocumentLinkProvider()).provideDocumentLinks(document);
+    const links = await mocked(new LusiaDocumentLinkProvider(realHosts)).provideDocumentLinks(
+      document,
+    );
     expect(links[0]?.target.fsPath).toBe(join(workspace.root, "page.lusia"));
     expect(links[0]?.tooltip).toBe(join(workspace.root, "page.lusia"));
   });
 
-  test("renames a plain tag and its close tag", () => {
-    const edit = mocked(new LusiaRenameProvider()).provideRenameEdits(
+  test("renames a plain tag and its close tag", async () => {
+    const edit = await mocked(new LusiaRenameProvider(realHosts)).provideRenameEdits(
       source.document,
       source.document.positionAt(2),
       "section",
@@ -321,41 +311,43 @@ describe("markup wiring", () => {
     expect(edit?.size).toBe(2);
   });
 
-  test("highlights and links the two tag names", () => {
-    const highlights = mocked(new LusiaDocumentHighlightProvider()).provideDocumentHighlights(
-      source.document,
-      source.document.positionAt(2),
-    );
+  test("highlights and links the two tag names", async () => {
+    const highlights = await mocked(
+      new LusiaDocumentHighlightProvider(realHosts),
+    ).provideDocumentHighlights(source.document, source.document.positionAt(2));
     expect(highlights?.map((highlight: any) => highlight.kind)).toEqual([
       vscode.DocumentHighlightKind.Read,
       vscode.DocumentHighlightKind.Read,
     ]);
-    const linked = mocked(new LusiaLinkedEditingProvider()).provideLinkedEditingRanges(
-      source.document,
-      source.document.positionAt(2),
-    );
+    const linked = await mocked(
+      new LusiaLinkedEditingProvider(realHosts),
+    ).provideLinkedEditingRanges(source.document, source.document.positionAt(2));
     expect(linked?.ranges).toHaveLength(2);
   });
 
-  test("outlines markup and style symbols", () => {
+  test("outlines markup and style symbols", async () => {
     const text = `<div><span>x</span></div>\n<style>\n.a { color: red; }\n</style>`;
     const document = fakeDocument(join(workspace.root, "Outline.lusia"), text);
-    const symbols = mocked(new LusiaDocumentSymbolProvider()).provideDocumentSymbols(document);
+    const symbols = await mocked(new LusiaDocumentSymbolProvider(realHosts)).provideDocumentSymbols(
+      document,
+    );
     expect(symbols[0]?.name).toBe("div");
     expect(symbols[0]?.kind).toBe(vscode.SymbolKind.Field);
     expect(symbols.some((symbol: any) => symbol.name === ".a")).toBe(true);
   });
 
-  test("folds elements and sections", () => {
+  test("folds elements and sections", async () => {
     const text = `<div>\n<span>x</span>\n</div>\n<script>\nconst x = 1;\n</script>`;
     const document = fakeDocument(join(workspace.root, "Fold.lusia"), text);
-    const ranges = mocked(new LusiaFoldingRangeProvider()).provideFoldingRanges(document);
+    const ranges = await mocked(new LusiaFoldingRangeProvider(realHosts)).provideFoldingRanges(
+      document,
+    );
     expect(ranges.some((range: any) => range.start === 0 && range.end === 1)).toBe(true);
     expect(ranges.some((range: any) => range.start === 3 && range.end === 4)).toBe(true);
   });
 
-  test("grows the selection from tag name to element", () => {
-    const chains = mocked(new LusiaSelectionRangeProvider()).provideSelectionRanges(
+  test("grows the selection from tag name to element", async () => {
+    const chains = await mocked(new LusiaSelectionRangeProvider(realHosts)).provideSelectionRanges(
       source.document,
       [source.document.positionAt(2)],
     );
@@ -365,20 +357,20 @@ describe("markup wiring", () => {
 });
 
 describe("style wiring", () => {
-  test("lists scss colors", () => {
+  test("lists scss colors", async () => {
     const document = fakeDocument(
       join(workspace.root, "Colors.lusia"),
       `<style>\n$brand: #ff0000;\n.a { color: $brand; }\n</style>`,
     );
-    const colors = mocked(new LusiaColorProvider()).provideDocumentColors(document);
+    const colors = await mocked(new LusiaColorProvider(realHosts)).provideDocumentColors(document);
     expect(colors).toHaveLength(1);
     expect(colors[0]?.color).toEqual(new vscode.Color(1, 0, 0, 1));
   });
 
-  test("offers the unknown property code action", () => {
+  test("offers the unknown property code action", async () => {
     const text = `<style>\n.a { colr: red; }\n</style>`;
     const document = fakeDocument(join(workspace.root, "Actions.lusia"), text);
-    const actions = mocked(new LusiaCodeActionProvider()).provideCodeActions(
+    const actions = await mocked(new LusiaCodeActionProvider(realHosts)).provideCodeActions(
       document,
       new vscode.Range(
         document.positionAt(text.indexOf("colr")),
@@ -394,7 +386,7 @@ describe("style wiring", () => {
 describe("diagnostic wiring", () => {
   const FILE = `<script>\nconst total: number = "three";\n</script>\n<div><span></div>\n<style>\n.a { colr: red; }\n</style>\n`;
   const source = component("Broken.lusia", FILE);
-  const diagnostics = new LusiaDiagnostics();
+  const diagnostics = new LusiaDiagnostics(realHosts);
   afterAll(() => diagnostics.dispose());
 
   test("fills one collection per source", async () => {
@@ -425,7 +417,7 @@ describe("diagnostic wiring", () => {
     expect(ready).toBe(true);
     const issues = captured.collections["lusia-lint"]?.get(lint.document.uri) ?? [];
     const diagnostic = issues[0]!;
-    const actions = mocked(new LusiaCodeActionProvider()).provideCodeActions(
+    const actions = await mocked(new LusiaCodeActionProvider(realHosts)).provideCodeActions(
       lint.document,
       diagnostic.range,
       { diagnostics: issues },

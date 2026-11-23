@@ -60,7 +60,7 @@ describe("lusia grammar with the real TypeScript grammar", () => {
 });
 
 describe("flow tags, events and bind-value in the grammar", () => {
-  test("IF, ELSEIF, ELSE, EACH and FOR are control keywords in both open and close tags", async () => {
+  test("IF, ELSEIF, ELSE, EACH and FOR are control keywords", async () => {
     const lines = await tokenizeLusia(
       "<IF {a}>\n</IF>\n<ELSEIF {b}>\n<ELSE>\n<EACH {c}>\n<FOR {n}>\n</FOR>",
     );
@@ -70,6 +70,28 @@ describe("flow tags, events and bind-value in the grammar", () => {
     expect(tokenOn(lines, 3, "ELSE")?.scopes).toContain("keyword.control.flow.lusia");
     expect(tokenOn(lines, 4, "EACH")?.scopes).toContain("keyword.control.flow.lusia");
     expect(tokenOn(lines, 5, "FOR")?.scopes).toContain("keyword.control.flow.lusia");
+  });
+
+  test("ELSEIF and ELSE have no closing tag, so markup after them stays HTML", async () => {
+    const lines = await tokenizeLusia(
+      "<IF {a}>\n<p>A</p>\n<ELSEIF {b}>\n<p>B</p>\n<ELSE>\n<p>C</p>\n</IF>",
+    );
+    expect(tokenOn(lines, 1, "p")?.scopes).toContain("entity.name.tag.html");
+    expect(tokenOn(lines, 3, "p")?.scopes).toContain("entity.name.tag.html");
+    expect(tokenOn(lines, 5, "p")?.scopes).toContain("entity.name.tag.html");
+    expect(tokenOn(lines, 6, "IF")?.scopes).toContain("keyword.control.flow.lusia");
+  });
+
+  test("a nested IF inside a branch and an EACH inside ELSE keep their flow keywords", async () => {
+    const lines = await tokenizeLusia(
+      "<IF {a}>\n<IF {b}>\n<i>x</i>\n</IF>\n<ELSE>\n<EACH {list} as={item}>\n<li>{item}</li>\n</EACH>\n</IF>",
+    );
+    expect(tokenOn(lines, 1, "IF")?.scopes).toContain("keyword.control.flow.lusia");
+    expect(tokenOn(lines, 3, "IF")?.scopes).toContain("keyword.control.flow.lusia");
+    expect(tokenOn(lines, 5, "EACH")?.scopes).toContain("keyword.control.flow.lusia");
+    expect(tokenOn(lines, 7, "EACH")?.scopes).toContain("keyword.control.flow.lusia");
+    expect(tokenOn(lines, 8, "IF")?.scopes).toContain("keyword.control.flow.lusia");
+    expect(tokenOn(lines, 6, "li")?.scopes).toContain("entity.name.tag.html");
   });
 
   test("the expression inside a flow tag is TypeScript", async () => {
@@ -86,6 +108,13 @@ describe("flow tags, events and bind-value in the grammar", () => {
   test("an on-attribute with an expression is an event keyword", async () => {
     const lines = await tokenizeLusia("<button onclick={increment}>x</button>");
     expect(tokenOn(lines, 0, "onclick")?.scopes).toContain("keyword.other.event.lusia");
+  });
+
+  test("an on:name attribute with an expression is an event keyword", async () => {
+    const lines = await tokenizeLusia("<section on:view={showView} on:click-outside={close}>x</section>");
+    expect(tokenOn(lines, 0, "on:view")?.scopes).toContain("keyword.other.event.lusia");
+    expect(tokenOn(lines, 0, "on:click-outside")?.scopes).toContain("keyword.other.event.lusia");
+    expect(tokenOn(lines, 0, "showView")?.scopes).toContain("meta.embedded.block.typescript");
   });
 
   test("a static on-attribute stays plain HTML", async () => {

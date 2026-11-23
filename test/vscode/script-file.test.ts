@@ -3,6 +3,7 @@ import { mkdirSync, mkdtempSync, rmSync, utimesSync, writeFileSync } from "node:
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { clearScriptSymbolsCache, scriptSymbols } from "../../src/script-file.ts";
+import { realHost } from "../support/real-host.ts";
 
 const ADD = `/**
  * Adds two numbers.
@@ -31,13 +32,13 @@ function write(name: string, code: string): string {
 }
 
 function names(specifier: string): string[] {
-  return scriptSymbols(join(dir, "App.lusia"), specifier).map((symbol) => symbol.name);
+  return scriptSymbols(realHost, join(dir, "App.lusia"), specifier).map((symbol) => symbol.name);
 }
 
 describe("scriptSymbols", () => {
   test("reads the exports of a relative .ts file", () => {
     write("math.ts", ADD);
-    expect(scriptSymbols(join(dir, "App.lusia"), "./math.ts")).toEqual([
+    expect(scriptSymbols(realHost, join(dir, "App.lusia"), "./math.ts")).toEqual([
       {
         name: "add",
         kind: "function",
@@ -51,7 +52,7 @@ describe("scriptSymbols", () => {
 
   test("resolves a specifier with no extension", () => {
     write("math.tsx", ADD);
-    expect(scriptSymbols(join(dir, "App.lusia"), "./math")[0]?.specifier).toBe("./math");
+    expect(scriptSymbols(realHost, join(dir, "App.lusia"), "./math")[0]?.specifier).toBe("./math");
     expect(names("./math")).toEqual(["add"]);
   });
 

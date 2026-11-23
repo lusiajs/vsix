@@ -35,7 +35,7 @@
       ]
     },
     "flow-close": {
-      "match": "(</)(IF|ELSEIF|ELSE|EACH|FOR|HTML|FALLBACK)(\\s*>)",
+      "match": "(</)(IF|EACH|FOR|HTML|FALLBACK)(\\s*>)",
       "captures": {
         "1": { "name": "punctuation.definition.tag.begin.html" },
         "2": { "name": "keyword.control.flow.lusia" },
@@ -47,7 +47,7 @@
       "name": "entity.other.attribute-name.html"
     },
     "event-attribute": {
-      "match": "(?<=\\s)on[a-z]+(?=\\s*=\\s*\\{)",
+      "match": "(?<=\\s)on(?:[a-z]+|:[a-z][a-z-]*)(?=\\s*=\\s*\\{)",
       "name": "keyword.other.event.lusia"
     },
     "bind-attribute": {

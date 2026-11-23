@@ -3,6 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { formatLusia } from "../../src/logic/format.ts";
+import { realHost } from "../support/real-host.ts";
 import {
   expressionEnd,
   protectExpressions,
@@ -22,23 +23,23 @@ const name=variable("Ada");
 
 describe("format", () => {
   test("is idempotent", async () => {
-    const once = await formatLusia(SAMPLE);
-    expect(await formatLusia(once)).toBe(once);
+    const once = await formatLusia(realHost, SAMPLE);
+    expect(await formatLusia(realHost, once)).toBe(once);
   });
 
   test("keeps every {expr} and turns a whole attribute value into an expression", async () => {
-    const output = await formatLusia(SAMPLE);
+    const output = await formatLusia(realHost, SAMPLE);
     expect(output).toContain("{name.value}");
     expect(output).toContain('disabled={name.value === "" || {a:1}.a}');
     expect(output).toContain('class="a {name}"');
   });
 
   test("keeps the style attributes", async () => {
-    expect(await formatLusia(SAMPLE)).toContain("<style scoped>");
+    expect(await formatLusia(realHost, SAMPLE)).toContain("<style scoped>");
   });
 
   test("keeps section order with one blank line between sections", async () => {
-    const output = await formatLusia(SAMPLE);
+    const output = await formatLusia(realHost, SAMPLE);
     const order = ["<style scoped>", "<script>", "<p ", "<button"].map((tag) =>
       output.indexOf(tag),
     );
@@ -48,7 +49,7 @@ describe("format", () => {
   });
 
   test("formats the script as TypeScript", async () => {
-    expect(await formatLusia(SAMPLE)).toContain('const name = variable("Ada");');
+    expect(await formatLusia(realHost, SAMPLE)).toContain('const name = variable("Ada");');
   });
 });
 
@@ -79,13 +80,13 @@ describe("format expressions", () => {
 describe("format settings", () => {
   test("uses the editor indentation when no Prettier config sets it", async () => {
     expect(
-      await formatLusia("<div>\n<p>hi</p>\n</div>", {
+      await formatLusia(realHost, "<div>\n<p>hi</p>\n</div>", {
         tabSize: 4,
         insertSpaces: true,
       }),
     ).toBe("<div>\n    <p>hi</p>\n</div>\n");
     expect(
-      await formatLusia("<div>\n<p>hi</p>\n</div>", {
+      await formatLusia(realHost, "<div>\n<p>hi</p>\n</div>", {
         tabSize: 1,
         insertSpaces: false,
       }),
@@ -99,7 +100,7 @@ describe("format settings", () => {
       const file = join(dir, "Card.lusia");
       writeFileSync(file, "");
       expect(
-        await formatLusia("<div>\n<p>hi</p>\n</div>", {
+        await formatLusia(realHost, "<div>\n<p>hi</p>\n</div>", {
           fileName: file,
           tabSize: 4,
           insertSpaces: true,
@@ -117,24 +118,22 @@ describe("format flow tags", () => {
 </EACH>
 <IF {todos.value.length > 0}>
 <p>Some</p>
-</IF>
 <ELSE>
 <p>None</p>
-</ELSE>
+</IF>
 <FOR {n} from={0} to={3}>
 <b>{n}</b>
 </FOR>
 `;
 
   test("keeps every flow tag uppercase and its attributes", async () => {
-    const output = await formatLusia(FLOW);
+    const output = await formatLusia(realHost, FLOW);
     for (const tag of [
       "<EACH {todos} as={todo} index={i} key={todo.id}>",
       "</EACH>",
       "<IF {todos.value.length > 0}>",
       "</IF>",
       "<ELSE>",
-      "</ELSE>",
       "<FOR {n} from={0} to={3}>",
       "</FOR>",
     ]) {
@@ -143,15 +142,15 @@ describe("format flow tags", () => {
   });
 
   test("is idempotent", async () => {
-    const once = await formatLusia(FLOW);
-    expect(await formatLusia(once)).toBe(once);
+    const once = await formatLusia(realHost, FLOW);
+    expect(await formatLusia(realHost, once)).toBe(once);
   });
 
   test("indents the content of a paired flow tag", async () => {
-    expect(await formatLusia(`<EACH {todos} as={todo}>\n<li>x</li>\n</EACH>`)).toBe(
+    expect(await formatLusia(realHost, `<EACH {todos} as={todo}>\n<li>x</li>\n</EACH>`)).toBe(
       `<EACH {todos} as={todo}>\n  <li>x</li>\n</EACH>\n`,
     );
-    expect(await formatLusia(`<div><IF {a}>\n<span>x</span>\n</IF></div>`)).toBe(
+    expect(await formatLusia(realHost, `<div><IF {a}>\n<span>x</span>\n</IF></div>`)).toBe(
       `<div>\n  <IF {a}>\n    <span>x</span>\n  </IF>\n</div>\n`,
     );
   });
@@ -165,14 +164,14 @@ describe("format flow tags", () => {
     <span>{task.title}</span>
   </li>
 </ol>`;
-    const output = await formatLusia(source);
+    const output = await formatLusia(realHost, source);
     expect(output).toContain('<li\n    class="row"\n    animate={[');
     expect(output).toContain("when: WHEN.ATTACH");
-    expect(await formatLusia(output)).toBe(output);
+    expect(await formatLusia(realHost, output)).toBe(output);
   });
 
   test("keeps a flow tag inside a paragraph on its line", async () => {
-    expect(await formatLusia(`<p>before <IF {ok}>yes</IF> after</p>`)).toBe(
+    expect(await formatLusia(realHost, `<p>before <IF {ok}>yes</IF> after</p>`)).toBe(
       `<p>before <IF {ok}>yes</IF> after</p>\n`,
     );
   });

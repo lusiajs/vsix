@@ -1,19 +1,21 @@
 import type { SelectionRange } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import { offsetRange } from "../language-service.ts";
+import type { LusiaHost } from "../../host/types.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import type { CssSelectionRange } from "./types.ts";
 
 /** The selection chain for each offset, innermost first; nothing outside a style block. */
 export function cssSelection(
+  host: LusiaHost,
   text: string,
   offsets: number[],
 ): Array<CssSelectionRange | undefined> {
-  return offsets.map((offset) => selectionAt(text, offset));
+  return offsets.map((offset) => selectionAt(host, text, offset));
 }
 
-function selectionAt(text: string, offset: number): CssSelectionRange | undefined {
+function selectionAt(host: LusiaHost, text: string, offset: number): CssSelectionRange | undefined {
   try {
-    const style = styleContextAt(text, offset);
+    const style = styleContextAt(host, text, offset);
     if (!style) return undefined;
     const stylesheet = style.service.parseStylesheet(style.document);
     const [selection] = style.service.getSelectionRanges(

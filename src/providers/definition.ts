@@ -1,24 +1,28 @@
 import * as vscode from "vscode";
 import { componentPath } from "../component-file.ts";
-import { tagNameAt } from "lusiajs/language/parse/tag.ts";
 import { cssDefinitions } from "../logic/css.ts";
+import { hostFor, type HostSource } from "../host/source.ts";
 import { inTsRegion, locationOf, projectOf, tsLocations } from "./common.ts";
 
 export class LusiaDefinitionProvider implements vscode.DefinitionProvider {
-  provideDefinition(
+  constructor(private readonly hosts: HostSource = hostFor) {}
+
+  async provideDefinition(
     document: vscode.TextDocument,
     position: vscode.Position,
-  ): vscode.Location[] | undefined {
+  ): Promise<vscode.Location[] | undefined> {
+    const host = await this.hosts(document);
+    if (!host) return undefined;
     const text = document.getText();
     const offset = document.offsetAt(position);
-    if (inTsRegion(text, offset)) {
-      const locations = tsLocations(document, projectOf(document).definitions(offset));
+    if (inTsRegion(host, text, offset)) {
+      const locations = tsLocations(document, projectOf(host, document).definitions(offset));
       return locations.length > 0 ? locations : undefined;
     }
-    const tag = tagNameAt(text, offset);
-    const path = tag ? componentPath(document.fileName, text, tag.name) : undefined;
+    const tag = host.parseTag.tagNameAt(text, offset);
+    const path = tag ? componentPath(host, document.fileName, text, tag.name) : undefined;
     if (path) return [locationOf(document, path, 0)];
-    const style = cssDefinitions(text, offset, document.fileName).map((location) =>
+    const style = cssDefinitions(host, text, offset, document.fileName).map((location) =>
       locationOf(
         document,
         location.path ?? document.fileName,

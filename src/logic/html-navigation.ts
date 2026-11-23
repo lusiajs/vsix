@@ -1,4 +1,5 @@
 import type { TextRange } from "lusiajs/editor/range.ts";
+import type { LusiaHost } from "../host/types.ts";
 import {
   editable,
   htmlService,
@@ -11,11 +12,12 @@ import { offsetRange } from "./language-service.ts";
 import type { RegionEdit, RegionHighlight } from "./region-types.ts";
 
 export function htmlRename(
+  host: LusiaHost,
   text: string,
   offset: number,
   newName: string,
 ): RegionEdit[] | undefined {
-  const tag = renameTagAt(text, offset);
+  const tag = renameTagAt(host, text, offset);
   if (!tag) return undefined;
   const { document, parsed } = markupHtml(text);
   try {
@@ -34,13 +36,21 @@ export function htmlRename(
 }
 
 /** The tag name the rename editor selects, for plain tags only. */
-export function htmlRenameRange(text: string, offset: number): TextRange | undefined {
-  const tag = renameTagAt(text, offset);
+export function htmlRenameRange(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): TextRange | undefined {
+  const tag = renameTagAt(host, text, offset);
   return tag ? { start: tag.start, end: tag.end } : undefined;
 }
 
-export function htmlLinkedRanges(text: string, offset: number): TextRange[] | undefined {
-  if (!editable(text, offset)) return undefined;
+export function htmlLinkedRanges(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): TextRange[] | undefined {
+  if (!editable(host, text, offset)) return undefined;
   const { document, parsed } = markupHtml(text);
   try {
     const ranges = htmlService().findLinkedEditingRanges(
@@ -60,8 +70,8 @@ export function htmlLinkedRanges(text: string, offset: number): TextRange[] | un
   }
 }
 
-export function htmlHighlights(text: string, offset: number): RegionHighlight[] {
-  if (!editable(text, offset)) return [];
+export function htmlHighlights(host: LusiaHost, text: string, offset: number): RegionHighlight[] {
+  if (!editable(host, text, offset)) return [];
   const { document, parsed } = markupHtml(text);
   try {
     const highlights = htmlService().findDocumentHighlights(
@@ -80,10 +90,10 @@ export function htmlHighlights(text: string, offset: number): RegionHighlight[] 
   }
 }
 
-function renameTagAt(text: string, offset: number): TagName | undefined {
-  if (!editable(text, offset)) return undefined;
+function renameTagAt(host: LusiaHost, text: string, offset: number): TagName | undefined {
+  if (!editable(host, text, offset)) return undefined;
   const tag = tagNameAt(text, offset);
-  return tag && isPlainTag(text, tag.name) ? tag : undefined;
+  return tag && isPlainTag(host, text, tag.name) ? tag : undefined;
 }
 
 function highlightKind(kind: number | undefined): RegionHighlight["kind"] {

@@ -1,11 +1,12 @@
 import type { ColorPresentation } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import { offsetRange, type LspRange } from "../language-service.ts";
 import { shift, styleContextAt, styleSections, type StyleContext } from "./context.ts";
+import type { LusiaHost } from "../../host/types.ts";
 import type { CssColorInformation, CssColorPresentation } from "./types.ts";
 
-export function cssColors(text: string): CssColorInformation[] {
+export function cssColors(host: LusiaHost, text: string): CssColorInformation[] {
   const colors: CssColorInformation[] = [];
-  for (const style of styleSections(text)) {
+  for (const style of styleSections(host, text)) {
     let found;
     try {
       const stylesheet = style.service.parseStylesheet(style.document);
@@ -22,9 +23,13 @@ export function cssColors(text: string): CssColorInformation[] {
   return colors;
 }
 
-export function cssColorPresentations(text: string, offset: number): CssColorPresentation[] {
+export function cssColorPresentations(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): CssColorPresentation[] {
   try {
-    const style = styleContextAt(text, offset);
+    const style = styleContextAt(host, text, offset);
     if (!style) return [];
     const stylesheet = style.service.parseStylesheet(style.document);
     const local = offset - style.section.contentStart;

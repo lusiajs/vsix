@@ -45,7 +45,7 @@
   "Lusia if else": {
     "prefix": "lusia-if-else",
     "description": "Show one part when a condition is true, another when not",
-    "body": ["<IF {${1:condition}}>", "\t$2", "</IF>", "<ELSE>", "\t$0", "</ELSE>"]
+    "body": ["<IF {${1:condition}}>", "\t$2", "<ELSE>", "\t$0", "</IF>"]
   },
   "Lusia each": {
     "prefix": "lusia-each",

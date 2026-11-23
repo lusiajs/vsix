@@ -1,6 +1,7 @@
 import type { Diagnostic } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import { offsetRange } from "../language-service.ts";
 import { shift, styleSections, type StyleSection } from "./context.ts";
+import type { LusiaHost } from "../../host/types.ts";
 import type { CssDiagnostic, CssDiagnosticSeverity } from "./types.ts";
 
 const IGNORED_AT_RULE = /^Unknown at rule @(scoped|global)\b/;
@@ -13,9 +14,9 @@ const SEVERITIES: Record<number, CssDiagnosticSeverity> = {
 };
 
 /** Style diagnostics, with the ranges already shifted into the component. */
-export function cssDiagnostics(text: string): CssDiagnostic[] {
+export function cssDiagnostics(host: LusiaHost, text: string): CssDiagnostic[] {
   const diagnostics: CssDiagnostic[] = [];
-  for (const style of styleSections(text)) {
+  for (const style of styleSections(host, text)) {
     for (const diagnostic of validation(style)) {
       if (IGNORED_AT_RULE.test(diagnostic.message)) continue;
       const padded = offsetRange(style.document, diagnostic.range);

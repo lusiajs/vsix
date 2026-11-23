@@ -5,11 +5,7 @@ import {
   type LanguageService,
 } from "vscode-html-languageservice/lib/esm/htmlLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
-import { inExpressionAt } from "lusiajs/language/format/format-expressions.ts";
-import { findComponentImport } from "lusiajs/language/parse/imports.ts";
-import { isFlowTag } from "lusiajs/editor/completion/markup-items.ts";
-import { regionAt } from "lusiajs/language/parse/regions.ts";
-import { openTagAt } from "lusiajs/language/parse/tag.ts";
+import type { LusiaHost } from "../host/types.ts";
 import { editorDocument } from "./language-service.ts";
 
 export const URI = "inmemory://lusia/markup.html";
@@ -45,29 +41,32 @@ export function markupHtml(text: string): MarkupDocument {
 }
 
 /** The HTML service only sees markup outside an expression. */
-export function editable(text: string, offset: number): boolean {
-  return regionAt(text, offset).kind === "markup" && !inExpressionAt(text, offset);
+export function editable(host: LusiaHost, text: string, offset: number): boolean {
+  return (
+    host.parseRegions.regionAt(text, offset).kind === "markup" &&
+    !host.formatExpressions.inExpressionAt(text, offset)
+  );
 }
 
-export function ownedTag(text: string, offset: number): boolean {
-  const tag = openTagAt(text, offset);
+export function ownedTag(host: LusiaHost, text: string, offset: number): boolean {
+  const tag = host.parseTag.openTagAt(text, offset);
   if (!tag) return false;
   return (
     tag.name === "style" ||
     tag.name === "script" ||
-    isFlowTag(tag.name) ||
-    findComponentImport(text, tag.name) !== undefined
+    host.markupItems.isFlowTag(tag.name) ||
+    host.parseImports.findComponentImport(text, tag.name) !== undefined
   );
 }
 
 /** Whether a tag is plain HTML: lowercase, not a component and not a flow tag. */
-export function isPlainTag(text: string, name: string): boolean {
+export function isPlainTag(host: LusiaHost, text: string, name: string): boolean {
   return (
     /^[a-z][\w.-]*$/.test(name) &&
     name !== "style" &&
     name !== "script" &&
-    !isFlowTag(name) &&
-    findComponentImport(text, name) === undefined
+    !host.markupItems.isFlowTag(name) &&
+    host.parseImports.findComponentImport(text, name) === undefined
   );
 }
 

@@ -9,6 +9,7 @@ import {
   type SourceName,
 } from "./diagnostics-sources.ts";
 import { htmlDiagnostics } from "./logic/html.ts";
+import { hostFor, type HostSource } from "./host/source.ts";
 import { TsProject } from "./ts/project.ts";
 
 const DEBOUNCE_MS = 300;
@@ -19,6 +20,12 @@ export class LusiaDiagnostics implements vscode.Disposable {
   private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
   private readonly versions = new Map<string, number>();
 
+  constructor(private readonly hosts: HostSource = hostFor) {}
+
+  scheduleAll(): void {
+    for (const document of vscode.workspace.textDocuments) this.schedule(document);
+  }
+
   schedule(document: vscode.TextDocument): void {
     if (document.languageId !== "lusia") return;
     const key = document.uri.toString();
@@ -28,7 +35,7 @@ export class LusiaDiagnostics implements vscode.Disposable {
       key,
       setTimeout(() => {
         this.timers.delete(key);
-        this.check(document);
+        void this.check(document);
       }, DEBOUNCE_MS),
     );
   }
@@ -53,17 +60,23 @@ export class LusiaDiagnostics implements vscode.Disposable {
     this.timers.delete(key);
   }
 
-  private check(document: vscode.TextDocument): void {
-    const text = document.getText();
+  private async check(document: vscode.TextDocument): Promise<void> {
     const version = document.version;
+    const host = await this.hosts(document);
+    if (this.stale(document, version)) return;
+    if (!host) {
+      this.apply(document, {});
+      return;
+    }
+    const text = document.getText();
     const sources: SourceDiagnostics = {
-      lusia: compileDiagnostics(document),
-      "lusia-lint": lintDiagnostics(document),
-      typescript: typeScriptDiagnostics(document),
-      css: cssSourceDiagnostics(document),
+      lusia: compileDiagnostics(host, document),
+      "lusia-lint": lintDiagnostics(host, document),
+      typescript: typeScriptDiagnostics(host, document),
+      css: cssSourceDiagnostics(host, document),
     };
     this.apply(document, sources);
-    void htmlDiagnostics(text).then((issues) => {
+    void htmlDiagnostics(host, text).then((issues) => {
       if (this.stale(document, version)) return;
       sources.html = htmlSourceDiagnostics(document, issues);
       this.apply(document, sources);

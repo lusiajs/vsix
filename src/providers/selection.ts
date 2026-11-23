@@ -1,32 +1,38 @@
 import * as vscode from "vscode";
-import { regionAt } from "lusiajs/language/parse/regions.ts";
 import { cssSelection, type CssSelectionRange } from "../logic/css.ts";
 import { htmlSelection, type RegionSelection } from "../logic/html.ts";
+import { hostFor, type HostSource } from "../host/source.ts";
+import type { LusiaHost } from "../host/types.ts";
 import { rangeOf } from "./common.ts";
 
 export class LusiaSelectionRangeProvider implements vscode.SelectionRangeProvider {
-  provideSelectionRanges(
+  constructor(private readonly hosts: HostSource = hostFor) {}
+
+  async provideSelectionRanges(
     document: vscode.TextDocument,
     positions: vscode.Position[],
-  ): vscode.SelectionRange[] {
+  ): Promise<vscode.SelectionRange[]> {
+    const host = await this.hosts(document);
+    if (!host) return [];
     const text = document.getText();
-    return positions.map((position) => selectionAt(document, text, position));
+    return positions.map((position) => selectionAt(host, document, text, position));
   }
 }
 
 function selectionAt(
+  host: LusiaHost,
   document: vscode.TextDocument,
   text: string,
   position: vscode.Position,
 ): vscode.SelectionRange {
   const offset = document.offsetAt(position);
-  const region = regionAt(text, offset);
+  const region = host.parseRegions.regionAt(text, offset);
   if (region.kind === "style") {
-    const selection = cssSelection(text, [offset])[0];
+    const selection = cssSelection(host, text, [offset])[0];
     if (selection) return toSelection(document, selection);
   }
   if (region.kind === "markup") {
-    const [selection] = htmlSelection(text, [offset]);
+    const [selection] = htmlSelection(host, text, [offset]);
     if (selection) return toSelection(document, selection);
   }
   return new vscode.SelectionRange(new vscode.Range(position, position));

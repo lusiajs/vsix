@@ -2,6 +2,7 @@ import { basename } from "node:path";
 import type { CompletionItem } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import type { CompletionResult } from "lusiajs/editor/completions.ts";
 import type { TextRange } from "lusiajs/editor/range.ts";
+import type { LusiaHost } from "../../host/types.ts";
 import { hoverText, offsetRange, toCompletionKind } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { indexMembers } from "./scss/find.ts";
@@ -9,12 +10,13 @@ import { buildScssIndex } from "./scss/index.ts";
 import type { ScssIndex, ScssMember } from "./scss/types.ts";
 
 export function cssCompletions(
+  host: LusiaHost,
   text: string,
   offset: number,
   fileName?: string,
 ): CompletionResult[] {
   try {
-    const style = styleContextAt(text, offset);
+    const style = styleContextAt(host, text, offset);
     if (!style) return [];
     const official = officialCompletions(style);
     const indexed = scssCompletions(style, fileName, offset);

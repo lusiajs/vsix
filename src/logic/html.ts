@@ -3,7 +3,7 @@ import type { CompletionItem } from "vscode-html-languageservice/lib/esm/htmlLan
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { CompletionResult } from "lusiajs/editor/completions.ts";
 import type { HoverResult } from "lusiajs/editor/hover.ts";
-import { isTagNameTyping } from "lusiajs/language/parse/tag.ts";
+import type { LusiaHost } from "../host/types.ts";
 import {
   URI,
   editable,
@@ -36,9 +36,9 @@ export type {
   RegionSymbol,
 } from "./region-types.ts";
 
-export function htmlCompletions(text: string, offset: number): CompletionResult[] {
-  if (!editable(text, offset)) return [];
-  if (!isTagNameTyping(text, offset) && ownedTag(text, offset)) return [];
+export function htmlCompletions(host: LusiaHost, text: string, offset: number): CompletionResult[] {
+  if (!editable(host, text, offset)) return [];
+  if (!host.parseTag.isTagNameTyping(text, offset) && ownedTag(host, text, offset)) return [];
   const document = editorDocument(URI, "html", text);
   try {
     const htmlDocument = htmlService().parseHTMLDocument(document);
@@ -54,8 +54,8 @@ export function htmlCompletions(text: string, offset: number): CompletionResult[
   }
 }
 
-export function htmlHover(text: string, offset: number): HoverResult | undefined {
-  if (!editable(text, offset) || ownedTag(text, offset) || !insideTag(text, offset))
+export function htmlHover(host: LusiaHost, text: string, offset: number): HoverResult | undefined {
+  if (!editable(host, text, offset) || ownedTag(host, text, offset) || !insideTag(text, offset))
     return undefined;
   const document = editorDocument(URI, "html", text);
   try {
@@ -70,10 +70,14 @@ export function htmlHover(text: string, offset: number): HoverResult | undefined
 }
 
 /** The closing tag to insert after the `>` the user just typed, for plain tags. */
-export function htmlTagClose(text: string, offset: number): RegionEdit | undefined {
-  if (!editable(text, offset) || text.charAt(offset - 1) !== ">") return undefined;
+export function htmlTagClose(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): RegionEdit | undefined {
+  if (!editable(host, text, offset) || text.charAt(offset - 1) !== ">") return undefined;
   const name = startTagNameBefore(text, offset);
-  if (!name || !isPlainTag(text, name)) return undefined;
+  if (!name || !isPlainTag(host, text, name)) return undefined;
   const { document, parsed } = markupHtml(text);
   try {
     const completion = htmlService().doTagComplete(document, document.positionAt(offset), parsed);

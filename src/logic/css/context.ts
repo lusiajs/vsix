@@ -6,8 +6,8 @@ import {
 import type { LanguageService } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { TextRange } from "lusiajs/editor/range.ts";
-import { regionAt } from "lusiajs/language/parse/regions.ts";
-import { findSections, type Section } from "lusiajs/language/parse/sections.ts";
+import type { Section } from "lusiajs/language/parse/sections.ts";
+import type { LusiaHost } from "../../host/types.ts";
 import { editorDocument, type LspPosition } from "../language-service.ts";
 
 export type StyleLanguage = "css" | "scss";
@@ -30,15 +30,20 @@ const CSS_LANG = /(?:^|\s)lang\s*=\s*(?:"css"|'css')/i;
 
 const services: { css?: LanguageService; scss?: LanguageService } = {};
 
-export function styleContextAt(text: string, offset: number): StyleContext | undefined {
-  const region = regionAt(text, offset);
+export function styleContextAt(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): StyleContext | undefined {
+  const region = host.parseRegions.regionAt(text, offset);
   if (region.kind !== "style" || !region.section) return undefined;
   const style = styleSection(region.section, text);
   return { ...style, position: style.document.positionAt(offset - style.section.contentStart) };
 }
 
-export function styleSections(text: string): StyleSection[] {
-  return findSections(text)
+export function styleSections(host: LusiaHost, text: string): StyleSection[] {
+  return host.parseSections
+    .findSections(text)
     .filter((section) => section.kind === "style")
     .map((section) => styleSection(section, text));
 }

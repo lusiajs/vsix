@@ -1,18 +1,23 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { exportedSymbols, type ScriptSymbol } from "lusiajs/editor/script/symbols.ts";
+import type { ScriptSymbol } from "lusiajs/editor/script/symbols.ts";
+import type { LusiaHost } from "./host/types.ts";
 
 const CACHE_LIMIT = 100;
 const TYPESCRIPT_EXTENSION = /\.tsx?$/;
 const cache = new Map<string, ScriptSymbol[]>();
 
 /** The symbols a relative import specifier points at, or none when it is missing or not TypeScript. */
-export function scriptSymbols(documentPath: string, specifier: string): ScriptSymbol[] {
+export function scriptSymbols(
+  host: LusiaHost,
+  documentPath: string,
+  specifier: string,
+): ScriptSymbol[] {
   if (!isRelative(specifier)) return [];
   const path = symbolPath(documentPath, specifier);
   if (!path) return [];
   try {
-    return symbolsAt(path, specifier);
+    return symbolsAt(host, path, specifier);
   } catch {
     return [];
   }
@@ -22,12 +27,12 @@ export function clearScriptSymbolsCache(): void {
   cache.clear();
 }
 
-function symbolsAt(path: string, specifier: string): ScriptSymbol[] {
+function symbolsAt(host: LusiaHost, path: string, specifier: string): ScriptSymbol[] {
   const stat = statSync(path);
   const key = `${path}\n${stat.mtimeMs}\n${stat.size}`;
   const cached = cache.get(key);
   if (cached) return withSpecifier(cached, specifier);
-  const symbols = exportedSymbols(readFileSync(path, "utf8"), specifier);
+  const symbols = host.scriptSymbols.exportedSymbols(readFileSync(path, "utf8"), specifier);
   remember(key, symbols);
   return symbols;
 }

@@ -5,6 +5,7 @@ import type {
   TextEdit,
   WorkspaceEdit,
 } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
+import type { LusiaHost } from "../../host/types.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import type { CssCodeAction, CssDiagnostic, CssDiagnosticSeverity, CssTextEdit } from "./types.ts";
 
@@ -16,13 +17,14 @@ const SEVERITIES: Record<CssDiagnosticSeverity, DiagnosticSeverity> = {
 };
 
 export function cssCodeActions(
+  host: LusiaHost,
   text: string,
   start: number,
   end: number,
   diagnostics: CssDiagnostic[],
 ): CssCodeAction[] {
   try {
-    const style = styleContextAt(text, start);
+    const style = styleContextAt(host, text, start);
     if (!style) return [];
     const stylesheet = style.service.parseStylesheet(style.document);
     const context = { diagnostics: localDiagnostics(diagnostics, style) };

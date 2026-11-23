@@ -1,6 +1,6 @@
 import { basename } from "node:path";
 import { readFileSync } from "node:fs";
-import { findSections } from "lusiajs/language/parse/sections.ts";
+import type { LusiaHost } from "../host/types.ts";
 import { expressionEnd } from "./scan.ts";
 import { flowDeclarations } from "./flow-declarations.ts";
 import { virtualScript } from "./virtual.ts";
@@ -38,19 +38,23 @@ export function componentLength(fileName: string): number | undefined {
 }
 
 /** Also writes the props type that the parent tooling reads. */
-export function componentModule(fileName: string, sink: VirtualSink): string | undefined {
+export function componentModule(
+  host: LusiaHost,
+  fileName: string,
+  sink: VirtualSink,
+): string | undefined {
   const text = sources.get(fileName)?.text ?? readComponent(fileName);
   if (text === undefined) return undefined;
   const childPath = `${fileName}.ts`;
-  sink.set(childPath, componentSource(text));
+  sink.set(childPath, componentSource(host, text));
   const shimPath = `${fileName}.d.ts`;
   sink.set(shimPath, componentShim(childPath));
   return shimPath;
 }
 
-export function componentSource(text: string): string {
-  const virtual = virtualScript(text);
-  return `${virtual.text}${flowDeclarations(virtual.flowNames)}${propsDeclaration(scriptOf(text))}`;
+export function componentSource(host: LusiaHost, text: string): string {
+  const virtual = virtualScript(host, text);
+  return `${virtual.text}${flowDeclarations(virtual.flowNames)}${propsDeclaration(scriptOf(host, text))}`;
 }
 
 function readComponent(fileName: string): string | undefined {
@@ -61,8 +65,10 @@ function readComponent(fileName: string): string | undefined {
   }
 }
 
-function scriptOf(text: string): string {
-  const section = findSections(text).find((candidate) => candidate.kind === "script");
+function scriptOf(host: LusiaHost, text: string): string {
+  const section = host.parseSections
+    .findSections(text)
+    .find((candidate) => candidate.kind === "script");
   return section === undefined ? "" : text.slice(section.contentStart, section.contentEnd);
 }
 

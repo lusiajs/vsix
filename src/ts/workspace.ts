@@ -4,18 +4,19 @@ import { compilerOptionsFor, type Config } from "./config.ts";
 import { createLanguageHost, VirtualFiles } from "./host.ts";
 import { loadTypeScript, type TypeScriptModule } from "./load.ts";
 import { componentModule, componentVersion } from "./modules.ts";
+import type { LusiaHost } from "../host/types.ts";
 
 /** One TypeScript program per tsconfig, so lib files and imports are checked once. */
 export class Workspace {
   private static readonly cache = new Map<string, Workspace>();
 
-  static for(fileName: string): Workspace | undefined {
+  static for(host: LusiaHost, fileName: string): Workspace | undefined {
     const typescript = loadTypeScript(dirname(fileName));
     if (typescript === undefined) return undefined;
     const config = compilerOptionsFor(typescript, fileName);
     const cached = Workspace.cache.get(config.directory);
-    if (cached) return cached;
-    const workspace = new Workspace(typescript, config);
+    if (cached?.host === host) return cached;
+    const workspace = new Workspace(host, typescript, config);
     Workspace.cache.set(config.directory, workspace);
     return workspace;
   }
@@ -26,6 +27,7 @@ export class Workspace {
   private readonly components = new Map<string, number>();
 
   private constructor(
+    private readonly host: LusiaHost,
     readonly typescript: TypeScriptModule,
     private readonly config: Config,
   ) {
@@ -56,13 +58,13 @@ export class Workspace {
   refreshComponents(): void {
     for (const [fileName, version] of this.components) {
       if (componentVersion(fileName) === version) continue;
-      componentModule(fileName, this.files);
+      componentModule(this.host, fileName, this.files);
       this.components.set(fileName, componentVersion(fileName));
     }
   }
 
   private component(fileName: string): string | undefined {
-    const shim = componentModule(fileName, this.files);
+    const shim = componentModule(this.host, fileName, this.files);
     if (shim !== undefined) this.components.set(fileName, componentVersion(fileName));
     return shim;
   }

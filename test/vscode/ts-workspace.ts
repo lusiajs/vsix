@@ -2,6 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { TsProject } from "../../src/ts/project.ts";
+import { realHost } from "../support/real-host.ts";
 
 const TMP = resolve(import.meta.dir, "../../.agent/tmp");
 const RUNTIME = fileURLToPath(import.meta.resolve("lusiajs"));
@@ -29,7 +30,7 @@ export function createWorkspace(files: Record<string, string> = {}): Workspace {
         noEmit: true,
         allowImportingTsExtensions: true,
         lib: ["ESNext", "DOM", "DOM.Iterable"],
-        paths: { "lusiajs": [RUNTIME] },
+        paths: { lusiajs: [RUNTIME] },
       },
     }),
   );
@@ -46,7 +47,7 @@ export function createWorkspace(files: Record<string, string> = {}): Workspace {
       const file = join(root, name);
       writeFileSync(file, text);
       opened.push(file);
-      return TsProject.open(file, text);
+      return TsProject.open(realHost, file, text);
     },
     dispose() {
       for (const file of opened) TsProject.forget(file);
