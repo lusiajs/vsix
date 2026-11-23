@@ -36,3 +36,6 @@ Indent the code inside `<script>` and `<style>` of a `.lusia` file by 2 spaces, 
 
 # 10. Branches
 Work from `main`. Only `main` and `dev` stay long-lived. Delete a branch once it is merged.
+
+# 11. Worktrees
+Worktrees go in `.worktrees/` inside this repo (gitignored): `git worktree add .worktrees/<name> -b <branch> dev`. Never put them next to the repo or in `/tmp`.
