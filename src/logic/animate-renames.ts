@@ -17,10 +17,14 @@ const NAME_RENAMES: ReadonlyMap<string, string> = new Map([
   ["MIDWAY.SKIP", "MIDWAY.JUMP_TO_END"],
   ["MIDWAY.IGNORE", "MIDWAY.KEEP_CURRENT"],
   ["MIDWAY.TURN", "MIDWAY.SWITCH"],
+  ["TURN.SUDDEN", "MIDWAY.SWITCH"],
+  ["TURN.SMOOTH", "MIDWAY.SWITCH_SMOOTH"],
+  ["TURN.STOP", "MIDWAY.SWITCH_STOP"],
 ]);
 
 // A key is an old name before a colon; an enum name is an old name before its member or as a bare MIDWAY member.
-const OLD_NAME = /\b(?:style|when|more|default)(?=\s*:)|\bWHEN(?=\.)|\bMIDWAY\.(?:FINISH|SKIP|IGNORE|TURN)\b/;
+const OLD_NAME =
+  /\b(?:style|when|more|default)(?=\s*:)|\bWHEN(?=\.)|\bMIDWAY\.(?:FINISH|SKIP|IGNORE|TURN)\b|(?<!MIDWAY\.)\bTURN\.(?:SUDDEN|SMOOTH|STOP)\b/;
 
 /** The first old animate name in the range, with the text that replaces it. */
 export function animateRenameFix(text: string, start: number, end: number): RenameFix | undefined {

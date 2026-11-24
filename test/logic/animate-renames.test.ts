@@ -15,6 +15,8 @@ describe("animate rename fix", () => {
     ["MIDWAY.FINISH", "MIDWAY.FINISH", "MIDWAY.WAIT"],
     ["MIDWAY.SKIP", "MIDWAY.SKIP", "MIDWAY.JUMP_TO_END"],
     ["MIDWAY.IGNORE", "MIDWAY.IGNORE", "MIDWAY.KEEP_CURRENT"],
+    ["TURN.SMOOTH", "TURN.SMOOTH", "MIDWAY.SWITCH_SMOOTH"],
+    ["TURN.STOP", "TURN.STOP", "MIDWAY.SWITCH_STOP"],
     ["MIDWAY.TURN", "MIDWAY.TURN", "MIDWAY.SWITCH"],
   ])("renames %s", (text, from, to) => {
     const fix = fixIn(text);
