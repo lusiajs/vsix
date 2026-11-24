@@ -49,21 +49,21 @@ function reportLoaded(result: Extract<HostResult, { ok: true }>): void {
   );
   if (!once(`loaded|${info.entryPath}|${info.toolsVersion}|${lusia}`)) return;
   log([
-    `Loaded ${TOOLS_PACKAGE}/${TOOLS_ENTRY.slice(2)}`,
+    `Loaded ${info.packageName}/${TOOLS_ENTRY.slice(2)}`,
     `  path: ${info.entryPath}`,
-    `  language tools: ${info.toolsVersion}`,
+    `  ${info.packageName}: ${info.toolsVersion}`,
     `  lusiajs: ${lusia}`,
     `  editor API: ${info.apiVersion}`,
     `  load time: ${info.loadMs.toFixed(1)} ms`,
   ]);
   if (info.lusiaVersion !== undefined && info.lusiaVersion !== info.toolsVersion) {
-    warnMismatch(info.toolsVersion, info.lusiaVersion);
+    warnMismatch(info.packageName, info.toolsVersion, info.lusiaVersion);
   }
 }
 
-function warnMismatch(toolsVersion: string, lusiaVersion: string): void {
-  const fix = `bun add -d ${TOOLS_PACKAGE}@${lusiaVersion}`;
-  const message = `${TOOLS_PACKAGE} ${toolsVersion} does not match lusiajs ${lusiaVersion}. Run: ${fix}`;
+function warnMismatch(packageName: string, toolsVersion: string, lusiaVersion: string): void {
+  const fix = `bun add -d ${packageName}@${lusiaVersion}`;
+  const message = `${packageName} ${toolsVersion} does not match lusiajs ${lusiaVersion}. Run: ${fix}`;
   log([`Warning: ${message}`]);
   void vscode.window.showWarningMessage(message, "Copy command").then((choice) => {
     if (choice === "Copy command") void vscode.env.clipboard.writeText(fix);
@@ -96,22 +96,22 @@ function failureMessage(failure: HostFailure): FailureMessage {
       return notInstalledMessage(failure.lusiaInstalled, failure.lusiaVersion, failure.searched);
     case "untrusted":
       return {
-        summary: "Trust this folder to let Lusia run the project's language tools.",
+        summary: "Trust this folder to let Lusia use the project's VS Code support.",
         details: [`Entry: ${failure.entryPath}`],
       };
     case "noEntry":
       return {
-        summary: `${TOOLS_PACKAGE} ${failure.toolsVersion} has no ${TOOLS_ENTRY.slice(2)} entry. Update: bun update ${TOOLS_PACKAGE}`,
+        summary: `${failure.packageName} ${failure.toolsVersion} has no ${TOOLS_ENTRY.slice(2)} entry. Update: bun update ${failure.packageName}`,
         details: [`Package: ${failure.packagePath}`],
       };
     case "apiVersion":
       return {
-        summary: `${TOOLS_PACKAGE} ${failure.toolsVersion} uses editor API ${String(failure.apiVersion)}; this extension supports ${SUPPORTED_API_VERSION}. Update the extension or update ${TOOLS_PACKAGE}.`,
+        summary: `${failure.packageName} ${failure.toolsVersion} uses editor API ${String(failure.apiVersion)}; this extension supports ${SUPPORTED_API_VERSION}. Update the extension or update ${failure.packageName}.`,
         details: [`Entry: ${failure.entryPath}`],
       };
     case "importFailed":
       return {
-        summary: "Lusia language tools failed to load. Reinstall: bun install",
+        summary: "Lusia VS Code support failed to load. Reinstall: bun install",
         details: [`Entry: ${failure.entryPath}`, String(failure.error), errorStack(failure.error)],
       };
   }
@@ -123,7 +123,7 @@ function notInstalledMessage(
   searched: string[],
 ): FailureMessage {
   const summary = lusiaInstalled
-    ? `Lusia language tools are not installed. Run: bun add -d ${TOOLS_PACKAGE}@${lusiaVersion}`
+    ? `Lusia VS Code support is not installed. Run: bun add -d ${TOOLS_PACKAGE}@${lusiaVersion}`
     : `Lusia is not installed in this project. Run: bun add -d ${LUSIA_PACKAGE} ${TOOLS_PACKAGE}`;
   return { summary, details: ["Searched:", ...searched.map((path) => `  ${path}`)] };
 }

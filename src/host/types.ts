@@ -30,14 +30,14 @@ export interface SemanticToken {
   modifiers: string[];
 }
 
-/** Added in later language tools; older tools do not export it. */
+/** Added in later VS Code support packages; older ones do not export it. */
 export interface SemanticTokensNamespace {
   semanticTokens(source: string): SemanticToken[];
   TOKEN_TYPES: readonly string[];
   TOKEN_MODIFIERS: readonly string[];
 }
 
-/** The namespaces the language tools export, typed from the lusiajs modules they wrap. */
+/** The namespaces the VS Code support package exports, typed from the lusiajs modules they wrap. */
 export interface LusiaHost {
   range: typeof range;
   completions: typeof completions;

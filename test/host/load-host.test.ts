@@ -4,8 +4,11 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { vscode } from "../vscode/mock-vscode.ts";
 import { fakeDocument } from "../vscode/vscode-stub.ts";
+import { TOOLS_PACKAGES } from "../../src/host/constants.ts";
 import { hostResultFor } from "../../src/host/load-host.ts";
 import { HOST_NAMESPACES } from "../../src/host/types.ts";
+
+const [NEW_PACKAGE, OLD_PACKAGE] = TOOLS_PACKAGES;
 
 const roots: string[] = [];
 const workspace = vscode.workspace as unknown as {
@@ -39,11 +42,12 @@ function writeJson(file: string, value: unknown): void {
 
 function installTools(
   root: string,
-  options: { version?: string; entry?: string; source?: string } = {},
+  options: { name?: string; version?: string; entry?: string; source?: string } = {},
 ): void {
-  const packageDir = join(root, "node_modules", "@lusiajs", "language-tools");
+  const name = options.name ?? NEW_PACKAGE;
+  const packageDir = join(root, "node_modules", name);
   writeJson(join(packageDir, "package.json"), {
-    name: "@lusiajs/language-tools",
+    name,
     version: options.version ?? "0.1.0",
     exports: { "./vscode": { types: "./dist/vscode.d.ts", import: "./dist/vscode.js" } },
   });
@@ -70,10 +74,30 @@ describe("loading the language host", () => {
     expect(result.info.toolsVersion).toBe("0.1.0");
     expect(result.info.lusiaVersion).toBe("0.2.0");
     expect(result.info.apiVersion).toBe(1);
-    expect(result.info.entryPath).toBe(
-      join(root, "node_modules", "@lusiajs", "language-tools", "dist", "vscode.js"),
-    );
+    expect(result.info.packageName).toBe(NEW_PACKAGE);
+    expect(result.info.entryPath).toBe(join(root, "node_modules", NEW_PACKAGE, "dist", "vscode.js"));
     expect(result.host.range).toEqual({});
+  });
+
+  test("loads the old package name when only it is installed", async () => {
+    const { root, document } = project();
+    installTools(root, { name: OLD_PACKAGE });
+    const result = await hostResultFor(document);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.info.packageName).toBe(OLD_PACKAGE);
+    expect(result.info.entryPath).toBe(join(root, "node_modules", OLD_PACKAGE, "dist", "vscode.js"));
+  });
+
+  test("prefers the new package name when both are installed", async () => {
+    const { root, document } = project();
+    installTools(root, { name: OLD_PACKAGE, version: "0.1.0" });
+    installTools(root, { name: NEW_PACKAGE, version: "0.2.0" });
+    const result = await hostResultFor(document);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.info.packageName).toBe(NEW_PACKAGE);
+    expect(result.info.toolsVersion).toBe("0.2.0");
   });
 
   test("keeps the optional semanticTokens namespace when the tools export it", async () => {
@@ -97,7 +121,7 @@ describe("loading the language host", () => {
     expect(result.host.semanticTokens).toBeUndefined();
   });
 
-  test("reports every searched path when the language tools are not installed", async () => {
+  test("reports every searched path when the VS Code support is not installed", async () => {
     const { root, document } = project();
     const result = await hostResultFor(document);
     expect(result.ok).toBe(false);
@@ -105,14 +129,13 @@ describe("loading the language host", () => {
     expect(result.failure).toMatchObject({ cause: "notInstalled", lusiaInstalled: false });
     if (result.failure.cause !== "notInstalled") return;
     expect(result.failure.searched).toContain(
-      join(root, "src", "node_modules", "@lusiajs", "language-tools", "package.json"),
+      join(root, "src", "node_modules", NEW_PACKAGE, "package.json"),
     );
-    expect(result.failure.searched).toContain(
-      join(root, "node_modules", "@lusiajs", "language-tools", "package.json"),
-    );
+    expect(result.failure.searched).toContain(join(root, "node_modules", NEW_PACKAGE, "package.json"));
+    expect(result.failure.searched).toContain(join(root, "node_modules", OLD_PACKAGE, "package.json"));
   });
 
-  test("says lusiajs is present when only the language tools are missing", async () => {
+  test("says lusiajs is present when only the VS Code support is missing", async () => {
     const { root, document } = project();
     installLusia(root, "0.1.0");
     const result = await hostResultFor(document);
@@ -124,8 +147,8 @@ describe("loading the language host", () => {
 
   test("fails for an old package without the vscode entry", async () => {
     const { root, document } = project();
-    writeJson(join(root, "node_modules", "@lusiajs", "language-tools", "package.json"), {
-      name: "@lusiajs/language-tools",
+    writeJson(join(root, "node_modules", NEW_PACKAGE, "package.json"), {
+      name: NEW_PACKAGE,
       version: "0.0.9",
     });
     const result = await hostResultFor(document);
@@ -167,7 +190,7 @@ describe("loading the language host", () => {
 });
 
 describe("version mismatch", () => {
-  test("still loads when lusiajs and the language tools differ", async () => {
+  test("still loads when lusiajs and the VS Code support differ", async () => {
     const { root, document } = project();
     installTools(root, { version: "0.1.0" });
     installLusia(root, "0.2.0");

@@ -4,7 +4,7 @@
 
 Editor support for `.lusia` components: colors, completion, errors and formatting.
 
-Works with `lusiajs` and `@lusiajs/language-tools` 0.1.1-beta and later 0.1 versions.
+Works with `lusiajs` and `@lusiajs/vscode-support` 0.1.1-beta and later 0.1 versions. Projects that still use `@lusiajs/language-tools` also work.
 
 ## Features
 
@@ -21,10 +21,10 @@ Works with `lusiajs` and `@lusiajs/language-tools` 0.1.1-beta and later 0.1 vers
 
 ## Setup
 
-The language features come from the project's own Lusia tools. Install them in your project:
+The language features come from the project's own VS Code support package. Install it in your project:
 
 ```sh
-bun add -d lusiajs @lusiajs/language-tools
+bun add -d lusiajs @lusiajs/vscode-support
 ```
 
 > [!IMPORTANT]
@@ -33,8 +33,8 @@ bun add -d lusiajs @lusiajs/language-tools
 | Message | What to do |
 | ------- | ---------- |
 | Lusia is not installed in this project | Run the install command above |
-| Lusia language tools are not installed | Run `bun add -d @lusiajs/language-tools@<lusiajs version>` |
-| has no `vscode` entry | Update the tools: `bun update @lusiajs/language-tools` |
+| Lusia VS Code support is not installed | Run `bun add -d @lusiajs/vscode-support@<lusiajs version>` |
+| has no `vscode` entry | Update the package: `bun update @lusiajs/vscode-support` (or `@lusiajs/language-tools` for older projects) |
 | uses editor API N | Update the extension, or update the tools |
 | failed to load | Read the error in the Lusia output, then run `bun install` |
 | Trust this folder | Trust the folder, so Lusia can run the project's tools |
