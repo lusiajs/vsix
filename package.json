@@ -14,7 +14,10 @@
     "vscode": "^1.80.0"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Snippets",
+    "Formatters",
+    "Linters"
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
@@ -127,5 +130,21 @@
   },
   "dependencies": {
     "typescript": "5.9.3"
-  }
+  },
+  "keywords": [
+    "lusia",
+    "bun",
+    "typescript",
+    "scss",
+    "html",
+    "single-file",
+    "component",
+    "framework",
+    "ui",
+    "syntax highlighting",
+    "autocomplete",
+    "intellisense",
+    "formatter",
+    "snippets"
+  ]
 }
