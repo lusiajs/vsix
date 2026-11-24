@@ -52,16 +52,16 @@ describe("api hover markdown", () => {
     expect(markdown.startsWith("```html\n<EACH")).toBe(true);
   });
 
-  test("shows the compact declaration for WHEN and PRESET", () => {
-    expect(declarationOf(entryNamed("WHEN"))).toBe(
-      "const WHEN: { ATTACH, DETACH, VIEW, HOVER, SCROLL, MOVE, RESIZE, MOVE_OR_RESIZE, MANUAL }",
+  test("shows the compact declaration for ON and PRESET", () => {
+    expect(declarationOf(entryNamed("ON"))).toBe(
+      "const ON: { ATTACH, DETACH, VIEW, HOVER, SCROLL, MOVE, RESIZE, MOVE_OR_RESIZE, MANUAL, MOUSE_MOVE }",
     );
     expect(declarationOf(entryNamed("PRESET"))).toStartWith("const PRESET: { FADE_IN, FADE_OUT");
   });
 
   test("escapes pipes inside a table cell", () => {
     const entry: ApiEntry = {
-      ...entryNamed("TURN"),
+      ...entryNamed("MIDWAY"),
       members: [{ name: "A", summary: "one | two" }],
     };
     expect(apiHoverMarkdown(entry)).toContain("| `A` | one \\| two |");
