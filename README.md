@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/lusiajs/lusia/main/logo/logo-128.png" width="96" alt="Lusia logo"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/lusiajs/lusia/main/logo/logo-animated.svg" width="96" alt="Lusia logo"></p>
 
 # Lusia for VS Code
 
