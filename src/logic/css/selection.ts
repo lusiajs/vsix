@@ -13,7 +13,11 @@ export function cssSelection(
   return offsets.map((offset) => selectionAt(host, text, offset));
 }
 
-function selectionAt(host: LusiaHost, text: string, offset: number): CssSelectionRange | undefined {
+function selectionAt(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): CssSelectionRange | undefined {
   try {
     const style = styleContextAt(host, text, offset);
     if (!style) return undefined;
@@ -29,10 +33,15 @@ function selectionAt(host: LusiaHost, text: string, offset: number): CssSelectio
   }
 }
 
-function toSelection(selection: SelectionRange, style: StyleContext): CssSelectionRange {
+function toSelection(
+  selection: SelectionRange,
+  style: StyleContext,
+): CssSelectionRange {
   const range = offsetRange(style.document, selection.range);
   return {
-    range: range ? shift(range, style.section.contentStart) : { start: 0, end: 0 },
+    range: range
+      ? shift(range, style.section.contentStart)
+      : { start: 0, end: 0 },
     parent: selection.parent ? toSelection(selection.parent, style) : undefined,
   };
 }

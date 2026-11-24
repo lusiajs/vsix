@@ -7,13 +7,20 @@ import { hostFor, type HostSource } from "../host/source.ts";
 export class LusiaFoldingRangeProvider implements vscode.FoldingRangeProvider {
   constructor(private readonly hosts: HostSource = hostFor) {}
 
-  async provideFoldingRanges(document: vscode.TextDocument): Promise<vscode.FoldingRange[]> {
+  async provideFoldingRanges(
+    document: vscode.TextDocument,
+  ): Promise<vscode.FoldingRange[]> {
     const host = await this.hosts(document);
     if (!host) return [];
     const text = document.getText();
     return [
       ...htmlFolding(text).map(
-        (fold) => new vscode.FoldingRange(fold.startLine, fold.endLine, kindOf(fold.kind)),
+        (fold) =>
+          new vscode.FoldingRange(
+            fold.startLine,
+            fold.endLine,
+            kindOf(fold.kind),
+          ),
       ),
       ...cssFolding(host, text).flatMap((fold) =>
         offsetRange(document, fold.start, fold.end, fold.kind),
@@ -33,7 +40,9 @@ function offsetRange(
 ): vscode.FoldingRange[] {
   const startLine = document.positionAt(start).line;
   const endLine = document.positionAt(end).line;
-  return endLine > startLine ? [new vscode.FoldingRange(startLine, endLine, kindOf(kind))] : [];
+  return endLine > startLine
+    ? [new vscode.FoldingRange(startLine, endLine, kindOf(kind))]
+    : [];
 }
 
 function sectionRange(
@@ -42,10 +51,14 @@ function sectionRange(
 ): vscode.FoldingRange[] {
   const startLine = document.positionAt(section.openStart).line;
   const endLine = document.positionAt(section.end).line;
-  return endLine > startLine ? [new vscode.FoldingRange(startLine, endLine - 1)] : [];
+  return endLine > startLine
+    ? [new vscode.FoldingRange(startLine, endLine - 1)]
+    : [];
 }
 
-function kindOf(kind: RegionFolding["kind"]): vscode.FoldingRangeKind | undefined {
+function kindOf(
+  kind: RegionFolding["kind"],
+): vscode.FoldingRangeKind | undefined {
   if (kind === "comment") return vscode.FoldingRangeKind.Comment;
   if (kind === "imports") return vscode.FoldingRangeKind.Imports;
   return kind === "region" ? vscode.FoldingRangeKind.Region : undefined;

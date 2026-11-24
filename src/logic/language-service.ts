@@ -13,7 +13,11 @@ export interface LspRange {
   end: LspPosition;
 }
 
-export function editorDocument(uri: string, languageId: string, text: string): TextDocument {
+export function editorDocument(
+  uri: string,
+  languageId: string,
+  text: string,
+): TextDocument {
   return TextDocument.create(uri, languageId, 1, text);
 }
 
@@ -41,7 +45,9 @@ export function toCompletionKind(kind: number | undefined): CompletionKind {
 }
 
 /** The markdown of a language server hover, or undefined when it is empty. */
-export function hoverText(hover: { contents: unknown } | null | undefined): string | undefined {
+export function hoverText(
+  hover: { contents: unknown } | null | undefined,
+): string | undefined {
   return hover ? contentsText(hover.contents) : undefined;
 }
 
@@ -50,13 +56,19 @@ export function offsetRange(
   range: LspRange | undefined,
 ): TextRange | undefined {
   if (!range) return undefined;
-  return { start: document.offsetAt(range.start), end: document.offsetAt(range.end) };
+  return {
+    start: document.offsetAt(range.start),
+    end: document.offsetAt(range.end),
+  };
 }
 
 function contentsText(contents: unknown): string | undefined {
-  if (typeof contents === "string") return contents === "" ? undefined : contents;
+  if (typeof contents === "string")
+    return contents === "" ? undefined : contents;
   if (Array.isArray(contents)) {
-    const parts = contents.map(itemText).filter((part): part is string => part !== undefined);
+    const parts = contents
+      .map(itemText)
+      .filter((part): part is string => part !== undefined);
     return parts.length === 0 ? undefined : parts.join("\n\n");
   }
   return itemText(contents);
@@ -64,7 +76,8 @@ function contentsText(contents: unknown): string | undefined {
 
 function itemText(item: unknown): string | undefined {
   if (typeof item === "string") return item === "" ? undefined : item;
-  if (isCode(item)) return ["```" + item.language, item.value, "```"].join("\n");
+  if (isCode(item))
+    return ["```" + item.language, item.value, "```"].join("\n");
   if (isMarkup(item)) return item.value === "" ? undefined : item.value;
   return undefined;
 }

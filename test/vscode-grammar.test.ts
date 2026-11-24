@@ -16,7 +16,9 @@ interface Rule {
   [key: string]: unknown;
 }
 
-const grammar = JSON.parse(readFileSync(GRAMMAR_PATH, "utf8")) as Rule & { scopeName: string };
+const grammar = JSON.parse(readFileSync(GRAMMAR_PATH, "utf8")) as Rule & {
+  scopeName: string;
+};
 
 // Every regex the grammar uses, found anywhere in its tree.
 function collectRegexes(node: unknown, found: string[] = []): string[] {
@@ -24,7 +26,10 @@ function collectRegexes(node: unknown, found: string[] = []): string[] {
     for (const item of node) collectRegexes(item, found);
   } else if (node && typeof node === "object") {
     for (const [key, value] of Object.entries(node)) {
-      if ((key === "begin" || key === "end" || key === "match") && typeof value === "string") {
+      if (
+        (key === "begin" || key === "end" || key === "match") &&
+        typeof value === "string"
+      ) {
         found.push(value);
       } else {
         collectRegexes(value, found);
@@ -91,7 +96,9 @@ describe("Lusia VS Code grammar", () => {
   });
 
   test("the package manifest points at the grammar and maps embedded regions", () => {
-    const manifest = JSON.parse(readFileSync(join(EXTENSION, "package.json"), "utf8"));
+    const manifest = JSON.parse(
+      readFileSync(join(EXTENSION, "package.json"), "utf8"),
+    );
     const contribution = manifest.contributes.grammars[0];
     expect(contribution.scopeName).toBe(grammar.scopeName);
     expect(existsSync(join(EXTENSION, contribution.path))).toBe(true);
@@ -104,7 +111,9 @@ describe("Lusia VS Code grammar", () => {
   });
 
   test("> and => in TypeScript regions are not treated as unmatched brackets", () => {
-    const manifest = JSON.parse(readFileSync(join(EXTENSION, "package.json"), "utf8"));
+    const manifest = JSON.parse(
+      readFileSync(join(EXTENSION, "package.json"), "utf8"),
+    );
     const scopes = manifest.contributes.grammars[0].unbalancedBracketScopes;
     expect(scopes).toContain("keyword.operator.relational");
     expect(scopes).toContain("storage.type.function.arrow");
@@ -119,7 +128,8 @@ describe("Lusia VS Code grammar", () => {
 });
 
 function findRepo(name: string): Rule {
-  const repository = (grammar as { repository?: Record<string, Rule> }).repository ?? {};
+  const repository =
+    (grammar as { repository?: Record<string, Rule> }).repository ?? {};
   const rule = repository[name];
   if (!rule) throw new Error(`missing repository rule ${name}`);
   return rule;

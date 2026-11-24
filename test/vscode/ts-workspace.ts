@@ -34,7 +34,8 @@ export function createWorkspace(files: Record<string, string> = {}): Workspace {
       },
     }),
   );
-  for (const [name, text] of Object.entries(files)) writeFileSync(join(root, name), text);
+  for (const [name, text] of Object.entries(files))
+    writeFileSync(join(root, name), text);
   const opened: string[] = [];
   return {
     root,

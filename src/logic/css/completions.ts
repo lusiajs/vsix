@@ -3,7 +3,11 @@ import type { CompletionItem } from "vscode-css-languageservice/lib/esm/cssLangu
 import type { CompletionResult } from "lusiajs/editor/completions.ts";
 import type { TextRange } from "lusiajs/editor/range.ts";
 import type { LusiaHost } from "../../host/types.ts";
-import { hoverText, offsetRange, toCompletionKind } from "../language-service.ts";
+import {
+  hoverText,
+  offsetRange,
+  toCompletionKind,
+} from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
 import { indexMembers } from "./scss/find.ts";
 import { buildScssIndex } from "./scss/index.ts";
@@ -28,11 +32,18 @@ export function cssCompletions(
 
 function officialCompletions(style: StyleContext): CompletionResult[] {
   const stylesheet = style.service.parseStylesheet(style.document);
-  const list = style.service.doComplete(style.document, style.position, stylesheet);
+  const list = style.service.doComplete(
+    style.document,
+    style.position,
+    stylesheet,
+  );
   return list.items.map((item) => completionItem(item, style));
 }
 
-function completionItem(item: CompletionItem, style: StyleContext): CompletionResult {
+function completionItem(
+  item: CompletionItem,
+  style: StyleContext,
+): CompletionResult {
   return {
     label: item.label,
     kind: toCompletionKind(item.kind),
@@ -66,14 +77,20 @@ function scssCompletions(
   const namespaced = /([A-Za-z_][\w-]*)\.(\$?[\w-]*)$/.exec(before);
   if (namespaced) {
     const prefix = namespaced[2] ?? "";
-    return namespacedItems(index, namespaced[1] ?? "", prefix, rangeOf(style, end, prefix));
+    return namespacedItems(
+      index,
+      namespaced[1] ?? "",
+      prefix,
+      rangeOf(style, end, prefix),
+    );
   }
   const variable = /(^|[^\w-])(\$[\w-]*)$/.exec(before);
   if (variable) {
     const prefix = variable[2] ?? "";
     return memberItems(
       indexMembers(index, undefined).filter(
-        (member) => member.kind === "variable" && member.name.startsWith(prefix),
+        (member) =>
+          member.kind === "variable" && member.name.startsWith(prefix),
       ),
       (member) => member.name,
       rangeOf(style, end, prefix),
@@ -84,7 +101,8 @@ function scssCompletions(
     const prefix = include[1] ?? "";
     return memberItems(
       mixinItems(index, prefix),
-      (member) => (member.namespace ? `${member.namespace}.${member.name}` : member.name),
+      (member) =>
+        member.namespace ? `${member.namespace}.${member.name}` : member.name,
       rangeOf(style, end, prefix),
     );
   }

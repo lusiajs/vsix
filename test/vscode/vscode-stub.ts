@@ -184,16 +184,25 @@ export class CodeAction {
 }
 
 export class WorkspaceEdit {
-  private readonly changes = new Map<string, Array<{ uri: Uri; range: Range; newText: string }>>();
+  private readonly changes = new Map<
+    string,
+    Array<{ uri: Uri; range: Range; newText: string }>
+  >();
   replace(uri: Uri, range: Range, newText: string): void {
     const key = uri.toString();
-    this.changes.set(key, [...(this.changes.get(key) ?? []), { uri, range, newText }]);
+    this.changes.set(key, [
+      ...(this.changes.get(key) ?? []),
+      { uri, range, newText },
+    ]);
   }
   insert(uri: Uri, position: Position, newText: string): void {
     this.replace(uri, new Range(position, position), newText);
   }
   get size(): number {
-    return [...this.changes.values()].reduce((total, edits) => total + edits.length, 0);
+    return [...this.changes.values()].reduce(
+      (total, edits) => total + edits.length,
+      0,
+    );
   }
   entries(): Array<Array<{ uri: Uri; range: Range; newText: string }>> {
     return [...this.changes.values()];
@@ -235,7 +244,12 @@ export const CompletionItemKind = {
   Color: 15,
 };
 
-export const DiagnosticSeverity = { Error: 0, Warning: 1, Information: 2, Hint: 3 };
+export const DiagnosticSeverity = {
+  Error: 0,
+  Warning: 1,
+  Information: 2,
+  Hint: 3,
+};
 
 export const SymbolKind = {
   File: 0,
@@ -306,7 +320,11 @@ export interface Captured {
   close?: (document: any) => void;
 }
 
-type Registration = (selector: unknown, provider: any, ...rest: unknown[]) => { dispose(): void };
+type Registration = (
+  selector: unknown,
+  provider: any,
+  ...rest: unknown[]
+) => { dispose(): void };
 
 export function createVscode() {
   const captured: Captured = { collections: {}, triggers: {} };
@@ -321,7 +339,10 @@ export function createVscode() {
     captured.collections[name] = created;
     return created;
   };
-  const register = (name: keyof Captured, withTriggers = false): Registration => {
+  const register = (
+    name: keyof Captured,
+    withTriggers = false,
+  ): Registration => {
     return (_selector, provider, ...rest) => {
       (captured as unknown as Record<string, unknown>)[name] = provider;
       if (withTriggers) captured.triggers[name] = rest as string[];
@@ -349,7 +370,11 @@ export function createVscode() {
     registerDocumentSemanticTokensProvider: register("semanticTokens"),
   };
   const window = {
-    createOutputChannel: (_name: string) => ({ appendLine() {}, show() {}, dispose() {} }),
+    createOutputChannel: (_name: string) => ({
+      appendLine() {},
+      show() {},
+      dispose() {},
+    }),
   };
   const workspace = {
     onDidOpenTextDocument: (callback: (document: any) => void) => {
@@ -366,7 +391,9 @@ export function createVscode() {
     },
     textDocuments: [] as unknown[],
     isTrusted: true,
-    getWorkspaceFolder: (_uri: unknown): { uri: { fsPath: string } } | undefined => undefined,
+    getWorkspaceFolder: (
+      _uri: unknown,
+    ): { uri: { fsPath: string } } | undefined => undefined,
   };
   return {
     Position,
@@ -413,7 +440,8 @@ export function fakeDocument(fileName: string, text: string, version = 1): any {
   const starts = [0];
   for (let index = 0; index < text.length; index++)
     if (text[index] === "\n") starts.push(index + 1);
-  const offsetAt = (position: Position) => (starts[position.line] ?? 0) + position.character;
+  const offsetAt = (position: Position) =>
+    (starts[position.line] ?? 0) + position.character;
   const positionAt = (offset: number) => {
     let line = 0;
     while (line + 1 < starts.length && starts[line + 1]! <= offset) line++;
@@ -433,7 +461,9 @@ export function fakeDocument(fileName: string, text: string, version = 1): any {
         line + 1 < starts.length
           ? starts[line + 1]! - 1 - starts[line]!
           : text.length - starts[line]!;
-      return { range: new Range(new Position(line, 0), new Position(line, end)) };
+      return {
+        range: new Range(new Position(line, 0), new Position(line, end)),
+      };
     },
   };
 }

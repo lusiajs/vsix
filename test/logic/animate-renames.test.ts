@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { animateRenameFix, isRenameMessage } from "../../src/logic/animate-renames.ts";
+import {
+  animateRenameFix,
+  isRenameMessage,
+} from "../../src/logic/animate-renames.ts";
 
 function fixIn(text: string) {
   return animateRenameFix(text, 0, text.length);

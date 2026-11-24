@@ -8,7 +8,9 @@ import { TsProject } from "./ts/project.ts";
 
 export type SourceName = "lusia" | "lusia-lint" | "typescript" | "html" | "css";
 
-export type SourceDiagnostics = Partial<Record<SourceName, vscode.Diagnostic[]>>;
+export type SourceDiagnostics = Partial<
+  Record<SourceName, vscode.Diagnostic[]>
+>;
 
 const SEVERITIES: Record<CssDiagnosticSeverity, vscode.DiagnosticSeverity> = {
   error: vscode.DiagnosticSeverity.Error,
@@ -27,20 +29,29 @@ export function compileDiagnostics(
   } catch (error) {
     const { line, column, message } = host.errorPosition.errorPosition(error);
     const range = lineRange(document, line - 1, column - 1);
-    return [diagnostic(range, message, vscode.DiagnosticSeverity.Error, "lusia")];
+    return [
+      diagnostic(range, message, vscode.DiagnosticSeverity.Error, "lusia"),
+    ];
   }
 }
 
-export function lintIssues(host: LusiaHost, document: vscode.TextDocument): LintIssue[] {
+export function lintIssues(
+  host: LusiaHost,
+  document: vscode.TextDocument,
+): LintIssue[] {
   const text = document.getText();
-  return host.lint.lintLusia(text, (name) => declaredProps(host, document.fileName, text, name));
+  return host.lint.lintLusia(text, (name) =>
+    declaredProps(host, document.fileName, text, name),
+  );
 }
 
 export function lintDiagnostics(
   host: LusiaHost,
   document: vscode.TextDocument,
 ): vscode.Diagnostic[] {
-  return lintIssues(host, document).map((issue) => lintDiagnostic(document, issue));
+  return lintIssues(host, document).map((issue) =>
+    lintDiagnostic(document, issue),
+  );
 }
 
 export function typeScriptDiagnostics(
@@ -110,7 +121,13 @@ function fromOffsets(
   source: SourceName,
   code?: string | number,
 ): vscode.Diagnostic {
-  return diagnostic(offsetRange(document, start, end), message, severity, source, code);
+  return diagnostic(
+    offsetRange(document, start, end),
+    message,
+    severity,
+    source,
+    code,
+  );
 }
 
 function diagnostic(
@@ -126,7 +143,10 @@ function diagnostic(
   return item;
 }
 
-function lintDiagnostic(document: vscode.TextDocument, issue: LintIssue): vscode.Diagnostic {
+function lintDiagnostic(
+  document: vscode.TextDocument,
+  issue: LintIssue,
+): vscode.Diagnostic {
   const range = lineRange(document, issue.line - 1, issue.column - 1);
   const item = diagnostic(
     range,
@@ -138,16 +158,25 @@ function lintDiagnostic(document: vscode.TextDocument, issue: LintIssue): vscode
     issue.code,
   );
   // The API types no longer expose `data`, but the editor keeps it when it hands a diagnostic back.
-  if (issue.fix) (item as vscode.Diagnostic & { data?: LintFix }).data = issue.fix;
+  if (issue.fix)
+    (item as vscode.Diagnostic & { data?: LintFix }).data = issue.fix;
   return item;
 }
 
-function offsetRange(document: vscode.TextDocument, start: number, end: number): vscode.Range {
+function offsetRange(
+  document: vscode.TextDocument,
+  start: number,
+  end: number,
+): vscode.Range {
   return new vscode.Range(document.positionAt(start), document.positionAt(end));
 }
 
 /** From a column to the end of its line. Line and column are 0-based here. */
-function lineRange(document: vscode.TextDocument, line: number, column: number): vscode.Range {
+function lineRange(
+  document: vscode.TextDocument,
+  line: number,
+  column: number,
+): vscode.Range {
   const lineIndex = Math.min(Math.max(line, 0), document.lineCount - 1);
   const start = new vscode.Position(lineIndex, Math.max(column, 0));
   return new vscode.Range(start, document.lineAt(lineIndex).range.end);

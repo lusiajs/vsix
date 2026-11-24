@@ -6,7 +6,12 @@ import type { TextDocument } from "vscode-languageserver-textdocument";
 import type { LusiaHost } from "../host/types.ts";
 import { htmlService, markupDocument } from "./html-shared.ts";
 import { offsetRange } from "./language-service.ts";
-import type { RegionFolding, RegionLink, RegionSelection, RegionSymbol } from "./region-types.ts";
+import type {
+  RegionFolding,
+  RegionLink,
+  RegionSelection,
+  RegionSymbol,
+} from "./region-types.ts";
 
 /** Static `href`/`src`-style references in the markup. */
 export function htmlLinks(host: LusiaHost, text: string): RegionLink[] {
@@ -57,7 +62,11 @@ export function htmlFolding(text: string): RegionFolding[] {
   }
 }
 
-export function htmlSelection(host: LusiaHost, text: string, offsets: number[]): RegionSelection[] {
+export function htmlSelection(
+  host: LusiaHost,
+  text: string,
+  offsets: number[],
+): RegionSelection[] {
   if (offsets.length === 0) return [];
   const document = markupDocument(text);
   try {
@@ -82,11 +91,15 @@ function inExpression(
   range: { start: number; end: number },
 ): boolean {
   return (
-    text.charAt(range.start) === "{" || host.formatExpressions.inExpressionAt(text, range.start)
+    text.charAt(range.start) === "{" ||
+    host.formatExpressions.inExpressionAt(text, range.start)
   );
 }
 
-function regionSymbol(document: TextDocument, symbol: DocumentSymbol): RegionSymbol[] {
+function regionSymbol(
+  document: TextDocument,
+  symbol: DocumentSymbol,
+): RegionSymbol[] {
   const range = offsetRange(document, symbol.range);
   const selectionRange = offsetRange(document, symbol.selectionRange);
   if (!range || !selectionRange) return [];
@@ -97,7 +110,9 @@ function regionSymbol(document: TextDocument, symbol: DocumentSymbol): RegionSym
       kind: symbol.kind,
       range,
       selectionRange,
-      children: symbol.children?.flatMap((child) => regionSymbol(document, child)) ?? [],
+      children:
+        symbol.children?.flatMap((child) => regionSymbol(document, child)) ??
+        [],
     },
   ];
 }
@@ -108,10 +123,14 @@ function regionSelection(
 ): RegionSelection | undefined {
   const range = offsetRange(document, selection.range);
   if (!range) return undefined;
-  const parent = selection.parent ? regionSelection(document, selection.parent) : undefined;
+  const parent = selection.parent
+    ? regionSelection(document, selection.parent)
+    : undefined;
   return parent ? { range, parent } : { range };
 }
 
 function foldingKind(kind: string | undefined): RegionFolding["kind"] {
-  return kind === "comment" || kind === "imports" || kind === "region" ? kind : undefined;
+  return kind === "comment" || kind === "imports" || kind === "region"
+    ? kind
+    : undefined;
 }

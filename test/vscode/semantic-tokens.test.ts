@@ -6,12 +6,22 @@ import type { LusiaHost, SemanticToken } from "../../src/host/types.ts";
 const { LusiaSemanticTokensProvider, SEMANTIC_TOKENS_LEGEND } =
   await import("../../src/providers/semantic-tokens.ts");
 
-const document = fakeDocument("/project/src/App.lusia", "<EACH {rows} as={row}></EACH>");
+const document = fakeDocument(
+  "/project/src/App.lusia",
+  "<EACH {rows} as={row}></EACH>",
+);
 
 function hostReturning(tokens: SemanticToken[]): LusiaHost {
   const semanticTokens = {
     semanticTokens: () => tokens,
-    TOKEN_TYPES: ["keyword", "decorator", "event", "parameter", "class", "enumMember"],
+    TOKEN_TYPES: [
+      "keyword",
+      "decorator",
+      "event",
+      "parameter",
+      "class",
+      "enumMember",
+    ],
     TOKEN_MODIFIERS: ["readonly"],
   };
   return { semanticTokens } as unknown as LusiaHost;
@@ -21,8 +31,11 @@ function providerFor(host: LusiaHost | undefined) {
   return new LusiaSemanticTokensProvider(async () => host);
 }
 
-async function dataOf(host: LusiaHost | undefined): Promise<number[] | undefined> {
-  const tokens = await providerFor(host).provideDocumentSemanticTokens(document);
+async function dataOf(
+  host: LusiaHost | undefined,
+): Promise<number[] | undefined> {
+  const tokens =
+    await providerFor(host).provideDocumentSemanticTokens(document);
   return tokens === undefined ? undefined : Array.from(tokens.data);
 }
 

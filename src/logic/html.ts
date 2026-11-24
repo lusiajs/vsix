@@ -13,7 +13,12 @@ import {
   ownedTag,
   startTagNameBefore,
 } from "./html-shared.ts";
-import { editorDocument, hoverText, offsetRange, toCompletionKind } from "./language-service.ts";
+import {
+  editorDocument,
+  hoverText,
+  offsetRange,
+  toCompletionKind,
+} from "./language-service.ts";
 import type { RegionEdit } from "./region-types.ts";
 
 const SNIPPET_FORMAT = 2;
@@ -25,7 +30,12 @@ export {
   htmlRename,
   htmlRenameRange,
 } from "./html-navigation.ts";
-export { htmlFolding, htmlLinks, htmlSelection, htmlSymbols } from "./html-structure.ts";
+export {
+  htmlFolding,
+  htmlLinks,
+  htmlSelection,
+  htmlSymbols,
+} from "./html-structure.ts";
 export type {
   RegionDiagnostic,
   RegionEdit,
@@ -36,13 +46,25 @@ export type {
   RegionSymbol,
 } from "./region-types.ts";
 
-export function htmlCompletions(host: LusiaHost, text: string, offset: number): CompletionResult[] {
+export function htmlCompletions(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): CompletionResult[] {
   if (!editable(host, text, offset)) return [];
-  if (!host.parseTag.isTagNameTyping(text, offset) && ownedTag(host, text, offset)) return [];
+  if (
+    !host.parseTag.isTagNameTyping(text, offset) &&
+    ownedTag(host, text, offset)
+  )
+    return [];
   const document = editorDocument(URI, "html", text);
   try {
     const htmlDocument = htmlService().parseHTMLDocument(document);
-    const list = htmlService().doComplete(document, document.positionAt(offset), htmlDocument);
+    const list = htmlService().doComplete(
+      document,
+      document.positionAt(offset),
+      htmlDocument,
+    );
     const results: CompletionResult[] = [];
     for (const item of list.items) {
       const result = completionResult(document, item);
@@ -54,16 +76,32 @@ export function htmlCompletions(host: LusiaHost, text: string, offset: number): 
   }
 }
 
-export function htmlHover(host: LusiaHost, text: string, offset: number): HoverResult | undefined {
-  if (!editable(host, text, offset) || ownedTag(host, text, offset) || !insideTag(text, offset))
+export function htmlHover(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): HoverResult | undefined {
+  if (
+    !editable(host, text, offset) ||
+    ownedTag(host, text, offset) ||
+    !insideTag(text, offset)
+  )
     return undefined;
   const document = editorDocument(URI, "html", text);
   try {
     const htmlDocument = htmlService().parseHTMLDocument(document);
-    const result = htmlService().doHover(document, document.positionAt(offset), htmlDocument);
+    const result = htmlService().doHover(
+      document,
+      document.positionAt(offset),
+      htmlDocument,
+    );
     const markdown = hoverText(result);
     if (!result || !markdown) return undefined;
-    return { kind: "markdown", markdown, range: offsetRange(document, result.range) };
+    return {
+      kind: "markdown",
+      markdown,
+      range: offsetRange(document, result.range),
+    };
   } catch {
     return undefined;
   }
@@ -75,14 +113,22 @@ export function htmlTagClose(
   text: string,
   offset: number,
 ): RegionEdit | undefined {
-  if (!editable(host, text, offset) || text.charAt(offset - 1) !== ">") return undefined;
+  if (!editable(host, text, offset) || text.charAt(offset - 1) !== ">")
+    return undefined;
   const name = startTagNameBefore(text, offset);
   if (!name || !isPlainTag(host, text, name)) return undefined;
   const { document, parsed } = markupHtml(text);
   try {
-    const completion = htmlService().doTagComplete(document, document.positionAt(offset), parsed);
+    const completion = htmlService().doTagComplete(
+      document,
+      document.positionAt(offset),
+      parsed,
+    );
     if (!completion) return undefined;
-    return { range: { start: offset, end: offset }, newText: completion.replace("$0", "") };
+    return {
+      range: { start: offset, end: offset },
+      newText: completion.replace("$0", ""),
+    };
   } catch {
     return undefined;
   }
@@ -105,6 +151,7 @@ function completionResult(
     snippet: item.insertTextFormat === SNIPPET_FORMAT,
     detail: item.detail,
     documentation: hoverText({ contents: item.documentation }),
-    range: edit && "range" in edit ? offsetRange(document, edit.range) : undefined,
+    range:
+      edit && "range" in edit ? offsetRange(document, edit.range) : undefined,
   };
 }

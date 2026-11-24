@@ -42,16 +42,25 @@ function writeJson(file: string, value: unknown): void {
 
 function installTools(
   root: string,
-  options: { name?: string; version?: string; entry?: string; source?: string } = {},
+  options: {
+    name?: string;
+    version?: string;
+    entry?: string;
+    source?: string;
+  } = {},
 ): void {
   const name = options.name ?? NEW_PACKAGE;
   const packageDir = join(root, "node_modules", name);
   writeJson(join(packageDir, "package.json"), {
     name,
     version: options.version ?? "0.1.0",
-    exports: { "./vscode": { types: "./dist/vscode.d.ts", import: "./dist/vscode.js" } },
+    exports: {
+      "./vscode": { types: "./dist/vscode.d.ts", import: "./dist/vscode.js" },
+    },
   });
-  const exports = HOST_NAMESPACES.map((name) => `export const ${name} = {};`).join("\n");
+  const exports = HOST_NAMESPACES.map(
+    (name) => `export const ${name} = {};`,
+  ).join("\n");
   const source =
     options.source ??
     `export const EDITOR_API_VERSION = 1;\nexport const LUSIA_VERSION = "0.1.0";\n${exports}\n`;
@@ -60,7 +69,10 @@ function installTools(
 }
 
 function installLusia(root: string, version = "0.1.0"): void {
-  writeJson(join(root, "node_modules", "lusiajs", "package.json"), { name: "lusiajs", version });
+  writeJson(join(root, "node_modules", "lusiajs", "package.json"), {
+    name: "lusiajs",
+    version,
+  });
 }
 
 describe("loading the language host", () => {
@@ -75,7 +87,9 @@ describe("loading the language host", () => {
     expect(result.info.lusiaVersion).toBe("0.2.0");
     expect(result.info.apiVersion).toBe(1);
     expect(result.info.packageName).toBe(NEW_PACKAGE);
-    expect(result.info.entryPath).toBe(join(root, "node_modules", NEW_PACKAGE, "dist", "vscode.js"));
+    expect(result.info.entryPath).toBe(
+      join(root, "node_modules", NEW_PACKAGE, "dist", "vscode.js"),
+    );
     expect(result.host.range).toEqual({});
   });
 
@@ -86,7 +100,9 @@ describe("loading the language host", () => {
     expect(result.ok).toBe(true);
     if (!result.ok) return;
     expect(result.info.packageName).toBe(OLD_PACKAGE);
-    expect(result.info.entryPath).toBe(join(root, "node_modules", OLD_PACKAGE, "dist", "vscode.js"));
+    expect(result.info.entryPath).toBe(
+      join(root, "node_modules", OLD_PACKAGE, "dist", "vscode.js"),
+    );
   });
 
   test("prefers the new package name when both are installed", async () => {
@@ -102,7 +118,9 @@ describe("loading the language host", () => {
 
   test("keeps the optional semanticTokens namespace when the tools export it", async () => {
     const { root, document } = project();
-    const exports = HOST_NAMESPACES.map((name) => `export const ${name} = {};`).join("\n");
+    const exports = HOST_NAMESPACES.map(
+      (name) => `export const ${name} = {};`,
+    ).join("\n");
     installTools(root, {
       source: `export const EDITOR_API_VERSION = 1;\n${exports}\nexport const semanticTokens = { semanticTokens: () => [] };\n`,
     });
@@ -126,13 +144,20 @@ describe("loading the language host", () => {
     const result = await hostResultFor(document);
     expect(result.ok).toBe(false);
     if (result.ok) return;
-    expect(result.failure).toMatchObject({ cause: "notInstalled", lusiaInstalled: false });
+    expect(result.failure).toMatchObject({
+      cause: "notInstalled",
+      lusiaInstalled: false,
+    });
     if (result.failure.cause !== "notInstalled") return;
     expect(result.failure.searched).toContain(
       join(root, "src", "node_modules", NEW_PACKAGE, "package.json"),
     );
-    expect(result.failure.searched).toContain(join(root, "node_modules", NEW_PACKAGE, "package.json"));
-    expect(result.failure.searched).toContain(join(root, "node_modules", OLD_PACKAGE, "package.json"));
+    expect(result.failure.searched).toContain(
+      join(root, "node_modules", NEW_PACKAGE, "package.json"),
+    );
+    expect(result.failure.searched).toContain(
+      join(root, "node_modules", OLD_PACKAGE, "package.json"),
+    );
   });
 
   test("says lusiajs is present when only the VS Code support is missing", async () => {

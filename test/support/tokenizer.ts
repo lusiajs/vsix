@@ -49,8 +49,12 @@ let grammarPromise: Promise<TextmateGrammar> | undefined;
 async function loadLusiaGrammar(): Promise<TextmateGrammar> {
   const onig = extensionRequire("vscode-oniguruma") as OnigModule;
   const textmate = extensionRequire("vscode-textmate") as TextmateModule;
-  const wasm = readFileSync(extensionRequire.resolve("vscode-oniguruma/release/onig.wasm"));
-  await onig.loadWASM(wasm.buffer.slice(wasm.byteOffset, wasm.byteOffset + wasm.byteLength));
+  const wasm = readFileSync(
+    extensionRequire.resolve("vscode-oniguruma/release/onig.wasm"),
+  );
+  await onig.loadWASM(
+    wasm.buffer.slice(wasm.byteOffset, wasm.byteOffset + wasm.byteLength),
+  );
   const onigLib = Promise.resolve({
     createOnigScanner: (patterns: string[]) => new onig.OnigScanner(patterns),
     createOnigString: (text: string) => new onig.OnigString(text),
@@ -59,7 +63,9 @@ async function loadLusiaGrammar(): Promise<TextmateGrammar> {
     onigLib,
     loadGrammar: async (scopeName) => {
       const path = GRAMMAR_FILES[scopeName];
-      return path ? textmate.parseRawGrammar(readFileSync(path, "utf8"), path) : null;
+      return path
+        ? textmate.parseRawGrammar(readFileSync(path, "utf8"), path)
+        : null;
     },
   });
   const grammar = await registry.loadGrammar("source.lusia");

@@ -25,7 +25,10 @@ export function virtualScript(host: LusiaHost, source: string): VirtualScript {
   const chars = blanked(source);
   const scriptSpans = sections
     .filter((section) => section.kind === "script")
-    .map((section) => ({ start: section.contentStart, end: section.contentEnd }));
+    .map((section) => ({
+      start: section.contentStart,
+      end: section.contentEnd,
+    }));
   for (const span of scriptSpans) copy(chars, source, span.start, span.end);
   const expressions = collectExpressions(source, sections);
   renderExpressions(chars, source, expressions);
@@ -34,7 +37,10 @@ export function virtualScript(host: LusiaHost, source: string): VirtualScript {
     scriptSpans,
     expressionSpans: expressions
       .filter((expression) => expression.end > expression.open + 1)
-      .map((expression) => ({ start: expression.open + 1, end: expression.end })),
+      .map((expression) => ({
+        start: expression.open + 1,
+        end: expression.end,
+      })),
     flowNames: collectFlowNames(source, sections),
   };
 }
@@ -58,7 +64,8 @@ function collectExpressions(source: string, sections: Section[]): Expression[] {
   let inTag = false;
   let i = 0;
   while (i < source.length) {
-    while (sections[section] !== undefined && i >= sections[section]!.end) section++;
+    while (sections[section] !== undefined && i >= sections[section]!.end)
+      section++;
     const current = sections[section];
     if (current && i >= current.openStart) {
       i = current.end;
@@ -88,7 +95,11 @@ function collectExpressions(source: string, sections: Section[]): Expression[] {
   return expressions;
 }
 
-function readExpression(source: string, open: number, expressions: Expression[]): number {
+function readExpression(
+  source: string,
+  open: number,
+  expressions: Expression[],
+): number {
   const close = expressionEnd(source, open);
   const leaked = close !== -1 && source.slice(open + 1, close).includes("</");
   if (close === -1 || leaked) {
@@ -100,7 +111,11 @@ function readExpression(source: string, open: number, expressions: Expression[])
   return close + 1;
 }
 
-function renderExpressions(chars: string[], source: string, expressions: Expression[]): void {
+function renderExpressions(
+  chars: string[],
+  source: string,
+  expressions: Expression[],
+): void {
   let previous: Expression | undefined;
   for (const expression of expressions) {
     if (!expression.closed) {
@@ -111,7 +126,10 @@ function renderExpressions(chars: string[], source: string, expressions: Express
     }
     chars[expression.end] = ")";
     copy(chars, source, expression.open + 1, expression.end);
-    if (previous !== undefined && joinable(source, previous.end, expression.open)) {
+    if (
+      previous !== undefined &&
+      joinable(source, previous.end, expression.open)
+    ) {
       chars[previous.end] = ",";
       chars[expression.open] = " ";
     } else {

@@ -11,21 +11,33 @@ const workspace = createWorkspace({
 });
 afterAll(() => workspace.dispose());
 
-const { LusiaCompletionProvider } = await import("../../src/providers/completion.ts");
+const { LusiaCompletionProvider } =
+  await import("../../src/providers/completion.ts");
 const { LusiaHoverProvider } = await import("../../src/providers/hover.ts");
-const { LusiaDefinitionProvider } = await import("../../src/providers/definition.ts");
-const { LusiaReferenceProvider } = await import("../../src/providers/references.ts");
+const { LusiaDefinitionProvider } =
+  await import("../../src/providers/definition.ts");
+const { LusiaReferenceProvider } =
+  await import("../../src/providers/references.ts");
 const { LusiaRenameProvider } = await import("../../src/providers/rename.ts");
-const { LusiaSignatureHelpProvider } = await import("../../src/providers/signature.ts");
-const { LusiaOnTypeFormattingProvider } = await import("../../src/providers/on-type.ts");
-const { LusiaDocumentLinkProvider } = await import("../../src/providers/links.ts");
-const { LusiaDocumentSymbolProvider } = await import("../../src/providers/symbols.ts");
-const { LusiaFoldingRangeProvider } = await import("../../src/providers/folding.ts");
-const { LusiaSelectionRangeProvider } = await import("../../src/providers/selection.ts");
-const { LusiaDocumentHighlightProvider } = await import("../../src/providers/highlights.ts");
-const { LusiaLinkedEditingProvider } = await import("../../src/providers/linked.ts");
+const { LusiaSignatureHelpProvider } =
+  await import("../../src/providers/signature.ts");
+const { LusiaOnTypeFormattingProvider } =
+  await import("../../src/providers/on-type.ts");
+const { LusiaDocumentLinkProvider } =
+  await import("../../src/providers/links.ts");
+const { LusiaDocumentSymbolProvider } =
+  await import("../../src/providers/symbols.ts");
+const { LusiaFoldingRangeProvider } =
+  await import("../../src/providers/folding.ts");
+const { LusiaSelectionRangeProvider } =
+  await import("../../src/providers/selection.ts");
+const { LusiaDocumentHighlightProvider } =
+  await import("../../src/providers/highlights.ts");
+const { LusiaLinkedEditingProvider } =
+  await import("../../src/providers/linked.ts");
 const { LusiaColorProvider } = await import("../../src/providers/colors.ts");
-const { LusiaCodeActionProvider } = await import("../../src/providers/code-actions.ts");
+const { LusiaCodeActionProvider } =
+  await import("../../src/providers/code-actions.ts");
 const { LusiaDiagnostics } = await import("../../src/diagnostics.ts");
 
 const captured = vscode.__captured;
@@ -56,7 +68,9 @@ describe("completion and hover wiring", () => {
 
   test("adds TypeScript members in a flow expression", async () => {
     const offset = offsetAfter(source.text, "{row.");
-    const items = await mocked(new LusiaCompletionProvider(realHosts)).provideCompletionItems(
+    const items = await mocked(
+      new LusiaCompletionProvider(realHosts),
+    ).provideCompletionItems(
       source.document,
       source.document.positionAt(offset),
     );
@@ -68,7 +82,10 @@ describe("completion and hover wiring", () => {
   });
 
   test("resolves a TypeScript auto-import into an additional edit", async () => {
-    const source = component("Auto.lusia", `<script>\nconst motion = pageMo\n</script>`);
+    const source = component(
+      "Auto.lusia",
+      `<script>\nconst motion = pageMo\n</script>`,
+    );
     const provider = mocked(new LusiaCompletionProvider(realHosts));
     const offset = offsetAfter(source.text, "pageMo");
     const items = await provider.provideCompletionItems(
@@ -148,14 +165,20 @@ describe("typed hover", () => {
   };
 
   test("shows the Lusia declaration and summary for an imported API name, not the TypeScript type", async () => {
-    const body = await hoverAt(APP.indexOf("import { variable") + "import { ".length + 2);
-    expect(body.startsWith("```ts\nvariable<T>(initial: T): Variable<T>\n```")).toBe(true);
+    const body = await hoverAt(
+      APP.indexOf("import { variable") + "import { ".length + 2,
+    );
+    expect(
+      body.startsWith("```ts\nvariable<T>(initial: T): Variable<T>\n```"),
+    ).toBe(true);
     expect(body).toContain("Creates a value that updates the page");
     expect(body).not.toContain("(alias)");
   });
 
   test("shows only the typed hover for a local variable", async () => {
-    const body = await hoverAt(APP.indexOf("EACH {todos") + "EACH {".length + 1);
+    const body = await hoverAt(
+      APP.indexOf("EACH {todos") + "EACH {".length + 1,
+    );
     expect(body).toContain("Variable<Todo[]>");
     expect(body).not.toContain("Creates a value");
   });
@@ -166,9 +189,15 @@ describe("typed hover", () => {
   });
 
   test("shows the Lusia declaration first for a dotted name", async () => {
-    const body = await hoverAt(APP.indexOf("variable.compute") + "variable.".length + 1);
-    expect(body.startsWith("```ts\nvariable.compute<T>(fn: () => T)")).toBe(true);
-    expect(body).toContain("Creates a read-only value derived from other variables.");
+    const body = await hoverAt(
+      APP.indexOf("variable.compute") + "variable.".length + 1,
+    );
+    expect(body.startsWith("```ts\nvariable.compute<T>(fn: () => T)")).toBe(
+      true,
+    );
+    expect(body).toContain(
+      "Creates a read-only value derived from other variables.",
+    );
   });
 
   test("shows the Lusia reference hover for markup flow tags", async () => {
@@ -184,7 +213,9 @@ describe("typed hover", () => {
       easeSource.document.positionAt(EASE_APP.indexOf("EASE.OUT") + 2),
     );
     const body = String(result?.contents?.value ?? "");
-    expect(body.startsWith("```ts\nconst EASE: { STYLE, IN, OUT, INOUT }\n```")).toBe(true);
+    expect(
+      body.startsWith("```ts\nconst EASE: { STYLE, IN, OUT, INOUT }\n```"),
+    ).toBe(true);
     expect(body).toContain("| `STYLE.QUART` |");
   });
 
@@ -202,7 +233,9 @@ describe("typed hover", () => {
     expect(String(resolved.documentation?.value)).toContain(
       "Creates a value that updates the page",
     );
-    expect(String(resolved.documentation?.value)).not.toContain("**variable()**");
+    expect(String(resolved.documentation?.value)).not.toContain(
+      "**variable()**",
+    );
   });
 
   test("keeps the unimported-name completion and its auto-import edit", async () => {
@@ -210,7 +243,10 @@ describe("typed hover", () => {
     const fileName = workspace.write("Empty.lusia", text);
     const document = fakeDocument(fileName, text);
     const provider = mocked(new LusiaCompletionProvider(realHosts));
-    const items = await provider.provideCompletionItems(document, document.positionAt(9));
+    const items = await provider.provideCompletionItems(
+      document,
+      document.positionAt(9),
+    );
     const item = items.find((candidate: any) => candidate.label === "variable");
     expect(item?.additionalTextEdits?.[0]?.newText).toContain(
       'import { variable } from "lusiajs";',
@@ -232,52 +268,73 @@ function toggle(value: number): void {}
 `;
 
 describe("script navigation wiring", () => {
-  workspace.write("util.ts", "export function greet(name: string): string {\n  return name;\n}\n");
+  workspace.write(
+    "util.ts",
+    "export function greet(name: string): string {\n  return name;\n}\n",
+  );
   const source = component("Calls.lusia", CALLS);
   const toggleStart = source.text.lastIndexOf("toggle(1)");
 
   test("helps with signature arguments", async () => {
     const offset = source.text.lastIndexOf("toggle(") + "toggle(".length;
-    const help = await mocked(new LusiaSignatureHelpProvider(realHosts)).provideSignatureHelp(
-      source.document,
-      source.document.positionAt(offset),
-    );
+    const help = await mocked(
+      new LusiaSignatureHelpProvider(realHosts),
+    ).provideSignatureHelp(source.document, source.document.positionAt(offset));
     expect(help?.signatures[0]?.label).toContain("toggle(value: number)");
     expect(help?.activeParameter).toBe(0);
   });
 
   test("defines a markup call in the script", async () => {
-    const locations = await mocked(new LusiaDefinitionProvider(realHosts)).provideDefinition(
+    const locations = await mocked(
+      new LusiaDefinitionProvider(realHosts),
+    ).provideDefinition(
       source.document,
       source.document.positionAt(toggleStart),
     );
     expect(locations?.[0]?.uri.fsPath).toBe(source.fileName);
     expect(locations?.[0]?.range.start.line).toBe(
-      source.text.slice(0, source.text.indexOf("function toggle")).split("\n").length - 1,
+      source.text.slice(0, source.text.indexOf("function toggle")).split("\n")
+        .length - 1,
     );
   });
 
   test("finds references across script and markup", async () => {
-    const locations = await mocked(new LusiaReferenceProvider(realHosts)).provideReferences(
+    const locations = await mocked(
+      new LusiaReferenceProvider(realHosts),
+    ).provideReferences(
       source.document,
       source.document.positionAt(source.text.indexOf("greet(")),
       { includeDeclaration: true },
     );
     expect(locations?.length).toBeGreaterThan(1);
-    expect(locations?.some((location: any) => location.uri.fsPath === source.fileName)).toBe(true);
-    expect(locations?.some((location: any) => location.uri.fsPath.endsWith("util.ts"))).toBe(true);
+    expect(
+      locations?.some(
+        (location: any) => location.uri.fsPath === source.fileName,
+      ),
+    ).toBe(true);
+    expect(
+      locations?.some((location: any) =>
+        location.uri.fsPath.endsWith("util.ts"),
+      ),
+    ).toBe(true);
   });
 
   test("renames a markup expression into the script", async () => {
-    const edit = await mocked(new LusiaRenameProvider(realHosts)).provideRenameEdits(
+    const edit = await mocked(
+      new LusiaRenameProvider(realHosts),
+    ).provideRenameEdits(
       source.document,
       source.document.positionAt(offsetAfter(source.text, "<p>{greet")),
       "welcome",
     );
     const changes = edit?.entries().flat() ?? [];
     expect(changes.length).toBeGreaterThanOrEqual(2);
-    expect(changes.some((change: any) => change.range.start.line === 2)).toBe(true);
-    expect(changes.every((change: any) => change.newText === "welcome")).toBe(true);
+    expect(changes.some((change: any) => change.range.start.line === 2)).toBe(
+      true,
+    );
+    expect(changes.every((change: any) => change.newText === "welcome")).toBe(
+      true,
+    );
   });
 });
 
@@ -294,16 +351,21 @@ describe("markup wiring", () => {
   });
 
   test("resolves a relative link against the component", async () => {
-    const document = fakeDocument(join(workspace.root, "Links.lusia"), `<a href="./page.lusia">`);
-    const links = await mocked(new LusiaDocumentLinkProvider(realHosts)).provideDocumentLinks(
-      document,
+    const document = fakeDocument(
+      join(workspace.root, "Links.lusia"),
+      `<a href="./page.lusia">`,
     );
+    const links = await mocked(
+      new LusiaDocumentLinkProvider(realHosts),
+    ).provideDocumentLinks(document);
     expect(links[0]?.target.fsPath).toBe(join(workspace.root, "page.lusia"));
     expect(links[0]?.tooltip).toBe(join(workspace.root, "page.lusia"));
   });
 
   test("renames a plain tag and its close tag", async () => {
-    const edit = await mocked(new LusiaRenameProvider(realHosts)).provideRenameEdits(
+    const edit = await mocked(
+      new LusiaRenameProvider(realHosts),
+    ).provideRenameEdits(
       source.document,
       source.document.positionAt(2),
       "section",
@@ -321,16 +383,19 @@ describe("markup wiring", () => {
     ]);
     const linked = await mocked(
       new LusiaLinkedEditingProvider(realHosts),
-    ).provideLinkedEditingRanges(source.document, source.document.positionAt(2));
+    ).provideLinkedEditingRanges(
+      source.document,
+      source.document.positionAt(2),
+    );
     expect(linked?.ranges).toHaveLength(2);
   });
 
   test("outlines markup and style symbols", async () => {
     const text = `<div><span>x</span></div>\n<style>\n.a { color: red; }\n</style>`;
     const document = fakeDocument(join(workspace.root, "Outline.lusia"), text);
-    const symbols = await mocked(new LusiaDocumentSymbolProvider(realHosts)).provideDocumentSymbols(
-      document,
-    );
+    const symbols = await mocked(
+      new LusiaDocumentSymbolProvider(realHosts),
+    ).provideDocumentSymbols(document);
     expect(symbols[0]?.name).toBe("div");
     expect(symbols[0]?.kind).toBe(vscode.SymbolKind.Field);
     expect(symbols.some((symbol: any) => symbol.name === ".a")).toBe(true);
@@ -339,18 +404,21 @@ describe("markup wiring", () => {
   test("folds elements and sections", async () => {
     const text = `<div>\n<span>x</span>\n</div>\n<script>\nconst x = 1;\n</script>`;
     const document = fakeDocument(join(workspace.root, "Fold.lusia"), text);
-    const ranges = await mocked(new LusiaFoldingRangeProvider(realHosts)).provideFoldingRanges(
-      document,
-    );
-    expect(ranges.some((range: any) => range.start === 0 && range.end === 1)).toBe(true);
-    expect(ranges.some((range: any) => range.start === 3 && range.end === 4)).toBe(true);
+    const ranges = await mocked(
+      new LusiaFoldingRangeProvider(realHosts),
+    ).provideFoldingRanges(document);
+    expect(
+      ranges.some((range: any) => range.start === 0 && range.end === 1),
+    ).toBe(true);
+    expect(
+      ranges.some((range: any) => range.start === 3 && range.end === 4),
+    ).toBe(true);
   });
 
   test("grows the selection from tag name to element", async () => {
-    const chains = await mocked(new LusiaSelectionRangeProvider(realHosts)).provideSelectionRanges(
-      source.document,
-      [source.document.positionAt(2)],
-    );
+    const chains = await mocked(
+      new LusiaSelectionRangeProvider(realHosts),
+    ).provideSelectionRanges(source.document, [source.document.positionAt(2)]);
     expect(chains[0]?.range.start.line).toBe(0);
     expect(chains[0]?.parent).toBeDefined();
   });
@@ -362,7 +430,9 @@ describe("style wiring", () => {
       join(workspace.root, "Colors.lusia"),
       `<style>\n$brand: #ff0000;\n.a { color: $brand; }\n</style>`,
     );
-    const colors = await mocked(new LusiaColorProvider(realHosts)).provideDocumentColors(document);
+    const colors = await mocked(
+      new LusiaColorProvider(realHosts),
+    ).provideDocumentColors(document);
     expect(colors).toHaveLength(1);
     expect(colors[0]?.color).toEqual(new vscode.Color(1, 0, 0, 1));
   });
@@ -370,7 +440,9 @@ describe("style wiring", () => {
   test("offers the unknown property code action", async () => {
     const text = `<style>\n.a { colr: red; }\n</style>`;
     const document = fakeDocument(join(workspace.root, "Actions.lusia"), text);
-    const actions = await mocked(new LusiaCodeActionProvider(realHosts)).provideCodeActions(
+    const actions = await mocked(
+      new LusiaCodeActionProvider(realHosts),
+    ).provideCodeActions(
       document,
       new vscode.Range(
         document.positionAt(text.indexOf("colr")),
@@ -378,7 +450,9 @@ describe("style wiring", () => {
       ),
       { diagnostics: [] },
     );
-    const rename = actions.find((action: any) => action.title === "Rename to 'color'");
+    const rename = actions.find(
+      (action: any) => action.title === "Rename to 'color'",
+    );
     expect(rename?.edit?.size).toBe(1);
   });
 
@@ -393,12 +467,14 @@ describe("style wiring", () => {
       vscode.DiagnosticSeverity.Error,
     );
     diagnostic.source = "lusia";
-    const actions = await mocked(new LusiaCodeActionProvider(realHosts)).provideCodeActions(
-      document,
-      diagnostic.range,
-      { diagnostics: [diagnostic] },
-    );
-    expect(actions.map((action: any) => action.title)).toEqual(["Rename to 'play'"]);
+    const actions = await mocked(
+      new LusiaCodeActionProvider(realHosts),
+    ).provideCodeActions(document, diagnostic.range, {
+      diagnostics: [diagnostic],
+    });
+    expect(actions.map((action: any) => action.title)).toEqual([
+      "Rename to 'play'",
+    ]);
     expect(actions[0]?.diagnostics).toEqual([diagnostic]);
     expect(actions[0]?.edit?.size).toBe(1);
   });
@@ -425,7 +501,9 @@ describe("diagnostic wiring", () => {
       expect(found.every((item) => item.source === name)).toBe(true);
     }
     diagnostics.clear(source.document);
-    expect(captured.collections.typescript?.get(source.document.uri)).toBeUndefined();
+    expect(
+      captured.collections.typescript?.get(source.document.uri),
+    ).toBeUndefined();
   }, 15000);
 
   test("turns a lint finding with a fix into a code action", async () => {
@@ -436,20 +514,24 @@ describe("diagnostic wiring", () => {
     diagnostics.schedule(lint.document);
     const ready = await waitFor(() => count("lusia-lint", lint.document) > 0);
     expect(ready).toBe(true);
-    const issues = captured.collections["lusia-lint"]?.get(lint.document.uri) ?? [];
+    const issues =
+      captured.collections["lusia-lint"]?.get(lint.document.uri) ?? [];
     const diagnostic = issues[0]!;
-    const actions = await mocked(new LusiaCodeActionProvider(realHosts)).provideCodeActions(
-      lint.document,
-      diagnostic.range,
-      { diagnostics: issues },
-    );
+    const actions = await mocked(
+      new LusiaCodeActionProvider(realHosts),
+    ).provideCodeActions(lint.document, diagnostic.range, {
+      diagnostics: issues,
+    });
     expect(actions[0]?.title.startsWith("Fix: ")).toBe(true);
     expect(actions[0]?.edit?.size).toBe(1);
     diagnostics.clear(lint.document);
   }, 15000);
 });
 
-async function waitFor(condition: () => boolean, timeout = 15000): Promise<boolean> {
+async function waitFor(
+  condition: () => boolean,
+  timeout = 15000,
+): Promise<boolean> {
   const start = Date.now();
   while (!condition()) {
     if (Date.now() - start > timeout) return false;
@@ -462,6 +544,9 @@ function mocked<T>(provider: T): any {
   return provider;
 }
 
-function count(name: string, document: ReturnType<typeof fakeDocument>): number {
+function count(
+  name: string,
+  document: ReturnType<typeof fakeDocument>,
+): number {
   return captured.collections[name]?.get(document.uri)?.length ?? 0;
 }

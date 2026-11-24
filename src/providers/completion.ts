@@ -52,15 +52,24 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
     this.documents.set(document.fileName, document);
     const text = document.getText();
     const offset = document.offsetAt(position);
-    const propsOf = (name: string) => componentProps(host, document.fileName, text, name);
-    const symbolsOf = (specifier: string) => scriptSymbols(host, document.fileName, specifier);
-    const base = host.completions.completionsAt(text, offset, propsOf, symbolsOf);
+    const propsOf = (name: string) =>
+      componentProps(host, document.fileName, text, name);
+    const symbolsOf = (specifier: string) =>
+      scriptSymbols(host, document.fileName, specifier);
+    const base = host.completions.completionsAt(
+      text,
+      offset,
+      propsOf,
+      symbolsOf,
+    );
     const extra = [
       ...htmlCompletions(host, text, offset),
       ...cssCompletions(host, text, offset, document.fileName),
     ];
     const labels = new Set(base.map((item) => item.label));
-    const project = inTsRegion(host, text, offset) ? projectOf(host, document) : undefined;
+    const project = inTsRegion(host, text, offset)
+      ? projectOf(host, document)
+      : undefined;
     if (project !== undefined) this.projects.set(document.fileName, project);
     const ts = project?.completions(offset) ?? [];
     const tsItems: TsItem[] = [];
@@ -72,7 +81,12 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
     const extras = extra.filter((item) => !labels.has(item.label));
     return [
       ...base.map((item) =>
-        toItem(host, document, item, apiData(host, document, offset, item, project)),
+        toItem(
+          host,
+          document,
+          item,
+          apiData(host, document, offset, item, project),
+        ),
       ),
       ...tsItems,
       ...extras.map((item) => toItem(host, document, item)),
@@ -91,7 +105,10 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
     if (document !== undefined && details.importEdits.length > 0) {
       item.additionalTextEdits = details.importEdits.map((edit) =>
         vscode.TextEdit.replace(
-          new vscode.Range(document.positionAt(edit.start), document.positionAt(edit.end)),
+          new vscode.Range(
+            document.positionAt(edit.start),
+            document.positionAt(edit.end),
+          ),
           edit.text,
         ),
       );
@@ -100,12 +117,18 @@ export class LusiaCompletionProvider implements vscode.CompletionItemProvider<Ts
       (part): part is string => part !== undefined && part !== "",
     );
     if (documentation.length > 0)
-      item.documentation = new vscode.MarkdownString(documentation.join("\n\n---\n\n"));
+      item.documentation = new vscode.MarkdownString(
+        documentation.join("\n\n---\n\n"),
+      );
     return item;
   }
 }
 
-function tsItem(document: vscode.TextDocument, offset: number, data: TsCompletion): TsItem {
+function tsItem(
+  document: vscode.TextDocument,
+  offset: number,
+  data: TsCompletion,
+): TsItem {
   const item: TsItem = new vscode.CompletionItem(data.name, KINDS[data.kind]);
   item.insertText = data.insertText;
   item.sortText = data.sortText;
@@ -127,12 +150,16 @@ function toItem(
   resolveData?: TsData,
 ): TsItem {
   const item: TsItem = new vscode.CompletionItem(data.label, KINDS[data.kind]);
-  item.insertText = data.snippet ? new vscode.SnippetString(data.insertText) : data.insertText;
+  item.insertText = data.snippet
+    ? new vscode.SnippetString(data.insertText)
+    : data.insertText;
   item.detail = data.detail;
   const documentation = host.markdown.completionMarkdown(data);
-  if (documentation !== undefined) item.documentation = new vscode.MarkdownString(documentation);
+  if (documentation !== undefined)
+    item.documentation = new vscode.MarkdownString(documentation);
   if (data.range) item.range = rangeOf(document, data.range);
-  if (data.importEdit) item.additionalTextEdits = [importEdit(document, data.importEdit)];
+  if (data.importEdit)
+    item.additionalTextEdits = [importEdit(document, data.importEdit)];
   if (resolveData) item.data = resolveData;
   return item;
 }
@@ -156,6 +183,9 @@ function apiData(
   };
 }
 
-function importEdit(document: vscode.TextDocument, edit: TextEdit): vscode.TextEdit {
+function importEdit(
+  document: vscode.TextDocument,
+  edit: TextEdit,
+): vscode.TextEdit {
   return vscode.TextEdit.replace(rangeOf(document, edit), edit.text);
 }

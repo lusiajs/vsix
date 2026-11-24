@@ -19,7 +19,8 @@ export function locatePackage(
     searched.push(candidate);
     if (existsSync(candidate)) return { packagePath: candidate, searched };
     const parent = dirname(dir);
-    if (dir === stopDir || parent === dir) return { packagePath: undefined, searched };
+    if (dir === stopDir || parent === dir)
+      return { packagePath: undefined, searched };
     dir = parent;
   }
 }

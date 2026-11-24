@@ -41,14 +41,22 @@ export function markupHtml(text: string): MarkupDocument {
 }
 
 /** The HTML service only sees markup outside an expression. */
-export function editable(host: LusiaHost, text: string, offset: number): boolean {
+export function editable(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): boolean {
   return (
     host.parseRegions.regionAt(text, offset).kind === "markup" &&
     !host.formatExpressions.inExpressionAt(text, offset)
   );
 }
 
-export function ownedTag(host: LusiaHost, text: string, offset: number): boolean {
+export function ownedTag(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): boolean {
   const tag = host.parseTag.openTagAt(text, offset);
   if (!tag) return false;
   return (
@@ -60,7 +68,11 @@ export function ownedTag(host: LusiaHost, text: string, offset: number): boolean
 }
 
 /** Whether a tag is plain HTML: lowercase, not a component and not a flow tag. */
-export function isPlainTag(host: LusiaHost, text: string, name: string): boolean {
+export function isPlainTag(
+  host: LusiaHost,
+  text: string,
+  name: string,
+): boolean {
   return (
     /^[a-z][\w.-]*$/.test(name) &&
     name !== "style" &&
@@ -81,7 +93,10 @@ export function tagNameAt(text: string, offset: number): TagName | undefined {
   return { name, start, end: start + name.length };
 }
 
-export function startTagNameBefore(text: string, offset: number): string | undefined {
+export function startTagNameBefore(
+  text: string,
+  offset: number,
+): string | undefined {
   const open = text.lastIndexOf("<", offset - 1);
   if (open === -1) return undefined;
   return TAG_HEAD.exec(text.slice(open, offset))?.[1];

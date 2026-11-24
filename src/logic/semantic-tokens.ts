@@ -30,7 +30,10 @@ export function legendTokens(
   });
 }
 
-function modifierBits(names: readonly string[], legendModifiers: readonly string[]): number {
+function modifierBits(
+  names: readonly string[],
+  legendModifiers: readonly string[],
+): number {
   return names.reduce((bits, name) => {
     const index = legendModifiers.indexOf(name);
     return index === -1 ? bits : bits | (1 << index);
@@ -39,14 +42,23 @@ function modifierBits(names: readonly string[], legendModifiers: readonly string
 
 /** The LSP encoding: five numbers per token, each position relative to the previous token. */
 export function encodeTokens(tokens: readonly EncodedToken[]): number[] {
-  const sorted = [...tokens].sort((a, b) => a.line - b.line || a.character - b.character);
+  const sorted = [...tokens].sort(
+    (a, b) => a.line - b.line || a.character - b.character,
+  );
   const data: number[] = [];
   let previousLine = 0;
   let previousCharacter = 0;
   for (const token of sorted) {
     const deltaLine = token.line - previousLine;
-    const deltaCharacter = deltaLine === 0 ? token.character - previousCharacter : token.character;
-    data.push(deltaLine, deltaCharacter, token.length, token.type, token.modifiers);
+    const deltaCharacter =
+      deltaLine === 0 ? token.character - previousCharacter : token.character;
+    data.push(
+      deltaLine,
+      deltaCharacter,
+      token.length,
+      token.type,
+      token.modifiers,
+    );
     previousLine = token.line;
     previousCharacter = token.character;
   }

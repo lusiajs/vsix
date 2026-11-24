@@ -16,8 +16,15 @@ export class LusiaReferenceProvider implements vscode.ReferenceProvider {
     const offset = document.offsetAt(position);
     const locations: vscode.Location[] = [];
     if (inTsRegion(host, text, offset))
-      locations.push(...tsLocations(document, projectOf(host, document).references(offset)));
-    for (const location of cssReferences(host, text, offset, document.fileName)) {
+      locations.push(
+        ...tsLocations(document, projectOf(host, document).references(offset)),
+      );
+    for (const location of cssReferences(
+      host,
+      text,
+      offset,
+      document.fileName,
+    )) {
       locations.push(
         locationOf(
           document,

@@ -28,7 +28,9 @@ describe("htmlCompletions", () => {
   });
 
   test("returns a snippet and a range over the typed word", () => {
-    const item = htmlCompletions(realHost, "<div cl", 7).find((entry) => entry.label === "class");
+    const item = htmlCompletions(realHost, "<div cl", 7).find(
+      (entry) => entry.label === "class",
+    );
     expect(item).toBeDefined();
     expect(item?.snippet).toBe(true);
     expect(item?.range).toEqual({ start: 5, end: 7 });
@@ -36,13 +38,19 @@ describe("htmlCompletions", () => {
   });
 
   test("stays out of script and style content", () => {
-    expect(htmlCompletions(realHost, "<script>const x = 1;</script>", 12)).toEqual([]);
-    expect(htmlCompletions(realHost, "<style>.a { color: red; }</style>", 12)).toEqual([]);
+    expect(
+      htmlCompletions(realHost, "<script>const x = 1;</script>", 12),
+    ).toEqual([]);
+    expect(
+      htmlCompletions(realHost, "<style>.a { color: red; }</style>", 12),
+    ).toEqual([]);
   });
 
   test("stays out of an expression", () => {
     const text = "<div class={count}>";
-    expect(htmlCompletions(realHost, text, text.indexOf("count") + 2)).toEqual([]);
+    expect(htmlCompletions(realHost, text, text.indexOf("count") + 2)).toEqual(
+      [],
+    );
   });
 
   test("leaves tags the shared completion table owns to it", () => {
@@ -66,7 +74,11 @@ describe("htmlHover", () => {
   });
 
   test("returns nothing outside markup or in text between tags", () => {
-    expect(htmlHover(realHost, "<script>const x = 1;</script>", 12)).toBeUndefined();
-    expect(htmlHover(realHost, markup, markup.indexOf("hello") + 2)).toBeUndefined();
+    expect(
+      htmlHover(realHost, "<script>const x = 1;</script>", 12),
+    ).toBeUndefined();
+    expect(
+      htmlHover(realHost, markup, markup.indexOf("hello") + 2),
+    ).toBeUndefined();
   });
 });

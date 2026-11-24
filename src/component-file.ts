@@ -24,7 +24,9 @@ export function declaredProps(
   name: string,
 ): PropDef[] | undefined {
   const path = componentPath(host, documentPath, text, name);
-  return path ? host.parseProps.parsePropDefs(readFileSync(path, "utf8")) : undefined;
+  return path
+    ? host.parseProps.parsePropDefs(readFileSync(path, "utf8"))
+    : undefined;
 }
 
 export function componentProps(

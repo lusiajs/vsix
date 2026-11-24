@@ -2,15 +2,24 @@ import { existsSync, statSync } from "node:fs";
 import { dirname } from "node:path";
 import { pathToFileURL } from "node:url";
 import * as vscode from "vscode";
-import { LUSIA_PACKAGE, SUPPORTED_API_VERSION, TOOLS_PACKAGES } from "./constants.ts";
+import {
+  LUSIA_PACKAGE,
+  SUPPORTED_API_VERSION,
+  TOOLS_PACKAGES,
+} from "./constants.ts";
 import { locatePackage, type LocatedPackage } from "./locate.ts";
 import { entryPathOf, readManifest } from "./manifest.ts";
 import { reportHost, resetReports } from "./report.ts";
 import type { HostFailure, HostResult } from "./result.ts";
-import { HOST_NAMESPACES, OPTIONAL_HOST_NAMESPACES, type LusiaHost } from "./types.ts";
+import {
+  HOST_NAMESPACES,
+  OPTIONAL_HOST_NAMESPACES,
+  type LusiaHost,
+} from "./types.ts";
 
 type ImportOutcome =
-  { ok: true; host: LusiaHost; loadMs: number } | { ok: false; failure: HostFailure };
+  | { ok: true; host: LusiaHost; loadMs: number }
+  | { ok: false; failure: HostFailure };
 
 /** Imported editor modules, keyed by file and modification times, so an update reloads them. */
 const imports = new Map<string, Promise<ImportOutcome>>();
@@ -21,18 +30,24 @@ export function resetHost(): void {
 }
 
 /** The language host for a document's project, or undefined when it cannot be loaded. */
-export async function hostFor(document: vscode.TextDocument): Promise<LusiaHost | undefined> {
+export async function hostFor(
+  document: vscode.TextDocument,
+): Promise<LusiaHost | undefined> {
   const result = await hostResultFor(document);
   reportHost(result, document);
   return result.ok ? result.host : undefined;
 }
 
-export async function hostResultFor(document: vscode.TextDocument): Promise<HostResult> {
+export async function hostResultFor(
+  document: vscode.TextDocument,
+): Promise<HostResult> {
   const start = dirname(document.fileName);
   const stop = vscode.workspace.getWorkspaceFolder(document.uri)?.uri.fsPath;
   const tools = locateTools(start, stop);
   const lusia = locatePackage(LUSIA_PACKAGE, start, stop);
-  const lusiaManifest = lusia.packagePath ? readManifest(lusia.packagePath) : undefined;
+  const lusiaManifest = lusia.packagePath
+    ? readManifest(lusia.packagePath)
+    : undefined;
   const lusiaVersion = lusiaManifest?.version;
   if (tools.packagePath === undefined) {
     return failed({
@@ -53,7 +68,8 @@ export async function hostResultFor(document: vscode.TextDocument): Promise<Host
       toolsVersion,
     });
   }
-  if (!vscode.workspace.isTrusted) return failed({ cause: "untrusted", entryPath });
+  if (!vscode.workspace.isTrusted)
+    return failed({ cause: "untrusted", entryPath });
   const outcome = await importOnce(
     entryPath,
     tools.packageName,
@@ -125,7 +141,9 @@ async function importEntry(
       };
       return { ok: false, failure };
     }
-    const missing = HOST_NAMESPACES.filter((name) => module[name] === undefined);
+    const missing = HOST_NAMESPACES.filter(
+      (name) => module[name] === undefined,
+    );
     if (missing.length > 0) {
       const error = new Error(`missing namespaces: ${missing.join(", ")}`);
       const failure: HostFailure = {
@@ -138,7 +156,9 @@ async function importEntry(
       return { ok: false, failure };
     }
     const names = [...HOST_NAMESPACES, ...OPTIONAL_HOST_NAMESPACES];
-    const namespaces = Object.fromEntries(names.map((name) => [name, module[name]]));
+    const namespaces = Object.fromEntries(
+      names.map((name) => [name, module[name]]),
+    );
     const host = namespaces as unknown as LusiaHost;
     return { ok: true, host, loadMs: performance.now() - started };
   } catch (error) {

@@ -16,10 +16,12 @@ export interface RealFile {
 export function realFileOf(fileName: string): RealFile | undefined {
   if (fileName.endsWith(DECLARATION_SUFFIX))
     return {
-      fileName: fileName.slice(0, -DECLARATION_SUFFIX.length) + COMPONENT_SUFFIX,
+      fileName:
+        fileName.slice(0, -DECLARATION_SUFFIX.length) + COMPONENT_SUFFIX,
       generated: true,
     };
-  if (fileName.endsWith(TS_SUFFIX)) return { fileName: fileName.slice(0, -3), generated: false };
+  if (fileName.endsWith(TS_SUFFIX))
+    return { fileName: fileName.slice(0, -3), generated: false };
   return undefined;
 }
 
@@ -44,14 +46,20 @@ export function locationOf(
 ): TsLocation | undefined {
   const real = realFileOf(fileName);
   if (real === undefined) return { fileName, start };
-  if (real.generated) return allowGenerated ? { fileName: real.fileName, start: 0 } : undefined;
+  if (real.generated)
+    return allowGenerated ? { fileName: real.fileName, start: 0 } : undefined;
   const length = componentLength(real.fileName);
   if (length !== undefined && start > length) return undefined;
   return { fileName: real.fileName, start };
 }
 
-export function hasLocation(locations: TsLocation[], candidate: TsLocation): boolean {
+export function hasLocation(
+  locations: TsLocation[],
+  candidate: TsLocation,
+): boolean {
   return locations.some(
-    (location) => location.fileName === candidate.fileName && location.start === candidate.start,
+    (location) =>
+      location.fileName === candidate.fileName &&
+      location.start === candidate.start,
   );
 }

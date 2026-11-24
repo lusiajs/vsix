@@ -10,9 +10,19 @@ export interface HostInfo {
 }
 
 export type HostFailure =
-  | { cause: "notInstalled"; searched: string[]; lusiaInstalled: boolean; lusiaVersion?: string }
+  | {
+      cause: "notInstalled";
+      searched: string[];
+      lusiaInstalled: boolean;
+      lusiaVersion?: string;
+    }
   | { cause: "untrusted"; entryPath: string }
-  | { cause: "noEntry"; packageName: string; packagePath: string; toolsVersion: string }
+  | {
+      cause: "noEntry";
+      packageName: string;
+      packagePath: string;
+      toolsVersion: string;
+    }
   | {
       cause: "apiVersion";
       packageName: string;
@@ -29,4 +39,5 @@ export type HostFailure =
     };
 
 export type HostResult =
-  { ok: true; host: LusiaHost; info: HostInfo } | { ok: false; failure: HostFailure };
+  | { ok: true; host: LusiaHost; info: HostInfo }
+  | { ok: false; failure: HostFailure };

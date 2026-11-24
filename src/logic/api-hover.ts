@@ -17,19 +17,27 @@ export function apiHoverMarkdown(entry: ApiEntry): string {
 
 /** A value with members shows its top-level names only, such as `const EASE: { STYLE, IN, OUT, INOUT }`. */
 export function declarationOf(entry: ApiEntry): string {
-  if (entry.kind !== "value" || entry.members === undefined) return entry.signature;
+  if (entry.kind !== "value" || entry.members === undefined)
+    return entry.signature;
   const names = entry.members.map((member) => member.name).join(", ");
   return `const ${entry.name}: { ${names} }`;
 }
 
 function membersSection(entry: ApiEntry): string[] {
   if (entry.members === undefined) return [];
-  return ["Members", "", "| Value | What it does |", "| --- | --- |", ...memberRows(entry.members)];
+  return [
+    "Members",
+    "",
+    "| Value | What it does |",
+    "| --- | --- |",
+    ...memberRows(entry.members),
+  ];
 }
 
 function memberRows(members: ApiMember[], parent?: string): string[] {
   return members.flatMap((member) => {
-    const value = parent === undefined ? member.name : `${parent}.${member.name}`;
+    const value =
+      parent === undefined ? member.name : `${parent}.${member.name}`;
     return [
       `| \`${value}\` | ${tableCell(member.summary)} |`,
       ...memberRows(member.members ?? [], value),

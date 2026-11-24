@@ -10,12 +10,16 @@ const EXTERNAL = /^[a-z][a-z0-9+.-]*:/i;
 export class LusiaDocumentLinkProvider implements vscode.DocumentLinkProvider {
   constructor(private readonly hosts: HostSource = hostFor) {}
 
-  async provideDocumentLinks(document: vscode.TextDocument): Promise<vscode.DocumentLink[]> {
+  async provideDocumentLinks(
+    document: vscode.TextDocument,
+  ): Promise<vscode.DocumentLink[]> {
     const host = await this.hosts(document);
     if (!host) return [];
     const text = document.getText();
     return [
-      ...htmlLinks(host, text).flatMap((link) => htmlLink(document, link.target, link.range)),
+      ...htmlLinks(host, text).flatMap((link) =>
+        htmlLink(document, link.target, link.range),
+      ),
       ...cssLinks(host, text, document.fileName).map((link) =>
         fileLink(document, link.path, link.range),
       ),
@@ -30,8 +34,15 @@ function htmlLink(
 ): vscode.DocumentLink[] {
   if (target.startsWith("#")) return [];
   if (EXTERNAL.test(target))
-    return [new vscode.DocumentLink(rangeOf(document, range), vscode.Uri.parse(target))];
-  return [fileLink(document, resolve(dirname(document.fileName), target), range)];
+    return [
+      new vscode.DocumentLink(
+        rangeOf(document, range),
+        vscode.Uri.parse(target),
+      ),
+    ];
+  return [
+    fileLink(document, resolve(dirname(document.fileName), target), range),
+  ];
 }
 
 function fileLink(
@@ -39,7 +50,10 @@ function fileLink(
   path: string,
   range: { start: number; end: number },
 ): vscode.DocumentLink {
-  const link = new vscode.DocumentLink(rangeOf(document, range), vscode.Uri.file(path));
+  const link = new vscode.DocumentLink(
+    rangeOf(document, range),
+    vscode.Uri.file(path),
+  );
   link.tooltip = path;
   return link;
 }

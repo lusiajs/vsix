@@ -10,19 +10,32 @@ import type { TsLocation } from "../ts/types.ts";
 const WORD_CHAR = /[\w$]/;
 
 /** Whether the cursor is in a script section or a `{...}` markup expression. */
-export function inTsRegion(host: LusiaHost, text: string, offset: number): boolean {
+export function inTsRegion(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): boolean {
   const region = host.parseRegions.regionAt(text, offset);
   if (region.kind === "style") return false;
   if (region.kind === "script") return true;
   return host.formatExpressions.inExpressionAt(text, offset);
 }
 
-export function projectOf(host: LusiaHost, document: vscode.TextDocument): TsProject {
+export function projectOf(
+  host: LusiaHost,
+  document: vscode.TextDocument,
+): TsProject {
   return TsProject.open(host, document.fileName, document.getText());
 }
 
-export function rangeOf(document: vscode.TextDocument, range: TextRange): vscode.Range {
-  return new vscode.Range(document.positionAt(range.start), document.positionAt(range.end));
+export function rangeOf(
+  document: vscode.TextDocument,
+  range: TextRange,
+): vscode.Range {
+  return new vscode.Range(
+    document.positionAt(range.start),
+    document.positionAt(range.end),
+  );
 }
 
 /** A position in any file: the editor's own text, or the file read from disk. */
@@ -33,7 +46,9 @@ export function positionIn(
 ): vscode.Position {
   if (sameFile(document.fileName, fileName)) return document.positionAt(offset);
   const text = readText(fileName);
-  return text === undefined ? new vscode.Position(0, 0) : positionAt(text, offset);
+  return text === undefined
+    ? new vscode.Position(0, 0)
+    : positionAt(text, offset);
 }
 
 /** The same pure mapping as `TextDocument.positionAt`, for a file the editor has not opened. */
@@ -50,10 +65,15 @@ export function locationOf(
   start: number,
   end: number = start,
 ): vscode.Location {
-  const uri = sameFile(document.fileName, fileName) ? document.uri : vscode.Uri.file(fileName);
+  const uri = sameFile(document.fileName, fileName)
+    ? document.uri
+    : vscode.Uri.file(fileName);
   const range = sameFile(document.fileName, fileName)
     ? new vscode.Range(document.positionAt(start), document.positionAt(end))
-    : new vscode.Range(positionIn(document, fileName, start), positionIn(document, fileName, end));
+    : new vscode.Range(
+        positionIn(document, fileName, start),
+        positionIn(document, fileName, end),
+      );
   return new vscode.Location(uri, range);
 }
 
@@ -61,12 +81,15 @@ export function tsLocations(
   document: vscode.TextDocument,
   locations: TsLocation[],
 ): vscode.Location[] {
-  return locations.map((location) => locationOf(document, location.fileName, location.start));
+  return locations.map((location) =>
+    locationOf(document, location.fileName, location.start),
+  );
 }
 
 export function symbolKindOf(kind: number): vscode.SymbolKind {
   const mapped = kind - 1;
-  return mapped >= vscode.SymbolKind.File && mapped <= vscode.SymbolKind.TypeParameter
+  return mapped >= vscode.SymbolKind.File &&
+    mapped <= vscode.SymbolKind.TypeParameter
     ? mapped
     : vscode.SymbolKind.Object;
 }
@@ -86,7 +109,10 @@ export function cssSymbolKindOf(kind: CssSymbolKind): vscode.SymbolKind {
 }
 
 /** The word that covers the cursor, for a rename placeholder. */
-export function wordRangeAt(text: string, offset: number): TextRange | undefined {
+export function wordRangeAt(
+  text: string,
+  offset: number,
+): TextRange | undefined {
   let start = Math.max(0, Math.min(offset, text.length));
   let end = start;
   while (start > 0 && WORD_CHAR.test(text.charAt(start - 1))) start--;
@@ -108,7 +134,8 @@ function readText(fileName: string): string | undefined {
 
 function startsOf(text: string): number[] {
   const starts = [0];
-  for (let i = 0; i < text.length; i++) if (text.charCodeAt(i) === 10) starts.push(i + 1);
+  for (let i = 0; i < text.length; i++)
+    if (text.charCodeAt(i) === 10) starts.push(i + 1);
   return starts;
 }
 

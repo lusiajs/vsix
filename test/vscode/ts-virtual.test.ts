@@ -30,7 +30,10 @@ describe("virtualScript", () => {
   test("copies the script as it is", () => {
     expect(virtual.text).toContain('const user = { name: "Ada" };');
     expect(virtual.scriptSpans).toEqual([
-      { start: SOURCE.indexOf("<script>") + "<script>".length, end: SOURCE.indexOf("</script>") },
+      {
+        start: SOURCE.indexOf("<script>") + "<script>".length,
+        end: SOURCE.indexOf("</script>"),
+      },
     ]);
   });
 
@@ -99,7 +102,9 @@ describe("virtualScript tolerance", () => {
     const source = "<EACH {rows} as={row} />";
     const virtual = virtualScript(realHost, source);
     expect(virtual.text.length).toBe(source.length);
-    expect(virtual.flowNames).toEqual([{ name: "row", kind: "item", list: "rows" }]);
+    expect(virtual.flowNames).toEqual([
+      { name: "row", kind: "item", list: "rows" },
+    ]);
   });
 
   test("does not read expressions out of the style section", () => {

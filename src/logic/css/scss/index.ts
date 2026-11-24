@@ -14,7 +14,10 @@ import type { ScssIndex, ScssMember, ScssMemberKind } from "./types.ts";
 const MAX_DEPTH = 8;
 
 /** The reachable SCSS members of a style, resolved from its imports on disk. */
-export function buildScssIndex(fileName: string | undefined, style: string): ScssIndex {
+export function buildScssIndex(
+  fileName: string | undefined,
+  style: string,
+): ScssIndex {
   const members: ScssMember[] = [];
   const files = new Set<string>();
   if (!fileName) return { members, files: [] };
@@ -64,7 +67,8 @@ function collectModule(
     if (directive.kind !== "forward") continue;
     for (const forward of directive.paths) {
       const target = resolveScssModule(path, forward.value);
-      if (target) members.push(...collectModule(target, files, stack, depth + 1));
+      if (target)
+        members.push(...collectModule(target, files, stack, depth + 1));
     }
   }
   stack.delete(path);

@@ -13,7 +13,13 @@ import { hostFor, type HostSource } from "./host/source.ts";
 import { TsProject } from "./ts/project.ts";
 
 const DEBOUNCE_MS = 300;
-const SOURCES: SourceName[] = ["lusia", "lusia-lint", "typescript", "html", "css"];
+const SOURCES: SourceName[] = [
+  "lusia",
+  "lusia-lint",
+  "typescript",
+  "html",
+  "css",
+];
 
 export class LusiaDiagnostics implements vscode.Disposable {
   private readonly collections = collections();
@@ -23,7 +29,8 @@ export class LusiaDiagnostics implements vscode.Disposable {
   constructor(private readonly hosts: HostSource = hostFor) {}
 
   scheduleAll(): void {
-    for (const document of vscode.workspace.textDocuments) this.schedule(document);
+    for (const document of vscode.workspace.textDocuments)
+      this.schedule(document);
   }
 
   schedule(document: vscode.TextDocument): void {
@@ -84,7 +91,10 @@ export class LusiaDiagnostics implements vscode.Disposable {
   }
 
   /** Sets every collection, dropping a finding another source already reported with the same span. */
-  private apply(document: vscode.TextDocument, sources: SourceDiagnostics): void {
+  private apply(
+    document: vscode.TextDocument,
+    sources: SourceDiagnostics,
+  ): void {
     const seen = new Set<string>();
     for (const source of SOURCES) {
       const unique = (sources[source] ?? []).filter((item) => {

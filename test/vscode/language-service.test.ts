@@ -8,7 +8,11 @@ import {
 
 describe("editorDocument", () => {
   test("maps offsets and positions both ways", () => {
-    const document = editorDocument("inmemory://a.lusia", "html", "one\ntwo\nthree");
+    const document = editorDocument(
+      "inmemory://a.lusia",
+      "html",
+      "one\ntwo\nthree",
+    );
     expect(document.positionAt(5)).toEqual({ line: 1, character: 1 });
     expect(document.offsetAt({ line: 2, character: 3 })).toBe(11);
     expect(document.lineCount).toBe(3);
@@ -34,22 +38,29 @@ describe("toCompletionKind", () => {
 
 describe("hoverText", () => {
   test("reads a markdown or plain text hover", () => {
-    expect(hoverText({ contents: { kind: "markdown", value: "**div**" } })).toBe("**div**");
-    expect(hoverText({ contents: { kind: "plaintext", value: "div" } })).toBe("div");
+    expect(
+      hoverText({ contents: { kind: "markdown", value: "**div**" } }),
+    ).toBe("**div**");
+    expect(hoverText({ contents: { kind: "plaintext", value: "div" } })).toBe(
+      "div",
+    );
   });
 
   test("joins a list of strings and code blocks", () => {
     expect(
       hoverText({
-        contents: ["The class attribute.", { language: "html", value: 'class="a"' }],
+        contents: [
+          "The class attribute.",
+          { language: "html", value: 'class="a"' },
+        ],
       }),
     ).toBe('The class attribute.\n\n```html\nclass="a"\n```');
   });
 
   test("keeps a single code block fenced", () => {
-    expect(hoverText({ contents: { language: "css", value: "display: block;" } })).toBe(
-      "```css\ndisplay: block;\n```",
-    );
+    expect(
+      hoverText({ contents: { language: "css", value: "display: block;" } }),
+    ).toBe("```css\ndisplay: block;\n```");
   });
 
   test("returns nothing for a missing or empty hover", () => {
@@ -63,7 +74,10 @@ describe("offsetRange", () => {
   test("turns a language server range into document offsets", () => {
     const document = editorDocument("inmemory://a.lusia", "html", "one\ntwo");
     expect(
-      offsetRange(document, { start: { line: 0, character: 1 }, end: { line: 1, character: 2 } }),
+      offsetRange(document, {
+        start: { line: 0, character: 1 },
+        end: { line: 1, character: 2 },
+      }),
     ).toEqual({
       start: 1,
       end: 6,

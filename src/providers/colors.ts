@@ -6,14 +6,21 @@ import { rangeOf } from "./common.ts";
 export class LusiaColorProvider implements vscode.DocumentColorProvider {
   constructor(private readonly hosts: HostSource = hostFor) {}
 
-  async provideDocumentColors(document: vscode.TextDocument): Promise<vscode.ColorInformation[]> {
+  async provideDocumentColors(
+    document: vscode.TextDocument,
+  ): Promise<vscode.ColorInformation[]> {
     const host = await this.hosts(document);
     if (!host) return [];
     return cssColors(host, document.getText()).map(
       (info) =>
         new vscode.ColorInformation(
           rangeOf(document, info.range),
-          new vscode.Color(info.color.red, info.color.green, info.color.blue, info.color.alpha),
+          new vscode.Color(
+            info.color.red,
+            info.color.green,
+            info.color.blue,
+            info.color.alpha,
+          ),
         ),
     );
   }
@@ -36,8 +43,12 @@ export class LusiaColorProvider implements vscode.DocumentColorProvider {
         presentation.edit.newText,
       );
       if (presentation.additionalEdits) {
-        item.additionalTextEdits = presentation.additionalEdits.map((additional) =>
-          vscode.TextEdit.replace(rangeOf(document, additional.range), additional.newText),
+        item.additionalTextEdits = presentation.additionalEdits.map(
+          (additional) =>
+            vscode.TextEdit.replace(
+              rangeOf(document, additional.range),
+              additional.newText,
+            ),
         );
       }
       return item;

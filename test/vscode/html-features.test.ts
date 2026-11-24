@@ -23,7 +23,9 @@ describe("htmlTagClose", () => {
       range: { start: 5, end: 5 },
       newText: "</div>",
     });
-    expect(htmlTagClose(realHost, `<div class={x}>`, 15)?.newText).toBe("</div>");
+    expect(htmlTagClose(realHost, `<div class={x}>`, 15)?.newText).toBe(
+      "</div>",
+    );
   });
 
   test("skips components, flow tags, void tags and section content", () => {
@@ -48,7 +50,9 @@ describe("htmlRename", () => {
   });
 
   test("works from the close tag too", () => {
-    expect(htmlRename(realHost, PAIR, 15, "section")?.map((edit) => edit.range)).toEqual([
+    expect(
+      htmlRename(realHost, PAIR, 15, "section")?.map((edit) => edit.range),
+    ).toEqual([
       { start: 6, end: 10 },
       { start: 14, end: 18 },
     ]);
@@ -63,7 +67,9 @@ describe("htmlRename", () => {
     expect(htmlRenameRange(realHost, `<Badge></Badge>`, 2)).toBeUndefined();
     expect(htmlRenameRange(realHost, `<IF {x}></IF>`, 2)).toBeUndefined();
     expect(htmlRenameRange(realHost, `<div>{span}</div>`, 7)).toBeUndefined();
-    expect(htmlRenameRange(realHost, `<style>\n.a {}\n</style>`, 9)).toBeUndefined();
+    expect(
+      htmlRenameRange(realHost, `<style>\n.a {}\n</style>`, 9),
+    ).toBeUndefined();
   });
 });
 
@@ -77,7 +83,9 @@ describe("htmlLinkedRanges", () => {
 
   test("stays out of expressions and section content", () => {
     expect(htmlLinkedRanges(realHost, `<div>{span}</div>`, 6)).toBeUndefined();
-    expect(htmlLinkedRanges(realHost, `<style>\n.a {}\n</style>`, 9)).toBeUndefined();
+    expect(
+      htmlLinkedRanges(realHost, `<style>\n.a {}\n</style>`, 9),
+    ).toBeUndefined();
   });
 });
 
@@ -140,7 +148,9 @@ describe("htmlSymbols", () => {
 
 describe("htmlFolding", () => {
   test("folds an element to its content", () => {
-    expect(htmlFolding("<div>\n<span>x</span>\n</div>")).toEqual([{ startLine: 0, endLine: 1 }]);
+    expect(htmlFolding("<div>\n<span>x</span>\n</div>")).toEqual([
+      { startLine: 0, endLine: 1 },
+    ]);
   });
 });
 
@@ -165,7 +175,14 @@ describe("htmlSelection", () => {
 describe("htmlDiagnostics", () => {
   test("reports tag close order", async () => {
     const issues = await htmlDiagnostics(realHost, "<div><span></div>");
-    expect(issues.map((issue) => [issue.code, issue.start, issue.end, issue.severity])).toEqual([
+    expect(
+      issues.map((issue) => [
+        issue.code,
+        issue.start,
+        issue.end,
+        issue.severity,
+      ]),
+    ).toEqual([
       ["close-order", 6, 10, "error"],
       ["close-order", 12, 16, "error"],
     ]);
@@ -173,10 +190,13 @@ describe("htmlDiagnostics", () => {
   });
 
   test("reports a duplicated attribute", async () => {
-    const issues = await htmlDiagnostics(realHost, `<div class="a" class="b">x</div>`);
-    expect(issues.map((issue) => [issue.code, issue.start, issue.end])).toEqual([
-      ["no-dup-attr", 15, 20],
-    ]);
+    const issues = await htmlDiagnostics(
+      realHost,
+      `<div class="a" class="b">x</div>`,
+    );
+    expect(issues.map((issue) => [issue.code, issue.start, issue.end])).toEqual(
+      [["no-dup-attr", 15, 20]],
+    );
   });
 
   test("accepts components, flow tags, expressions and scoped style", async () => {
@@ -216,8 +236,9 @@ describe("Emmet", () => {
         configurationDefaults?: Record<string, Record<string, string>>;
       };
     };
-    expect(manifest.contributes?.configurationDefaults?.["emmet.includeLanguages"]?.lusia).toBe(
-      "html",
-    );
+    expect(
+      manifest.contributes?.configurationDefaults?.["emmet.includeLanguages"]
+        ?.lusia,
+    ).toBe("html");
   });
 });

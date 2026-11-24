@@ -17,8 +17,14 @@ export function readManifest(packagePath: string): Manifest | undefined {
 
 /** The file the editor entry points at: `exports["./vscode"].import`, else the fallback file. */
 export function entryPathOf(packagePath: string, manifest: Manifest): string {
-  const entry = typeof manifest.exports === "object" ? manifest.exports[TOOLS_ENTRY] : undefined;
-  const relative = typeof entry === "string" ? entry : (importTarget(entry) ?? TOOLS_FALLBACK_FILE);
+  const entry =
+    typeof manifest.exports === "object"
+      ? manifest.exports[TOOLS_ENTRY]
+      : undefined;
+  const relative =
+    typeof entry === "string"
+      ? entry
+      : (importTarget(entry) ?? TOOLS_FALLBACK_FILE);
   return join(dirname(packagePath), relative);
 }
 

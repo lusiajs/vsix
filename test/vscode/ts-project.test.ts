@@ -37,14 +37,18 @@ const user = { name: "Ada", age: 36 };
 <p>{user.name}</p>
 `;
     const project = workspace.open("Types.lusia", source);
-    expect(project.hover(source.indexOf("count =") + 1)?.markdown).toContain("Variable<number>");
-    expect(project.completions(after(source, "count.")).map((item) => item.name)).toEqual(
-      expect.arrayContaining(["value", "get", "set", "peek"]),
+    expect(project.hover(source.indexOf("count =") + 1)?.markdown).toContain(
+      "Variable<number>",
     );
-    expect(project.completions(after(source, "user.")).map((item) => item.name)).toEqual(
-      expect.arrayContaining(["name", "age"]),
+    expect(
+      project.completions(after(source, "count.")).map((item) => item.name),
+    ).toEqual(expect.arrayContaining(["value", "get", "set", "peek"]));
+    expect(
+      project.completions(after(source, "user.")).map((item) => item.name),
+    ).toEqual(expect.arrayContaining(["name", "age"]));
+    expect(project.hover(source.indexOf("user =") + 1)?.markdown).toContain(
+      "name: string",
     );
-    expect(project.hover(source.indexOf("user =") + 1)?.markdown).toContain("name: string");
   });
 
   test("reads the imported function type, definition, references and rename", () => {
@@ -55,21 +59,28 @@ const hello = greet("Ada");
 <p>{hello.text}</p>
 `;
     const project = workspace.open("Functions.lusia", source);
-    expect(project.hover(source.indexOf("hello =") + 1)?.markdown).toContain("text: string");
+    expect(project.hover(source.indexOf("hello =") + 1)?.markdown).toContain(
+      "text: string",
+    );
 
     const call = after(source, "const hello = ");
     const definition = project.definitions(call)[0];
     expect(definition?.fileName.endsWith("util.ts")).toBe(true);
-    expect(definition === undefined ? "" : UTIL.slice(definition.start, definition.start + 5)).toBe(
-      "greet",
-    );
+    expect(
+      definition === undefined
+        ? ""
+        : UTIL.slice(definition.start, definition.start + 5),
+    ).toBe("greet");
 
     const references = project.references(call);
-    expect(references.some((location) => location.fileName.endsWith("util.ts"))).toBe(true);
+    expect(
+      references.some((location) => location.fileName.endsWith("util.ts")),
+    ).toBe(true);
     expect(
       references.some(
         (location) =>
-          location.fileName === project.fileName && location.start === source.indexOf("greet"),
+          location.fileName === project.fileName &&
+          location.start === source.indexOf("greet"),
       ),
     ).toBe(true);
 
@@ -77,7 +88,9 @@ const hello = greet("Ada");
     const renamed = applyEdits(source, project.fileName, edits);
     expect(renamed).toContain('import { welcome } from "./util.ts"');
     expect(renamed).toContain('welcome("Ada")');
-    expect(edits.find((edit) => edit.fileName.endsWith("util.ts"))?.text).toBe("welcome");
+    expect(edits.find((edit) => edit.fileName.endsWith("util.ts"))?.text).toBe(
+      "welcome",
+    );
   });
 
   test("helps with the arguments of an imported function", () => {
@@ -121,14 +134,19 @@ const hello = greet(user.name);
     const propertyStart = after(source, "{user.");
     const userHover = project.hover(propertyStart);
     expect(userHover?.markdown).toContain("name: string");
-    expect(userHover?.range).toEqual({ start: propertyStart, end: propertyStart + "name".length });
-    expect(project.hover(after(source, "{hello."))?.markdown).toContain("text: string");
-    expect(project.completions(after(source, "{user.")).map((item) => item.name)).toEqual(
-      expect.arrayContaining(["name", "age"]),
-    );
-    expect(project.completionDetails(after(source, "{hello."), "text")?.detail).toContain(
+    expect(userHover?.range).toEqual({
+      start: propertyStart,
+      end: propertyStart + "name".length,
+    });
+    expect(project.hover(after(source, "{hello."))?.markdown).toContain(
       "text: string",
     );
+    expect(
+      project.completions(after(source, "{user.")).map((item) => item.name),
+    ).toEqual(expect.arrayContaining(["name", "age"]));
+    expect(
+      project.completionDetails(after(source, "{hello."), "text")?.detail,
+    ).toContain("text: string");
   });
 
   test("resolves a component import and reads its props type", () => {
@@ -144,10 +162,14 @@ const wrong: typeof Badge.props = { label: 1 };
     const issues = project.diagnostics();
     expect(issues).toHaveLength(1);
     expect(issues[0]?.message).toContain("not assignable to type 'string'");
-    expect(project.hover(source.indexOf("Badge"))?.markdown).toContain("LusiaProps");
-    expect(project.definitions(source.indexOf("Badge"))[0]?.fileName.endsWith("Badge.lusia")).toBe(
-      true,
+    expect(project.hover(source.indexOf("Badge"))?.markdown).toContain(
+      "LusiaProps",
     );
+    expect(
+      project
+        .definitions(source.indexOf("Badge"))[0]
+        ?.fileName.endsWith("Badge.lusia"),
+    ).toBe(true);
   });
 
   test("resolves a component that declares no props", () => {
@@ -163,7 +185,9 @@ const props: typeof Plain.props = {};
 `;
     const project = workspace.open("PlainParent.lusia", source);
     expect(project.diagnostics()).toEqual([]);
-    expect(project.hover(source.indexOf("Plain"))?.markdown).toContain("LusiaProps");
+    expect(project.hover(source.indexOf("Plain"))?.markdown).toContain(
+      "LusiaProps",
+    );
   });
 
   test("infers EACH items, indexes and FOR counters", () => {
@@ -179,16 +203,24 @@ const rows = variable<Row[]>([{ label: "a", count: 1 }]);
 <FOR {n} to={3}><span>{n.toFixed(1)}</span></FOR>
 `;
     const project = workspace.open("Flow.lusia", source);
-    expect(project.hover(after(source, "{row."))?.markdown).toContain("label: string");
-    expect(project.completions(after(source, "{row.")).map((item) => item.name)).toEqual(
-      expect.arrayContaining(["label", "count"]),
+    expect(project.hover(after(source, "{row."))?.markdown).toContain(
+      "label: string",
     );
-    expect(project.hover(after(source, "{i."))?.markdown).toContain("value: number");
-    expect(project.completions(after(source, "{i.")).map((item) => item.name)).toEqual(
-      expect.arrayContaining(["value", "get", "set"]),
+    expect(
+      project.completions(after(source, "{row.")).map((item) => item.name),
+    ).toEqual(expect.arrayContaining(["label", "count"]));
+    expect(project.hover(after(source, "{i."))?.markdown).toContain(
+      "value: number",
     );
-    expect(project.hover(source.indexOf("{n.toFixed") + 1)?.markdown).toContain("number");
-    expect(project.completions(after(source, "{n.")).map((item) => item.name)).toContain("toFixed");
+    expect(
+      project.completions(after(source, "{i.")).map((item) => item.name),
+    ).toEqual(expect.arrayContaining(["value", "get", "set"]));
+    expect(project.hover(source.indexOf("{n.toFixed") + 1)?.markdown).toContain(
+      "number",
+    );
+    expect(
+      project.completions(after(source, "{n.")).map((item) => item.name),
+    ).toContain("toFixed");
   });
 
   test("tolerates an unclosed expression", () => {
@@ -199,19 +231,26 @@ const user = { name: "Ada", age: 36 };
 `;
     const project = workspace.open("Broken.lusia", source);
     expect(project.diagnostics()).toEqual([]);
-    expect(project.completions(after(source, "{user.")).map((item) => item.name)).toEqual(
-      expect.arrayContaining(["name", "age"]),
+    expect(
+      project.completions(after(source, "{user.")).map((item) => item.name),
+    ).toEqual(expect.arrayContaining(["name", "age"]));
+    expect(project.hover(after(source, "{user."))?.markdown).toContain(
+      "name: string",
     );
-    expect(project.hover(after(source, "{user."))?.markdown).toContain("name: string");
   });
 
   test("updates a project in place", () => {
-    const project = workspace.open("Update.lusia", `<script>\nconst value = 1;\n</script>\n`);
+    const project = workspace.open(
+      "Update.lusia",
+      `<script>\nconst value = 1;\n</script>\n`,
+    );
     expect(project.diagnostics()).toEqual([]);
     const source = `<script>\nconst value: string = "x";\n</script>\n<p>{value.length}</p>\n`;
     project.update(source);
     expect(project.diagnostics()).toEqual([]);
-    expect(project.hover(after(source, "{value."))?.markdown).toContain("length: number");
+    expect(project.hover(after(source, "{value."))?.markdown).toContain(
+      "length: number",
+    );
   });
 });
 

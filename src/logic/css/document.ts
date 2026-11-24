@@ -6,7 +6,12 @@ import type { LusiaHost } from "../../host/types.ts";
 import { offsetRange } from "../language-service.ts";
 import { shift, styleSections, type StyleSection } from "./context.ts";
 import { parseDirectives, resolveScssModule } from "./scss/parse.ts";
-import type { CssFoldingRange, CssLink, CssSymbol, CssSymbolKind } from "./types.ts";
+import type {
+  CssFoldingRange,
+  CssLink,
+  CssSymbol,
+  CssSymbolKind,
+} from "./types.ts";
 
 const SYMBOL_KINDS: Record<number, CssSymbolKind> = {
   5: "class",
@@ -17,7 +22,11 @@ const SYMBOL_KINDS: Record<number, CssSymbolKind> = {
   14: "variable",
 };
 
-export function cssLinks(host: LusiaHost, text: string, fileName?: string): CssLink[] {
+export function cssLinks(
+  host: LusiaHost,
+  text: string,
+  fileName?: string,
+): CssLink[] {
   if (!fileName) return [];
   const links: CssLink[] = [];
   for (const style of styleSections(host, text)) {
@@ -43,7 +52,10 @@ export function cssSymbols(host: LusiaHost, text: string): CssSymbol[] {
   for (const style of styleSections(host, text)) {
     try {
       const stylesheet = style.service.parseStylesheet(style.document);
-      const list = style.service.findDocumentSymbols2(style.document, stylesheet);
+      const list = style.service.findDocumentSymbols2(
+        style.document,
+        stylesheet,
+      );
       for (const symbol of list) {
         const result = toSymbol(symbol, style);
         if (result) symbols.push(result);
@@ -65,7 +77,11 @@ export function cssFolding(host: LusiaHost, text: string): CssFoldingRange[] {
       continue;
     }
     for (const folding of list) {
-      const start = lineOffset(style, folding.startLine, folding.startCharacter);
+      const start = lineOffset(
+        style,
+        folding.startLine,
+        folding.startCharacter,
+      );
       const end = lineOffset(style, folding.endLine, folding.endCharacter);
       if (start >= end) continue;
       ranges.push({
@@ -78,7 +94,10 @@ export function cssFolding(host: LusiaHost, text: string): CssFoldingRange[] {
   return ranges;
 }
 
-function toSymbol(symbol: DocumentSymbol, style: StyleSection): CssSymbol | undefined {
+function toSymbol(
+  symbol: DocumentSymbol,
+  style: StyleSection,
+): CssSymbol | undefined {
   const range = offsetRange(style.document, symbol.range);
   const selectionRange = offsetRange(style.document, symbol.selectionRange);
   if (!range || !selectionRange) return undefined;
@@ -94,12 +113,21 @@ function toSymbol(symbol: DocumentSymbol, style: StyleSection): CssSymbol | unde
   };
 }
 
-function lineOffset(style: StyleSection, line: number, character: number | undefined): number {
+function lineOffset(
+  style: StyleSection,
+  line: number,
+  character: number | undefined,
+): number {
   const lineIndex = Math.min(Math.max(line, 0), style.document.lineCount - 1);
   const end = style.document.getLineRange(lineIndex).end;
-  return style.document.offsetAt({ line: lineIndex, character: character ?? end.character });
+  return style.document.offsetAt({
+    line: lineIndex,
+    character: character ?? end.character,
+  });
 }
 
 function foldingKind(kind: string | undefined): CssFoldingRange["kind"] {
-  return kind === "comment" || kind === "imports" || kind === "region" ? kind : undefined;
+  return kind === "comment" || kind === "imports" || kind === "region"
+    ? kind
+    : undefined;
 }

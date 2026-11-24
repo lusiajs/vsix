@@ -4,7 +4,13 @@ import { cssRename, cssRenameRange, type CssFileEdit } from "../logic/css.ts";
 import { htmlRename, htmlRenameRange } from "../logic/html.ts";
 import { hostFor, type HostSource } from "../host/source.ts";
 import type { LusiaHost } from "../host/types.ts";
-import { inTsRegion, positionIn, projectOf, rangeOf, wordRangeAt } from "./common.ts";
+import {
+  inTsRegion,
+  positionIn,
+  projectOf,
+  rangeOf,
+  wordRangeAt,
+} from "./common.ts";
 
 export class LusiaRenameProvider implements vscode.RenameProvider {
   constructor(private readonly hosts: HostSource = hostFor) {}
@@ -36,7 +42,9 @@ export class LusiaRenameProvider implements vscode.RenameProvider {
   async prepareRename(
     document: vscode.TextDocument,
     position: vscode.Position,
-  ): Promise<vscode.Range | { range: vscode.Range; placeholder: string } | undefined> {
+  ): Promise<
+    vscode.Range | { range: vscode.Range; placeholder: string } | undefined
+  > {
     const host = await this.hosts(document);
     if (!host) return undefined;
     const text = document.getText();
@@ -63,10 +71,20 @@ function addMarkup(
   const markup = htmlRename(host, text, offset, newName);
   if (markup) {
     for (const change of markup)
-      edit.replace(document.uri, rangeOf(document, change.range), change.newText);
+      edit.replace(
+        document.uri,
+        rangeOf(document, change.range),
+        change.newText,
+      );
     return;
   }
-  for (const file of cssRename(host, text, offset, newName, document.fileName) ?? []) {
+  for (const file of cssRename(
+    host,
+    text,
+    offset,
+    newName,
+    document.fileName,
+  ) ?? []) {
     addCssFile(document, edit, file);
   }
 }
@@ -77,7 +95,8 @@ function addCssFile(
   file: CssFileEdit,
 ): void {
   const fileName = file.path ?? document.fileName;
-  const uri = file.path === undefined ? document.uri : vscode.Uri.file(file.path);
+  const uri =
+    file.path === undefined ? document.uri : vscode.Uri.file(file.path);
   for (const change of file.edits) {
     edit.replace(
       uri,
@@ -92,7 +111,10 @@ function placeholder(
   text: string,
   range: { start: number; end: number },
 ): { range: vscode.Range; placeholder: string } {
-  return { range: rangeOf(document, range), placeholder: text.slice(range.start, range.end) };
+  return {
+    range: rangeOf(document, range),
+    placeholder: text.slice(range.start, range.end),
+  };
 }
 
 function uriOf(document: vscode.TextDocument, fileName: string): vscode.Uri {

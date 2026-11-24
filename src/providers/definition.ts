@@ -16,19 +16,25 @@ export class LusiaDefinitionProvider implements vscode.DefinitionProvider {
     const text = document.getText();
     const offset = document.offsetAt(position);
     if (inTsRegion(host, text, offset)) {
-      const locations = tsLocations(document, projectOf(host, document).definitions(offset));
+      const locations = tsLocations(
+        document,
+        projectOf(host, document).definitions(offset),
+      );
       return locations.length > 0 ? locations : undefined;
     }
     const tag = host.parseTag.tagNameAt(text, offset);
-    const path = tag ? componentPath(host, document.fileName, text, tag.name) : undefined;
+    const path = tag
+      ? componentPath(host, document.fileName, text, tag.name)
+      : undefined;
     if (path) return [locationOf(document, path, 0)];
-    const style = cssDefinitions(host, text, offset, document.fileName).map((location) =>
-      locationOf(
-        document,
-        location.path ?? document.fileName,
-        location.range.start,
-        location.range.end,
-      ),
+    const style = cssDefinitions(host, text, offset, document.fileName).map(
+      (location) =>
+        locationOf(
+          document,
+          location.path ?? document.fileName,
+          location.range.start,
+          location.range.end,
+        ),
     );
     return style.length > 0 ? style : undefined;
   }

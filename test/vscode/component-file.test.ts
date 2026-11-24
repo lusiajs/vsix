@@ -5,7 +5,8 @@ import { realHost } from "../support/real-host.ts";
 
 const PARENT = join(import.meta.dir, "../fixtures/lint/Parent.lusia");
 const BADGE = join(import.meta.dir, "../fixtures/lint/badge.lusia");
-const BADGE_IMPORT = '<script>\nimport Badge from "./badge.lusia";\n</script>\n';
+const BADGE_IMPORT =
+  '<script>\nimport Badge from "./badge.lusia";\n</script>\n';
 
 describe("component file", () => {
   test("resolves an import specifier next to the document", () => {

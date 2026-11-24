@@ -24,7 +24,8 @@ export function cssDiagnostics(host: LusiaHost, text: string): CssDiagnostic[] {
       diagnostics.push({
         message: diagnostic.message,
         severity: SEVERITIES[diagnostic.severity ?? 1] ?? "error",
-        code: diagnostic.code === undefined ? undefined : String(diagnostic.code),
+        code:
+          diagnostic.code === undefined ? undefined : String(diagnostic.code),
         range: shift(padded, style.section.contentStart),
       });
     }

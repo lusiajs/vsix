@@ -2,7 +2,16 @@
   "Lusia component": {
     "prefix": "lusia",
     "description": "Lusia component skeleton",
-    "body": ["<script>", "$0", "</script>", "", "<p>${1:Hello}</p>", "", "<style>", "</style>"]
+    "body": [
+      "<script>",
+      "$0",
+      "</script>",
+      "",
+      "<p>${1:Hello}</p>",
+      "",
+      "<style>",
+      "</style>"
+    ]
   },
   "Lusia props": {
     "prefix": "props",
@@ -50,7 +59,11 @@
   "Lusia each": {
     "prefix": "lusia-each",
     "description": "Repeat markup for each item in a list",
-    "body": ["<EACH {${1:list}} as={${2:item}} key={${2:item}.id}>", "\t$0", "</EACH>"]
+    "body": [
+      "<EACH {${1:list}} as={${2:item}} key={${2:item}.id}>",
+      "\t$0",
+      "</EACH>"
+    ]
   },
   "Lusia for": {
     "prefix": "lusia-for",

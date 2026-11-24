@@ -21,7 +21,9 @@ export async function formatLusia(
   const prettier = await loadPrettier();
   const config = await configFor(prettier, settings);
   const parts = host.prettierParts.prettierParts(
-    async () => ({ format: (code, options) => prettier.format(code, options as Options) }),
+    async () => ({
+      format: (code, options) => prettier.format(code, options as Options),
+    }),
     config,
     settings.indentScriptAndStyle ?? true,
   ).parts;
@@ -45,6 +47,7 @@ async function configFor(
       : ((await prettier.resolveConfig(settings.fileName)) ?? {});
   const editor: Record<string, unknown> = {};
   if (settings.tabSize !== undefined) editor.tabWidth = settings.tabSize;
-  if (settings.insertSpaces !== undefined) editor.useTabs = !settings.insertSpaces;
+  if (settings.insertSpaces !== undefined)
+    editor.useTabs = !settings.insertSpaces;
   return { ...editor, ...resolved };
 }

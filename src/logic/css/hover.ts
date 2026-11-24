@@ -18,7 +18,11 @@ export function cssHover(
     const official = officialHover(style);
     const hit = memberAt(style, fileName, offset);
     if (hit && (!official || startsBefore(official.range, hit.range))) {
-      return { kind: "markdown", markdown: memberHover(hit.member), range: hit.range };
+      return {
+        kind: "markdown",
+        markdown: memberHover(hit.member),
+        range: hit.range,
+      };
     }
     return official;
   } catch {
@@ -28,7 +32,11 @@ export function cssHover(
 
 function officialHover(style: StyleContext): HoverResult | undefined {
   const stylesheet = style.service.parseStylesheet(style.document);
-  const hover = style.service.doHover(style.document, style.position, stylesheet);
+  const hover = style.service.doHover(
+    style.document,
+    style.position,
+    stylesheet,
+  );
   const markdown = hoverText(hover);
   if (!markdown) return undefined;
   const range = offsetRange(style.document, hover?.range);
@@ -39,7 +47,11 @@ function officialHover(style: StyleContext): HoverResult | undefined {
   };
 }
 
-function memberAt(style: StyleContext, fileName: string | undefined, offset: number) {
+function memberAt(
+  style: StyleContext,
+  fileName: string | undefined,
+  offset: number,
+) {
   if (style.language !== "scss") return undefined;
   const index = buildScssIndex(fileName, style.content);
   if (index.members.length === 0) return undefined;

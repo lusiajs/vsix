@@ -21,7 +21,12 @@ export function htmlRename(
   if (!tag) return undefined;
   const { document, parsed } = markupHtml(text);
   try {
-    const edit = htmlService().doRename(document, document.positionAt(tag.start), newName, parsed);
+    const edit = htmlService().doRename(
+      document,
+      document.positionAt(tag.start),
+      newName,
+      parsed,
+    );
     const edits = edit?.changes?.[document.uri];
     if (!edits) return undefined;
     const results: RegionEdit[] = [];
@@ -70,7 +75,11 @@ export function htmlLinkedRanges(
   }
 }
 
-export function htmlHighlights(host: LusiaHost, text: string, offset: number): RegionHighlight[] {
+export function htmlHighlights(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): RegionHighlight[] {
   if (!editable(host, text, offset)) return [];
   const { document, parsed } = markupHtml(text);
   try {
@@ -90,7 +99,11 @@ export function htmlHighlights(host: LusiaHost, text: string, offset: number): R
   }
 }
 
-function renameTagAt(host: LusiaHost, text: string, offset: number): TagName | undefined {
+function renameTagAt(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): TagName | undefined {
   if (!editable(host, text, offset)) return undefined;
   const tag = tagNameAt(text, offset);
   return tag && isPlainTag(host, text, tag.name) ? tag : undefined;

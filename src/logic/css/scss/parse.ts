@@ -71,7 +71,8 @@ export function parseDirectives(text: string): ScssDirective[] {
   while (match) {
     const kind = match[1] as ScssDirective["kind"];
     const body = match[2] ?? "";
-    const bodyOffset = (match.index ?? 0) + (match[0]?.length ?? 0) - body.length;
+    const bodyOffset =
+      (match.index ?? 0) + (match[0]?.length ?? 0) - body.length;
     const paths = quotedPaths(body, bodyOffset);
     if (paths.length > 0) {
       const namespace = kind === "use" ? NAMESPACE.exec(body)?.[1] : undefined;
@@ -88,9 +89,15 @@ export function parseDirectives(text: string): ScssDirective[] {
 }
 
 /** Resolves an `@use`/`@import` specifier to a file, partials included. */
-export function resolveScssModule(fromFile: string, specifier: string): string | undefined {
+export function resolveScssModule(
+  fromFile: string,
+  specifier: string,
+): string | undefined {
   if (!isFileSpecifier(specifier)) return undefined;
-  const base = resolve(dirname(fromFile), specifier.replace(/\.(scss|sass)$/i, ""));
+  const base = resolve(
+    dirname(fromFile),
+    specifier.replace(/\.(scss|sass)$/i, ""),
+  );
   return candidates(base).find(isFile);
 }
 
@@ -121,10 +128,16 @@ function candidates(base: string): string[] {
   const partial = name.startsWith("_") ? name : `_${name}`;
   const list: string[] = [];
   for (const extension of FILE_EXTENSIONS) {
-    list.push(join(dir, `${name}${extension}`), join(dir, `${partial}${extension}`));
+    list.push(
+      join(dir, `${name}${extension}`),
+      join(dir, `${partial}${extension}`),
+    );
   }
   for (const extension of FILE_EXTENSIONS) {
-    list.push(join(base, `index${extension}`), join(base, `_index${extension}`));
+    list.push(
+      join(base, `index${extension}`),
+      join(base, `_index${extension}`),
+    );
   }
   return list;
 }

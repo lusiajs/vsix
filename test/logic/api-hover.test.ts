@@ -11,7 +11,9 @@ function entryNamed(name: string): ApiEntry {
 describe("api hover markdown", () => {
   test("shows the compact declaration of EASE, not the expanded type", () => {
     const markdown = apiHoverMarkdown(entryNamed("EASE"));
-    expect(markdown.startsWith("```ts\nconst EASE: { STYLE, IN, OUT, INOUT }\n```")).toBe(true);
+    expect(
+      markdown.startsWith("```ts\nconst EASE: { STYLE, IN, OUT, INOUT }\n```"),
+    ).toBe(true);
     expect(markdown).not.toContain("readonly");
     expect(markdown).not.toContain("EaseStyle");
   });
@@ -20,9 +22,13 @@ describe("api hover markdown", () => {
     const markdown = apiHoverMarkdown(entryNamed("EASE"));
     expect(markdown).toContain("| Value | What it does |");
     expect(markdown).toContain("| `STYLE` |");
-    expect(markdown).toContain("| `STYLE.LINEAR` | Constant speed, no easing. |");
+    expect(markdown).toContain(
+      "| `STYLE.LINEAR` | Constant speed, no easing. |",
+    );
     expect(markdown).toContain("| `STYLE.BOUNCE` |");
-    expect(markdown).toContain("| `INOUT` | Slow at both ends, fast in the middle. |");
+    expect(markdown).toContain(
+      "| `INOUT` | Slow at both ends, fast in the middle. |",
+    );
   });
 
   test("orders the sections: declaration, summary, example, members", () => {
@@ -41,8 +47,12 @@ describe("api hover markdown", () => {
 
   test("shows the single-line signature of a function and no table", () => {
     const markdown = apiHoverMarkdown(entryNamed("detach()"));
-    expect(markdown.startsWith("```ts\ndetach(): Promise<void>\n```")).toBe(true);
-    expect(markdown).toContain("Removes a mounted component and stops its updates.");
+    expect(markdown.startsWith("```ts\ndetach(): Promise<void>\n```")).toBe(
+      true,
+    );
+    expect(markdown).toContain(
+      "Removes a mounted component and stops its updates.",
+    );
     expect(markdown).not.toContain("| Value | What it does |");
     expect(markdown).not.toContain("Members");
   });
@@ -56,7 +66,9 @@ describe("api hover markdown", () => {
     expect(declarationOf(entryNamed("ON"))).toBe(
       "const ON: { ATTACH, DETACH, VIEW, HOVER, SCROLL, MOVE, RESIZE, MOVE_OR_RESIZE, MANUAL, MOUSE_MOVE }",
     );
-    expect(declarationOf(entryNamed("PRESET"))).toStartWith("const PRESET: { FADE_IN, FADE_OUT");
+    expect(declarationOf(entryNamed("PRESET"))).toStartWith(
+      "const PRESET: { FADE_IN, FADE_OUT",
+    );
   });
 
   test("escapes pipes inside a table cell", () => {

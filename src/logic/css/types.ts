@@ -1,6 +1,7 @@
 import type { TextRange } from "lusiajs/editor/range.ts";
 
-export type CssDiagnosticSeverity = "error" | "warning" | "information" | "hint";
+export type CssDiagnosticSeverity =
+  "error" | "warning" | "information" | "hint";
 
 export interface CssDiagnostic {
   message: string;
@@ -19,7 +20,13 @@ export interface CssLocation {
 }
 
 export type CssSymbolKind =
-  "variable" | "function" | "mixin" | "class" | "property" | "selector" | "other";
+  | "variable"
+  | "function"
+  | "mixin"
+  | "class"
+  | "property"
+  | "selector"
+  | "other";
 
 export interface CssSymbol {
   name: string;

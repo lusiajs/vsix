@@ -3,7 +3,11 @@ import type { TextRange } from "lusiajs/editor/range.ts";
 import type { LusiaHost } from "../../host/types.ts";
 import { offsetRange } from "../language-service.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
-import { memberDefinition, scssMemberAt, scssOccurrences } from "./scss/find.ts";
+import {
+  memberDefinition,
+  scssMemberAt,
+  scssOccurrences,
+} from "./scss/find.ts";
 import { buildScssIndex } from "./scss/index.ts";
 import { readScssFile } from "./scss/parse.ts";
 import type { CssLocation } from "./types.ts";
@@ -36,13 +40,20 @@ export function cssReferences(
     const style = styleContextAt(host, text, offset);
     if (!style) return [];
     const locations = officialReferences(style);
-    const index = style.language === "scss" ? buildScssIndex(fileName, style.content) : undefined;
+    const index =
+      style.language === "scss"
+        ? buildScssIndex(fileName, style.content)
+        : undefined;
     const hit = index
       ? scssMemberAt(index, style.content, style.section.contentStart, offset)
       : undefined;
     if (hit) {
       const member = hit.member;
-      for (const range of scssOccurrences(member, style.content, style.section.contentStart)) {
+      for (const range of scssOccurrences(
+        member,
+        style.content,
+        style.section.contentStart,
+      )) {
         locations.push({ range });
       }
       for (const path of index?.files ?? []) {
@@ -59,7 +70,11 @@ export function cssReferences(
   }
 }
 
-export function cssHighlights(host: LusiaHost, text: string, offset: number): TextRange[] {
+export function cssHighlights(
+  host: LusiaHost,
+  text: string,
+  offset: number,
+): TextRange[] {
   try {
     const style = styleContextAt(host, text, offset);
     if (!style) return [];
@@ -76,7 +91,11 @@ export function cssHighlights(host: LusiaHost, text: string, offset: number): Te
 
 function officialDefinitions(style: StyleContext): CssLocation[] {
   const stylesheet = style.service.parseStylesheet(style.document);
-  const location = style.service.findDefinition(style.document, style.position, stylesheet);
+  const location = style.service.findDefinition(
+    style.document,
+    style.position,
+    stylesheet,
+  );
   return location ? [locationResult(style, location)] : [];
 }
 
@@ -91,11 +110,17 @@ function officialReferences(style: StyleContext): CssLocation[] {
 function locationResult(style: StyleContext, location: Location): CssLocation {
   const range = offsetRange(style.document, location.range);
   return {
-    range: range ? shift(range, style.section.contentStart) : { start: 0, end: 0 },
+    range: range
+      ? shift(range, style.section.contentStart)
+      : { start: 0, end: 0 },
   };
 }
 
-function memberAt(style: StyleContext, fileName: string | undefined, offset: number) {
+function memberAt(
+  style: StyleContext,
+  fileName: string | undefined,
+  offset: number,
+) {
   if (style.language !== "scss") return undefined;
   const index = buildScssIndex(fileName, style.content);
   if (index.members.length === 0) return undefined;

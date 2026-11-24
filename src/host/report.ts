@@ -1,5 +1,10 @@
 import * as vscode from "vscode";
-import { LUSIA_PACKAGE, SUPPORTED_API_VERSION, TOOLS_ENTRY, TOOLS_PACKAGE } from "./constants.ts";
+import {
+  LUSIA_PACKAGE,
+  SUPPORTED_API_VERSION,
+  TOOLS_ENTRY,
+  TOOLS_PACKAGE,
+} from "./constants.ts";
 import type { HostFailure, HostResult } from "./result.ts";
 
 export const SHOW_OUTPUT_COMMAND = "lusia.showOutput";
@@ -31,7 +36,10 @@ export function reportNoSemanticTokens(): void {
 }
 
 /** Logs the result, updates the status bar, and warns once per project and cause. */
-export function reportHost(result: HostResult, document: vscode.TextDocument): void {
+export function reportHost(
+  result: HostResult,
+  document: vscode.TextDocument,
+): void {
   if (result.ok) {
     reportLoaded(result);
   } else {
@@ -56,21 +64,33 @@ function reportLoaded(result: Extract<HostResult, { ok: true }>): void {
     `  editor API: ${info.apiVersion}`,
     `  load time: ${info.loadMs.toFixed(1)} ms`,
   ]);
-  if (info.lusiaVersion !== undefined && info.lusiaVersion !== info.toolsVersion) {
+  if (
+    info.lusiaVersion !== undefined &&
+    info.lusiaVersion !== info.toolsVersion
+  ) {
     warnMismatch(info.packageName, info.toolsVersion, info.lusiaVersion);
   }
 }
 
-function warnMismatch(packageName: string, toolsVersion: string, lusiaVersion: string): void {
+function warnMismatch(
+  packageName: string,
+  toolsVersion: string,
+  lusiaVersion: string,
+): void {
   const fix = `bun add -d ${packageName}@${lusiaVersion}`;
   const message = `${packageName} ${toolsVersion} does not match lusiajs ${lusiaVersion}. Run: ${fix}`;
   log([`Warning: ${message}`]);
-  void vscode.window.showWarningMessage(message, "Copy command").then((choice) => {
-    if (choice === "Copy command") void vscode.env.clipboard.writeText(fix);
-  });
+  void vscode.window
+    .showWarningMessage(message, "Copy command")
+    .then((choice) => {
+      if (choice === "Copy command") void vscode.env.clipboard.writeText(fix);
+    });
 }
 
-function reportFailure(failure: HostFailure, document: vscode.TextDocument): void {
+function reportFailure(
+  failure: HostFailure,
+  document: vscode.TextDocument,
+): void {
   const message = failureMessage(failure);
   showStatus("Lusia: not loaded", message.summary, true);
   const key = `failed|${failureKey(failure, document)}`;
@@ -78,7 +98,10 @@ function reportFailure(failure: HostFailure, document: vscode.TextDocument): voi
   log([`Not loaded: ${message.summary}`, ...message.details]);
   const actions = failureActions(failure);
   void vscode.window
-    .showWarningMessage(message.summary, ...actions.map((action) => action.label))
+    .showWarningMessage(
+      message.summary,
+      ...actions.map((action) => action.label),
+    )
     .then((choice) => {
       const action = actions.find((candidate) => candidate.label === choice);
       action?.run();
@@ -93,10 +116,15 @@ interface FailureMessage {
 function failureMessage(failure: HostFailure): FailureMessage {
   switch (failure.cause) {
     case "notInstalled":
-      return notInstalledMessage(failure.lusiaInstalled, failure.lusiaVersion, failure.searched);
+      return notInstalledMessage(
+        failure.lusiaInstalled,
+        failure.lusiaVersion,
+        failure.searched,
+      );
     case "untrusted":
       return {
-        summary: "Trust this folder to let Lusia use the project's VS Code support.",
+        summary:
+          "Trust this folder to let Lusia use the project's VS Code support.",
         details: [`Entry: ${failure.entryPath}`],
       };
     case "noEntry":
@@ -112,7 +140,11 @@ function failureMessage(failure: HostFailure): FailureMessage {
     case "importFailed":
       return {
         summary: "Lusia VS Code support failed to load. Reinstall: bun install",
-        details: [`Entry: ${failure.entryPath}`, String(failure.error), errorStack(failure.error)],
+        details: [
+          `Entry: ${failure.entryPath}`,
+          String(failure.error),
+          errorStack(failure.error),
+        ],
       };
   }
 }
@@ -125,22 +157,34 @@ function notInstalledMessage(
   const summary = lusiaInstalled
     ? `Lusia VS Code support is not installed. Run: bun add -d ${TOOLS_PACKAGE}@${lusiaVersion}`
     : `Lusia is not installed in this project. Run: bun add -d ${LUSIA_PACKAGE} ${TOOLS_PACKAGE}`;
-  return { summary, details: ["Searched:", ...searched.map((path) => `  ${path}`)] };
+  return {
+    summary,
+    details: ["Searched:", ...searched.map((path) => `  ${path}`)],
+  };
 }
 
-function failureActions(failure: HostFailure): { label: string; run: () => unknown }[] {
+function failureActions(
+  failure: HostFailure,
+): { label: string; run: () => unknown }[] {
   const output = { label: "Open output", run: showOutput };
   if (failure.cause === "untrusted") {
     return [
-      { label: "Manage Workspace Trust", run: () => vscode.commands.executeCommand(TRUST_COMMAND) },
+      {
+        label: "Manage Workspace Trust",
+        run: () => vscode.commands.executeCommand(TRUST_COMMAND),
+      },
       output,
     ];
   }
   return [output];
 }
 
-function failureKey(failure: HostFailure, document: vscode.TextDocument): string {
-  if (failure.cause === "notInstalled") return `notInstalled|${document.fileName}`;
+function failureKey(
+  failure: HostFailure,
+  document: vscode.TextDocument,
+): string {
+  if (failure.cause === "notInstalled")
+    return `notInstalled|${document.fileName}`;
   if (failure.cause === "noEntry") return `noEntry|${failure.packagePath}`;
   return `${failure.cause}|${"entryPath" in failure ? failure.entryPath : ""}`;
 }
@@ -167,7 +211,10 @@ function outputChannel(): vscode.OutputChannel {
 
 function statusItem(): vscode.StatusBarItem {
   if (status === undefined) {
-    status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 0);
+    status = vscode.window.createStatusBarItem(
+      vscode.StatusBarAlignment.Right,
+      0,
+    );
     status.command = SHOW_OUTPUT_COMMAND;
   }
   return status;

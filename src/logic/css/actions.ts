@@ -7,7 +7,12 @@ import type {
 } from "vscode-css-languageservice/lib/esm/cssLanguageService.js";
 import type { LusiaHost } from "../../host/types.ts";
 import { shift, styleContextAt, type StyleContext } from "./context.ts";
-import type { CssCodeAction, CssDiagnostic, CssDiagnosticSeverity, CssTextEdit } from "./types.ts";
+import type {
+  CssCodeAction,
+  CssDiagnostic,
+  CssDiagnosticSeverity,
+  CssTextEdit,
+} from "./types.ts";
 
 const SEVERITIES: Record<CssDiagnosticSeverity, DiagnosticSeverity> = {
   error: DiagnosticSeverity.Error,
@@ -29,8 +34,12 @@ export function cssCodeActions(
     const stylesheet = style.service.parseStylesheet(style.document);
     const context = { diagnostics: localDiagnostics(diagnostics, style) };
     const range = {
-      start: style.document.positionAt(Math.max(start - style.section.contentStart, 0)),
-      end: style.document.positionAt(Math.max(end - style.section.contentStart, 0)),
+      start: style.document.positionAt(
+        Math.max(start - style.section.contentStart, 0),
+      ),
+      end: style.document.positionAt(
+        Math.max(end - style.section.contentStart, 0),
+      ),
     };
     return style.service
       .doCodeActions2(style.document, range, context, stylesheet)
@@ -49,11 +58,16 @@ function toAction(action: CodeAction, style: StyleContext): CssCodeAction {
   };
 }
 
-function localDiagnostics(diagnostics: CssDiagnostic[], style: StyleContext): Diagnostic[] {
+function localDiagnostics(
+  diagnostics: CssDiagnostic[],
+  style: StyleContext,
+): Diagnostic[] {
   const { contentStart, contentEnd } = style.section;
   return diagnostics
     .filter(
-      (diagnostic) => diagnostic.range.start >= contentStart && diagnostic.range.end <= contentEnd,
+      (diagnostic) =>
+        diagnostic.range.start >= contentStart &&
+        diagnostic.range.end <= contentEnd,
     )
     .map((diagnostic) => ({
       message: diagnostic.message,
@@ -66,15 +80,22 @@ function localDiagnostics(diagnostics: CssDiagnostic[], style: StyleContext): Di
     }));
 }
 
-function editsOf(edit: WorkspaceEdit | undefined, style: StyleContext): CssTextEdit[] {
+function editsOf(
+  edit: WorkspaceEdit | undefined,
+  style: StyleContext,
+): CssTextEdit[] {
   if (!edit) return [];
   const edits: TextEdit[] = [];
   for (const change of edit.documentChanges ?? []) {
-    if ("textDocument" in change && change.textDocument.uri === style.document.uri) {
+    if (
+      "textDocument" in change &&
+      change.textDocument.uri === style.document.uri
+    ) {
       edits.push(...change.edits);
     }
   }
-  for (const change of edit.changes?.[style.document.uri] ?? []) edits.push(change);
+  for (const change of edit.changes?.[style.document.uri] ?? [])
+    edits.push(change);
   return edits.map((change) => ({
     range: shift(
       {

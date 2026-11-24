@@ -35,12 +35,21 @@ export function cssRename(
   try {
     const style = styleContextAt(host, text, offset);
     if (!style || newName === "") return undefined;
-    const index = style.language === "scss" ? buildScssIndex(fileName, style.content) : undefined;
+    const index =
+      style.language === "scss"
+        ? buildScssIndex(fileName, style.content)
+        : undefined;
     const hit = index
       ? scssMemberAt(index, style.content, style.section.contentStart, offset)
       : undefined;
-    const token = scssTokenAt(style.content, style.section.contentStart, offset);
-    const name = hit ? renameTo(hit.member, newName) : variableName(token?.text, newName);
+    const token = scssTokenAt(
+      style.content,
+      style.section.contentStart,
+      offset,
+    );
+    const name = hit
+      ? renameTo(hit.member, newName)
+      : variableName(token?.text, newName);
     const edits = officialEdits(style, name);
     if (hit) {
       addComponentOccurrences(edits, hit.member, style, name);
@@ -60,7 +69,11 @@ interface Edits {
 
 function officialRange(style: StyleContext): TextRange | undefined {
   const stylesheet = style.service.parseStylesheet(style.document);
-  const range = style.service.prepareRename(style.document, style.position, stylesheet);
+  const range = style.service.prepareRename(
+    style.document,
+    style.position,
+    stylesheet,
+  );
   const offsets = offsetRange(style.document, range);
   return offsets && shift(offsets, style.section.contentStart);
 }
@@ -68,12 +81,21 @@ function officialRange(style: StyleContext): TextRange | undefined {
 function officialEdits(style: StyleContext, name: string): Edits {
   const edits: Edits = { component: [], files: new Map() };
   const stylesheet = style.service.parseStylesheet(style.document);
-  const workspace = style.service.doRename(style.document, style.position, name, stylesheet);
+  const workspace = style.service.doRename(
+    style.document,
+    style.position,
+    name,
+    stylesheet,
+  );
   const changes = workspace.changes ?? {};
   const documentEdits = changes[style.document.uri] ?? [];
   for (const edit of documentEdits) {
     const range = offsetRange(style.document, edit.range);
-    addEdit(edits.component, range && shift(range, style.section.contentStart), edit.newText);
+    addEdit(
+      edits.component,
+      range && shift(range, style.section.contentStart),
+      edit.newText,
+    );
   }
   return edits;
 }
@@ -84,12 +106,21 @@ function addComponentOccurrences(
   style: StyleContext,
   name: string,
 ): void {
-  for (const range of scssOccurrences(member, style.content, style.section.contentStart)) {
+  for (const range of scssOccurrences(
+    member,
+    style.content,
+    style.section.contentStart,
+  )) {
     addEdit(edits.component, range, name);
   }
 }
 
-function addFileOccurrences(edits: Edits, member: ScssMember, files: string[], name: string): void {
+function addFileOccurrences(
+  edits: Edits,
+  member: ScssMember,
+  files: string[],
+  name: string,
+): void {
   for (const path of files) {
     const file = readScssFile(path);
     if (!file) continue;
@@ -101,7 +132,11 @@ function addFileOccurrences(edits: Edits, member: ScssMember, files: string[], n
   }
 }
 
-function addEdit(edits: CssTextEdit[], range: TextRange | undefined, newText: string): void {
+function addEdit(
+  edits: CssTextEdit[],
+  range: TextRange | undefined,
+  newText: string,
+): void {
   if (!range) return;
   if (edits.some((edit) => edit.range.start === range.start)) return;
   edits.push({ range, newText });
@@ -110,12 +145,15 @@ function addEdit(edits: CssTextEdit[], range: TextRange | undefined, newText: st
 function toFileEdits(edits: Edits): CssFileEdit[] {
   const files: CssFileEdit[] = [];
   if (edits.component.length > 0) files.push({ edits: edits.component });
-  for (const [path, fileEdits] of edits.files) files.push({ path, edits: fileEdits });
+  for (const [path, fileEdits] of edits.files)
+    files.push({ path, edits: fileEdits });
   return files;
 }
 
 function renameTo(member: ScssMember, newName: string): string {
-  return member.kind === "variable" ? variableName(member.name, newName) : newName;
+  return member.kind === "variable"
+    ? variableName(member.name, newName)
+    : newName;
 }
 
 function variableName(token: string | undefined, newName: string): string {
@@ -123,7 +161,11 @@ function variableName(token: string | undefined, newName: string): string {
   return `$${newName}`;
 }
 
-function memberAt(style: StyleContext, fileName: string | undefined, offset: number) {
+function memberAt(
+  style: StyleContext,
+  fileName: string | undefined,
+  offset: number,
+) {
   if (style.language !== "scss") return undefined;
   const index = buildScssIndex(fileName, style.content);
   if (index.members.length === 0) return undefined;

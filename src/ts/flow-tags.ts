@@ -17,7 +17,10 @@ const OPEN_TAG = /<(EACH|FOR)(?=[\s/>])/g;
 const IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
 
 /** The names the flow tags introduce, in document order and without duplicates. */
-export function collectFlowNames(source: string, sections: Section[]): FlowName[] {
+export function collectFlowNames(
+  source: string,
+  sections: Section[],
+): FlowName[] {
   const found = new Map<string, FlowName>();
   for (const match of masked(source, sections).matchAll(OPEN_TAG)) {
     const name = match[1] as "EACH" | "FOR";
@@ -41,7 +44,11 @@ function masked(source: string, sections: Section[]): string {
   return chars.join("");
 }
 
-function addFlow(found: Map<string, FlowName>, tag: "EACH" | "FOR", body: TagBody): void {
+function addFlow(
+  found: Map<string, FlowName>,
+  tag: "EACH" | "FOR",
+  body: TagBody,
+): void {
   if (tag === "FOR") {
     if (body.list !== undefined && IDENTIFIER.test(body.list))
       remember(found, { name: body.list, kind: "number" });
@@ -91,23 +98,37 @@ function readTag(source: string, from: number, to: number): TagBody {
   return { list, attrs };
 }
 
-function readValue(source: string, from: number, to: number): { code: string; next: number } {
+function readValue(
+  source: string,
+  from: number,
+  to: number,
+): { code: string; next: number } {
   const ch = source.charAt(from);
   if (ch === "{") return readCode(source, from, to);
   if (ch === '"' || ch === "'") {
     const end = source.indexOf(ch, from + 1);
     const stop = end === -1 || end > to ? to : end;
-    return { code: unwrap(source.slice(from + 1, stop)), next: Math.min(stop + 1, to) };
+    return {
+      code: unwrap(source.slice(from + 1, stop)),
+      next: Math.min(stop + 1, to),
+    };
   }
   let i = from;
   while (i < to && !/\s/.test(source.charAt(i))) i++;
   return { code: source.slice(from, i), next: i };
 }
 
-function readCode(source: string, open: number, to: number): { code: string; next: number } {
+function readCode(
+  source: string,
+  open: number,
+  to: number,
+): { code: string; next: number } {
   const end = expressionEnd(source, open);
   const stop = end === -1 || end > to ? to : end;
-  return { code: source.slice(open + 1, stop).trim(), next: Math.min(stop + 1, to) };
+  return {
+    code: source.slice(open + 1, stop).trim(),
+    next: Math.min(stop + 1, to),
+  };
 }
 
 function unwrap(value: string): string {

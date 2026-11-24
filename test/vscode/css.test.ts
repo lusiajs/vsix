@@ -15,7 +15,9 @@ function labels(text: string, offset: number): string[] {
 describe("css completions", () => {
   test("offers properties inside a style block", () => {
     const { text, offset } = marked("<style>\n.a { dis|\n}\n</style>");
-    const display = cssCompletions(realHost, text, offset).find((item) => item.label === "display");
+    const display = cssCompletions(realHost, text, offset).find(
+      (item) => item.label === "display",
+    );
     expect(display?.kind).toBe("property");
     expect(display?.insertText).toContain("display");
     expect(display?.snippet).toBe(true);
@@ -47,7 +49,9 @@ describe("css completions", () => {
 
   test("shifts a completion range by the style content start", () => {
     const { text, offset } = marked("<style>\n.a { dis|\n}\n</style>");
-    const display = cssCompletions(realHost, text, offset).find((item) => item.label === "display");
+    const display = cssCompletions(realHost, text, offset).find(
+      (item) => item.label === "display",
+    );
     const start = text.indexOf("dis");
     expect(display?.range).toEqual({ start, end: start + 3 });
   });
@@ -55,7 +59,9 @@ describe("css completions", () => {
 
 describe("css hover", () => {
   test("shows the property documentation as markdown", () => {
-    const { text, offset } = marked("<style>\n.a {\n  display|: block;\n}\n</style>");
+    const { text, offset } = marked(
+      "<style>\n.a {\n  display|: block;\n}\n</style>",
+    );
     const hover = cssHover(realHost, text, offset);
     expect(hover?.kind).toBe("markdown");
     if (hover?.kind !== "markdown") return;

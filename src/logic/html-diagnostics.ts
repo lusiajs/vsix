@@ -26,7 +26,10 @@ const NO_SELF_CLOSING = "no-self-closing";
 
 let validator: Promise<HtmlValidate> | undefined;
 
-export async function htmlDiagnostics(host: LusiaHost, text: string): Promise<RegionDiagnostic[]> {
+export async function htmlDiagnostics(
+  host: LusiaHost,
+  text: string,
+): Promise<RegionDiagnostic[]> {
   try {
     const report = await (
       await htmlValidate()
@@ -95,7 +98,11 @@ function blank(value: string, filler: string): string {
   return value.replace(/[^\n]/g, filler);
 }
 
-function isLusiaSelfClose(host: LusiaHost, text: string, message: Message): boolean {
+function isLusiaSelfClose(
+  host: LusiaHost,
+  text: string,
+  message: Message,
+): boolean {
   if (message.ruleId !== NO_SELF_CLOSING) return false;
   const name = tagNameBefore(text, message.offset);
   if (!name) return false;

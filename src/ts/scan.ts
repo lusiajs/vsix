@@ -59,7 +59,10 @@ export function unclosedEnd(source: string, open: number): number {
   const stop = lineEnd(source, open + 1);
   for (let i = open + 1; i < stop; i++) {
     const next = source.charAt(i + 1);
-    if (source.charAt(i) === "<" && (next === "/" || next === "!" || /[A-Za-z]/.test(next))) {
+    if (
+      source.charAt(i) === "<" &&
+      (next === "/" || next === "!" || /[A-Za-z]/.test(next))
+    ) {
       return i;
     }
   }

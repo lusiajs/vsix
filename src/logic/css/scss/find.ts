@@ -42,12 +42,18 @@ export function scssMemberAt(
   const kinds = memberKinds(content, token, namespace);
   for (const kind of kinds) {
     const member = index.members.find(
-      (item) => item.name === token.text && item.kind === kind && item.namespace === namespace,
+      (item) =>
+        item.name === token.text &&
+        item.kind === kind &&
+        item.namespace === namespace,
     );
     if (member) {
       return {
         member,
-        range: { start: contentStart + token.start, end: contentStart + token.end },
+        range: {
+          start: contentStart + token.start,
+          end: contentStart + token.end,
+        },
       };
     }
   }
@@ -55,17 +61,33 @@ export function scssMemberAt(
 }
 
 /** The members reached through a namespace, or the global ones when it is omitted. */
-export function indexMembers(index: ScssIndex, namespace?: string): ScssMember[] {
+export function indexMembers(
+  index: ScssIndex,
+  namespace?: string,
+): ScssMember[] {
   return index.members.filter((member) => member.namespace === namespace);
 }
 
 /** The ranges of the member's declaration and uses in a file. */
-export function scssOccurrences(member: ScssMember, text: string, by: number): TextRange[] {
-  return nameRanges(member, text).map(([start, end]) => ({ start: start + by, end: end + by }));
+export function scssOccurrences(
+  member: ScssMember,
+  text: string,
+  by: number,
+): TextRange[] {
+  return nameRanges(member, text).map(([start, end]) => ({
+    start: start + by,
+    end: end + by,
+  }));
 }
 
 export function memberHover(member: ScssMember): string {
-  return ["```scss", member.detail, "```", "", `From \`${basename(member.path)}\``].join("\n");
+  return [
+    "```scss",
+    member.detail,
+    "```",
+    "",
+    `From \`${basename(member.path)}\``,
+  ].join("\n");
 }
 
 export function memberDefinition(member: ScssMember): CssLocation {
@@ -122,8 +144,14 @@ function nameRanges(member: ScssMember, text: string): Array<[number, number]> {
     );
     return captureRanges(include, text);
   }
-  const declaration = captureRanges(new RegExp(`@function\\s+(${name})(?![\\w-])`, "g"), text);
-  const calls = captureRanges(new RegExp(`(?:^|[^\\w-])(${name})\\s*\\(`, "g"), text);
+  const declaration = captureRanges(
+    new RegExp(`@function\\s+(${name})(?![\\w-])`, "g"),
+    text,
+  );
+  const calls = captureRanges(
+    new RegExp(`(?:^|[^\\w-])(${name})\\s*\\(`, "g"),
+    text,
+  );
   return dedupeRanges([...declaration, ...calls]);
 }
 
@@ -142,13 +170,18 @@ function captureRanges(pattern: RegExp, text: string): Array<[number, number]> {
   let match = pattern.exec(text);
   while (match) {
     const offset = match[0].length - (match[1]?.length ?? 0);
-    ranges.push([match.index + offset, match.index + offset + (match[1]?.length ?? 0)]);
+    ranges.push([
+      match.index + offset,
+      match.index + offset + (match[1]?.length ?? 0),
+    ]);
     match = pattern.exec(text);
   }
   return ranges;
 }
 
-function dedupeRanges(ranges: Array<[number, number]>): Array<[number, number]> {
+function dedupeRanges(
+  ranges: Array<[number, number]>,
+): Array<[number, number]> {
   const seen = new Set<number>();
   return ranges
     .sort((a, b) => a[0] - b[0])

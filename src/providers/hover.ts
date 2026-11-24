@@ -19,18 +19,25 @@ export class LusiaHoverProvider implements vscode.HoverProvider {
     if (!host) return undefined;
     const text = document.getText();
     const offset = document.offsetAt(position);
-    const propsOf = (name: string) => componentProps(host, document.fileName, text, name);
-    const symbolsOf = (specifier: string) => scriptSymbols(host, document.fileName, specifier);
+    const propsOf = (name: string) =>
+      componentProps(host, document.fileName, text, name);
+    const symbolsOf = (specifier: string) =>
+      scriptSymbols(host, document.fileName, specifier);
     const shared = host.hover.hoverAt(text, offset, propsOf, symbolsOf);
     if (shared?.kind === "api") {
-      return hover(apiHoverMarkdown(shared.entry), shared.range && rangeOf(document, shared.range));
+      return hover(
+        apiHoverMarkdown(shared.entry),
+        shared.range && rangeOf(document, shared.range),
+      );
     }
     if (inTsRegion(host, text, offset)) {
       const typed = projectOf(host, document).hover(offset);
       if (typed) return hover(typed.markdown, rangeOf(document, typed.range));
     }
     const result =
-      shared ?? htmlHover(host, text, offset) ?? cssHover(host, text, offset, document.fileName);
+      shared ??
+      htmlHover(host, text, offset) ??
+      cssHover(host, text, offset, document.fileName);
     if (!result) return undefined;
     return hover(
       host.markdown.hoverMarkdown(result),
@@ -45,6 +52,12 @@ function hover(contents: string, range?: vscode.Range): vscode.Hover {
     : new vscode.Hover(new vscode.MarkdownString(contents));
 }
 
-function rangeOf(document: vscode.TextDocument, range: TextRange): vscode.Range {
-  return new vscode.Range(document.positionAt(range.start), document.positionAt(range.end));
+function rangeOf(
+  document: vscode.TextDocument,
+  range: TextRange,
+): vscode.Range {
+  return new vscode.Range(
+    document.positionAt(range.start),
+    document.positionAt(range.end),
+  );
 }

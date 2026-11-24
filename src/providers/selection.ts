@@ -5,7 +5,9 @@ import { hostFor, type HostSource } from "../host/source.ts";
 import type { LusiaHost } from "../host/types.ts";
 import { rangeOf } from "./common.ts";
 
-export class LusiaSelectionRangeProvider implements vscode.SelectionRangeProvider {
+export class LusiaSelectionRangeProvider
+  implements vscode.SelectionRangeProvider
+{
   constructor(private readonly hosts: HostSource = hostFor) {}
 
   async provideSelectionRanges(
@@ -15,7 +17,9 @@ export class LusiaSelectionRangeProvider implements vscode.SelectionRangeProvide
     const host = await this.hosts(document);
     if (!host) return [];
     const text = document.getText();
-    return positions.map((position) => selectionAt(host, document, text, position));
+    return positions.map((position) =>
+      selectionAt(host, document, text, position),
+    );
   }
 }
 

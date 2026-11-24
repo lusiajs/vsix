@@ -49,7 +49,9 @@ describe("format", () => {
   });
 
   test("formats the script as TypeScript", async () => {
-    expect(await formatLusia(realHost, SAMPLE)).toContain('const name = variable("Ada");');
+    expect(await formatLusia(realHost, SAMPLE)).toContain(
+      'const name = variable("Ada");',
+    );
   });
 });
 
@@ -62,7 +64,9 @@ describe("format expressions", () => {
   test("round-trips text that looks like placeholder padding", () => {
     const source = "<p>{a}~~Q</p><b>{b}Q</b>";
     const protectedMarkup = protectExpressions(source);
-    expect(restoreExpressions(protectedMarkup.text, protectedMarkup.expressions)).toBe(source);
+    expect(
+      restoreExpressions(protectedMarkup.text, protectedMarkup.expressions),
+    ).toBe(source);
   });
 
   test("protects and restores expressions", () => {
@@ -147,12 +151,15 @@ describe("format flow tags", () => {
   });
 
   test("indents the content of a paired flow tag", async () => {
-    expect(await formatLusia(realHost, `<EACH {todos} as={todo}>\n<li>x</li>\n</EACH>`)).toBe(
-      `<EACH {todos} as={todo}>\n  <li>x</li>\n</EACH>\n`,
-    );
-    expect(await formatLusia(realHost, `<div><IF {a}>\n<span>x</span>\n</IF></div>`)).toBe(
-      `<div>\n  <IF {a}>\n    <span>x</span>\n  </IF>\n</div>\n`,
-    );
+    expect(
+      await formatLusia(
+        realHost,
+        `<EACH {todos} as={todo}>\n<li>x</li>\n</EACH>`,
+      ),
+    ).toBe(`<EACH {todos} as={todo}>\n  <li>x</li>\n</EACH>\n`);
+    expect(
+      await formatLusia(realHost, `<div><IF {a}>\n<span>x</span>\n</IF></div>`),
+    ).toBe(`<div>\n  <IF {a}>\n    <span>x</span>\n  </IF>\n</div>\n`);
   });
 
   test("keeps a long expression attribute wrapped like the source", async () => {
@@ -171,13 +178,19 @@ describe("format flow tags", () => {
   });
 
   test("keeps a flow tag inside a paragraph on its line", async () => {
-    expect(await formatLusia(realHost, `<p>before <IF {ok}>yes</IF> after</p>`)).toBe(
-      `<p>before <IF {ok}>yes</IF> after</p>\n`,
-    );
+    expect(
+      await formatLusia(realHost, `<p>before <IF {ok}>yes</IF> after</p>`),
+    ).toBe(`<p>before <IF {ok}>yes</IF> after</p>\n`);
   });
 
   test("protects a flow tag like an expression", () => {
-    const protectedMarkup = protectExpressions("<IF {a > 1}>\n<p>{b}</p>\n</IF>");
-    expect(protectedMarkup.expressions).toEqual(["<IF {a > 1}>", "{b}", "</IF>"]);
+    const protectedMarkup = protectExpressions(
+      "<IF {a > 1}>\n<p>{b}</p>\n</IF>",
+    );
+    expect(protectedMarkup.expressions).toEqual([
+      "<IF {a > 1}>",
+      "{b}",
+      "</IF>",
+    ]);
   });
 });

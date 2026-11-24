@@ -38,7 +38,10 @@ export function styleContextAt(
   const region = host.parseRegions.regionAt(text, offset);
   if (region.kind !== "style" || !region.section) return undefined;
   const style = styleSection(region.section, text);
-  return { ...style, position: style.document.positionAt(offset - style.section.contentStart) };
+  return {
+    ...style,
+    position: style.document.positionAt(offset - style.section.contentStart),
+  };
 }
 
 export function styleSections(host: LusiaHost, text: string): StyleSection[] {

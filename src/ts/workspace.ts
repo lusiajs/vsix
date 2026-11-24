@@ -65,7 +65,8 @@ export class Workspace {
 
   private component(fileName: string): string | undefined {
     const shim = componentModule(this.host, fileName, this.files);
-    if (shim !== undefined) this.components.set(fileName, componentVersion(fileName));
+    if (shim !== undefined)
+      this.components.set(fileName, componentVersion(fileName));
     return shim;
   }
 }

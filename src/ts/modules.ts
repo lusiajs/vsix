@@ -69,7 +69,9 @@ function scriptOf(host: LusiaHost, text: string): string {
   const section = host.parseSections
     .findSections(text)
     .find((candidate) => candidate.kind === "script");
-  return section === undefined ? "" : text.slice(section.contentStart, section.contentEnd);
+  return section === undefined
+    ? ""
+    : text.slice(section.contentStart, section.contentEnd);
 }
 
 function componentShim(childPath: string): string {

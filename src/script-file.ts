@@ -27,12 +27,19 @@ export function clearScriptSymbolsCache(): void {
   cache.clear();
 }
 
-function symbolsAt(host: LusiaHost, path: string, specifier: string): ScriptSymbol[] {
+function symbolsAt(
+  host: LusiaHost,
+  path: string,
+  specifier: string,
+): ScriptSymbol[] {
   const stat = statSync(path);
   const key = `${path}\n${stat.mtimeMs}\n${stat.size}`;
   const cached = cache.get(key);
   if (cached) return withSpecifier(cached, specifier);
-  const symbols = host.scriptSymbols.exportedSymbols(readFileSync(path, "utf8"), specifier);
+  const symbols = host.scriptSymbols.exportedSymbols(
+    readFileSync(path, "utf8"),
+    specifier,
+  );
   remember(key, symbols);
   return symbols;
 }
@@ -43,12 +50,18 @@ function remember(key: string, symbols: ScriptSymbol[]): void {
 }
 
 /** A cached file read under one specifier; re-label it when another specifier points at the same file. */
-function withSpecifier(symbols: ScriptSymbol[], specifier: string): ScriptSymbol[] {
+function withSpecifier(
+  symbols: ScriptSymbol[],
+  specifier: string,
+): ScriptSymbol[] {
   if (symbols.every((symbol) => symbol.specifier === specifier)) return symbols;
   return symbols.map((symbol) => ({ ...symbol, specifier }));
 }
 
-function symbolPath(documentPath: string, specifier: string): string | undefined {
+function symbolPath(
+  documentPath: string,
+  specifier: string,
+): string | undefined {
   const base = resolve(dirname(documentPath), specifier);
   return candidates(base).find((candidate) => existsSync(candidate));
 }

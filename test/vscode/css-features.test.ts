@@ -27,7 +27,10 @@ const tokens = join(directory, "_tokens.scss");
 const palette = join(directory, "_palette.scss");
 const all = join(directory, "_all.scss");
 
-writeFileSync(tokens, "$brand: #ff0000;\n@mixin row($gap: 1px) { display: flex; }\n");
+writeFileSync(
+  tokens,
+  "$brand: #ff0000;\n@mixin row($gap: 1px) { display: flex; }\n",
+);
 writeFileSync(palette, "$ink: #111111;\n");
 writeFileSync(all, '@import "palette";\n@import "tokens";\n');
 
@@ -85,14 +88,20 @@ describe("css navigation in a style block", () => {
     const definitions = cssDefinitions(realHost, text, use);
     const definition = definitions[0];
     expect(definition?.range.start).toBe(text.indexOf("$brand"));
-    expect(text.slice(definition?.range.start, definition?.range.end)).toContain("$brand");
-    const references = cssReferences(realHost, text, use).map((item) => item.range.start);
+    expect(
+      text.slice(definition?.range.start, definition?.range.end),
+    ).toContain("$brand");
+    const references = cssReferences(realHost, text, use).map(
+      (item) => item.range.start,
+    );
     expect(references).toContain(text.indexOf("$brand"));
     expect(references).toContain(use);
   });
 
   test("highlights every use of the variable", () => {
-    const highlights = cssHighlights(realHost, text, use).map((range) => range.start);
+    const highlights = cssHighlights(realHost, text, use).map(
+      (range) => range.start,
+    );
     expect(highlights).toContain(text.indexOf("$brand"));
     expect(highlights).toContain(use);
   });
@@ -102,7 +111,10 @@ describe("css navigation in a style block", () => {
     expect(files).toHaveLength(1);
     const edits = files[0]?.edits ?? [];
     expect(edits.map((edit) => edit.newText)).toEqual(["$accent", "$accent"]);
-    expect(edits.map((edit) => edit.range.start)).toEqual([text.indexOf("$brand"), use]);
+    expect(edits.map((edit) => edit.range.start)).toEqual([
+      text.indexOf("$brand"),
+      use,
+    ]);
   });
 
   test("returns nothing outside a style block", () => {
@@ -134,14 +146,18 @@ describe("css links", () => {
 
 describe("css cross-file scss", () => {
   test("defines a namespaced variable in the imported file", () => {
-    const { text, offset } = marked(style('@use "tokens" as t;\n.card {\n  color: t.$bra|nd;\n}'));
+    const { text, offset } = marked(
+      style('@use "tokens" as t;\n.card {\n  color: t.$bra|nd;\n}'),
+    );
     const target = cssDefinitions(realHost, text, offset, component)[0];
     expect(target?.path).toBe(tokens);
     expect(target?.range).toEqual({ start: 0, end: 6 });
   });
 
   test("hovers a namespaced variable with its value and file", () => {
-    const { text, offset } = marked(style('@use "tokens" as t;\n.card {\n  color: t.$bra|nd;\n}'));
+    const { text, offset } = marked(
+      style('@use "tokens" as t;\n.card {\n  color: t.$bra|nd;\n}'),
+    );
     const hover = cssHover(realHost, text, offset, component);
     expect(hover?.kind).toBe("markdown");
     if (hover?.kind !== "markdown") return;
@@ -166,30 +182,48 @@ describe("css cross-file scss", () => {
   });
 
   test("completes namespaced variables and mixins", () => {
-    const variable = marked(style('@use "tokens" as t;\n.card {\n  color: t.$br|\n}'));
-    const variableLabels = cssCompletions(realHost, variable.text, variable.offset, component).map(
-      (item) => item.label,
+    const variable = marked(
+      style('@use "tokens" as t;\n.card {\n  color: t.$br|\n}'),
     );
+    const variableLabels = cssCompletions(
+      realHost,
+      variable.text,
+      variable.offset,
+      component,
+    ).map((item) => item.label);
     expect(variableLabels).toContain("$brand");
-    const mixin = marked(style('@use "tokens" as t;\n.card {\n  @include t.|\n}'));
-    const mixinLabels = cssCompletions(realHost, mixin.text, mixin.offset, component).map(
-      (item) => item.label,
+    const mixin = marked(
+      style('@use "tokens" as t;\n.card {\n  @include t.|\n}'),
     );
+    const mixinLabels = cssCompletions(
+      realHost,
+      mixin.text,
+      mixin.offset,
+      component,
+    ).map((item) => item.label);
     expect(mixinLabels).toContain("row");
   });
 
   test("renames a namespaced variable in both files", () => {
-    const { text, offset } = marked(style('@use "tokens" as t;\n.card {\n  color: t.$bra|nd;\n}'));
+    const { text, offset } = marked(
+      style('@use "tokens" as t;\n.card {\n  color: t.$bra|nd;\n}'),
+    );
     expect(cssRenameRange(realHost, text, offset, component)).toEqual({
       start: text.indexOf("$brand"),
       end: text.indexOf("$brand") + 6,
     });
     const files = cssRename(realHost, text, offset, "accent", component) ?? [];
-    const componentEdits = files.find((file) => file.path === undefined)?.edits ?? [];
+    const componentEdits =
+      files.find((file) => file.path === undefined)?.edits ?? [];
     const start = text.indexOf("$brand");
-    expect(componentEdits).toEqual([{ range: { start, end: start + 6 }, newText: "$accent" }]);
+    expect(componentEdits).toEqual([
+      { range: { start, end: start + 6 }, newText: "$accent" },
+    ]);
     const imported = files.find((file) => file.path === tokens);
-    expect(imported?.edits).toContainEqual({ range: { start: 0, end: 6 }, newText: "$accent" });
+    expect(imported?.edits).toContainEqual({
+      range: { start: 0, end: 6 },
+      newText: "$accent",
+    });
   });
 
   test("renames a namespaced mixin in both files", () => {
@@ -199,17 +233,26 @@ describe("css cross-file scss", () => {
     const imported = cssRename(realHost, text, offset, "line", component)?.find(
       (file) => file.path === tokens,
     );
-    expect(imported?.edits).toContainEqual({ range: { start: 24, end: 27 }, newText: "line" });
+    expect(imported?.edits).toContainEqual({
+      range: { start: 24, end: 27 },
+      newText: "line",
+    });
   });
 
   test("follows @import to a transitively imported variable", () => {
-    const { text, offset } = marked(style('@import "all";\n.card {\n  color: $in|k;\n}'));
-    expect(cssDefinitions(realHost, text, offset, component)[0]?.path).toBe(palette);
+    const { text, offset } = marked(
+      style('@import "all";\n.card {\n  color: $in|k;\n}'),
+    );
+    expect(cssDefinitions(realHost, text, offset, component)[0]?.path).toBe(
+      palette,
+    );
     expect(cssHover(realHost, text, offset, component)?.kind).toBe("markdown");
   });
 
   test("finds nothing for scss members without a component path", () => {
-    const { text, offset } = marked(style('@use "tokens" as t;\n.card {\n  color: t.$bra|nd;\n}'));
+    const { text, offset } = marked(
+      style('@use "tokens" as t;\n.card {\n  color: t.$bra|nd;\n}'),
+    );
     expect(cssDefinitions(realHost, text, offset)).toEqual([]);
   });
 });
@@ -231,11 +274,15 @@ describe("css colors", () => {
     const labels = presentations.map((item) => item.label);
     expect(labels).toContain("#00ff00");
     expect(labels).toContain("rgb(0, 255, 0)");
-    expect(presentations[0]?.edit.range).toEqual(cssColors(realHost, text)[0]?.range);
+    expect(presentations[0]?.edit.range).toEqual(
+      cssColors(realHost, text)[0]?.range,
+    );
   });
 
   test("returns nothing outside a colour", () => {
-    expect(cssColorPresentations(realHost, text, text.indexOf(".a"))).toEqual([]);
+    expect(cssColorPresentations(realHost, text, text.indexOf(".a"))).toEqual(
+      [],
+    );
   });
 });
 
@@ -252,7 +299,9 @@ describe("css document structure", () => {
   });
 
   test("folds rules and at-rule blocks", () => {
-    const text = style(".card {\n  color: red;\n}\n@scoped {\n  .other { color: blue; }\n}");
+    const text = style(
+      ".card {\n  color: red;\n}\n@scoped {\n  .other { color: blue; }\n}",
+    );
     const ranges = cssFolding(realHost, text);
     expect(ranges.length).toBeGreaterThanOrEqual(2);
     const first = ranges[0];
@@ -262,7 +311,10 @@ describe("css document structure", () => {
 
   test("builds a selection chain inside a declaration", () => {
     const text = style(".card {\n  color: red;\n}");
-    const [inside, outside] = cssSelection(realHost, text, [text.indexOf("color") + 2, 0]);
+    const [inside, outside] = cssSelection(realHost, text, [
+      text.indexOf("color") + 2,
+      0,
+    ]);
     expect(inside?.range.start).toBeLessThanOrEqual(text.indexOf("color") + 2);
     expect(inside?.range.end).toBeGreaterThanOrEqual(text.indexOf("color") + 2);
     expect(inside?.parent).toBeDefined();
@@ -286,7 +338,10 @@ describe("css code actions", () => {
     const action = actions.find((item) => item.title.startsWith("Rename to"));
     expect(action?.title).toBe("Rename to 'float'");
     const start = text.indexOf("floop");
-    expect(action?.edits?.[0]).toEqual({ range: { start, end: start + 5 }, newText: "float" });
+    expect(action?.edits?.[0]).toEqual({
+      range: { start, end: start + 5 },
+      newText: "float",
+    });
   });
 
   test("offers nothing outside a style block", () => {
