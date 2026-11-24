@@ -46,7 +46,7 @@ describe("lusia grammar with the real TypeScript grammar", () => {
 
   test("the expression of animate is an embedded TypeScript expression", async () => {
     const lines = await tokenizeLusia(
-      "<div animate={[{ animation: fade, active: ACTIVE.VIEW }]}>x</div>",
+      "<div animate={[{ play: fade, on: ON.VIEW }]}>x</div>",
     );
     expect(tokenOn(lines, 0, "fade")?.scopes).toContain("meta.embedded.block.typescript");
   });
