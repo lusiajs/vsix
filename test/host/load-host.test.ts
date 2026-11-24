@@ -4,11 +4,9 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { vscode } from "../vscode/mock-vscode.ts";
 import { fakeDocument } from "../vscode/vscode-stub.ts";
-import { TOOLS_PACKAGES } from "../../src/host/constants.ts";
+import { TOOLS_PACKAGE } from "../../src/host/constants.ts";
 import { hostResultFor } from "../../src/host/load-host.ts";
 import { HOST_NAMESPACES } from "../../src/host/types.ts";
-
-const [NEW_PACKAGE, OLD_PACKAGE] = TOOLS_PACKAGES;
 
 const roots: string[] = [];
 const workspace = vscode.workspace as unknown as {
@@ -43,16 +41,14 @@ function writeJson(file: string, value: unknown): void {
 function installTools(
   root: string,
   options: {
-    name?: string;
     version?: string;
     entry?: string;
     source?: string;
   } = {},
 ): void {
-  const name = options.name ?? NEW_PACKAGE;
-  const packageDir = join(root, "node_modules", name);
+  const packageDir = join(root, "node_modules", TOOLS_PACKAGE);
   writeJson(join(packageDir, "package.json"), {
-    name,
+    name: TOOLS_PACKAGE,
     version: options.version ?? "0.1.0",
     exports: {
       "./vscode": { types: "./dist/vscode.d.ts", import: "./dist/vscode.js" },
@@ -86,34 +82,10 @@ describe("loading the language host", () => {
     expect(result.info.toolsVersion).toBe("0.1.0");
     expect(result.info.lusiaVersion).toBe("0.2.0");
     expect(result.info.apiVersion).toBe(1);
-    expect(result.info.packageName).toBe(NEW_PACKAGE);
     expect(result.info.entryPath).toBe(
-      join(root, "node_modules", NEW_PACKAGE, "dist", "vscode.js"),
+      join(root, "node_modules", TOOLS_PACKAGE, "dist", "vscode.js"),
     );
     expect(result.host.range).toEqual({});
-  });
-
-  test("loads the old package name when only it is installed", async () => {
-    const { root, document } = project();
-    installTools(root, { name: OLD_PACKAGE });
-    const result = await hostResultFor(document);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-    expect(result.info.packageName).toBe(OLD_PACKAGE);
-    expect(result.info.entryPath).toBe(
-      join(root, "node_modules", OLD_PACKAGE, "dist", "vscode.js"),
-    );
-  });
-
-  test("prefers the new package name when both are installed", async () => {
-    const { root, document } = project();
-    installTools(root, { name: OLD_PACKAGE, version: "0.1.0" });
-    installTools(root, { name: NEW_PACKAGE, version: "0.2.0" });
-    const result = await hostResultFor(document);
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-    expect(result.info.packageName).toBe(NEW_PACKAGE);
-    expect(result.info.toolsVersion).toBe("0.2.0");
   });
 
   test("keeps the optional semanticTokens namespace when the tools export it", async () => {
@@ -150,13 +122,10 @@ describe("loading the language host", () => {
     });
     if (result.failure.cause !== "notInstalled") return;
     expect(result.failure.searched).toContain(
-      join(root, "src", "node_modules", NEW_PACKAGE, "package.json"),
+      join(root, "src", "node_modules", TOOLS_PACKAGE, "package.json"),
     );
     expect(result.failure.searched).toContain(
-      join(root, "node_modules", NEW_PACKAGE, "package.json"),
-    );
-    expect(result.failure.searched).toContain(
-      join(root, "node_modules", OLD_PACKAGE, "package.json"),
+      join(root, "node_modules", TOOLS_PACKAGE, "package.json"),
     );
   });
 
@@ -172,8 +141,8 @@ describe("loading the language host", () => {
 
   test("fails for an old package without the vscode entry", async () => {
     const { root, document } = project();
-    writeJson(join(root, "node_modules", NEW_PACKAGE, "package.json"), {
-      name: NEW_PACKAGE,
+    writeJson(join(root, "node_modules", TOOLS_PACKAGE, "package.json"), {
+      name: TOOLS_PACKAGE,
       version: "0.0.9",
     });
     const result = await hostResultFor(document);

@@ -5,9 +5,9 @@ import * as vscode from "vscode";
 import {
   LUSIA_PACKAGE,
   SUPPORTED_API_VERSION,
-  TOOLS_PACKAGES,
+  TOOLS_PACKAGE,
 } from "./constants.ts";
-import { locatePackage, type LocatedPackage } from "./locate.ts";
+import { locatePackage } from "./locate.ts";
 import { entryPathOf, readManifest } from "./manifest.ts";
 import { reportHost, resetReports } from "./report.ts";
 import type { HostFailure, HostResult } from "./result.ts";
@@ -43,7 +43,7 @@ export async function hostResultFor(
 ): Promise<HostResult> {
   const start = dirname(document.fileName);
   const stop = vscode.workspace.getWorkspaceFolder(document.uri)?.uri.fsPath;
-  const tools = locateTools(start, stop);
+  const tools = locatePackage(TOOLS_PACKAGE, start, stop);
   const lusia = locatePackage(LUSIA_PACKAGE, start, stop);
   const lusiaManifest = lusia.packagePath
     ? readManifest(lusia.packagePath)
@@ -63,7 +63,6 @@ export async function hostResultFor(
   if (!existsSync(entryPath)) {
     return failed({
       cause: "noEntry",
-      packageName: tools.packageName,
       packagePath: tools.packagePath,
       toolsVersion,
     });
@@ -72,7 +71,6 @@ export async function hostResultFor(
     return failed({ cause: "untrusted", entryPath });
   const outcome = await importOnce(
     entryPath,
-    tools.packageName,
     toolsVersion,
     mtimeOf(tools.packagePath),
   );
@@ -82,7 +80,6 @@ export async function hostResultFor(
     host: outcome.host,
     info: {
       entryPath,
-      packageName: tools.packageName,
       toolsVersion,
       lusiaVersion,
       apiVersion: SUPPORTED_API_VERSION,
@@ -91,40 +88,21 @@ export async function hostResultFor(
   };
 }
 
-interface LocatedTools extends LocatedPackage {
-  packageName: string;
-}
-
-/** Finds the first installed tools package. Older projects still have the fallback name. */
-function locateTools(start: string, stop: string | undefined): LocatedTools {
-  const searched: string[] = [];
-  for (const packageName of TOOLS_PACKAGES) {
-    const located = locatePackage(packageName, start, stop);
-    searched.push(...located.searched);
-    if (located.packagePath !== undefined) {
-      return { packageName, packagePath: located.packagePath, searched };
-    }
-  }
-  return { packageName: TOOLS_PACKAGES[0], packagePath: undefined, searched };
-}
-
 function importOnce(
   entryPath: string,
-  packageName: string,
   toolsVersion: string,
   manifestTime: number,
 ): Promise<ImportOutcome> {
   const key = [entryPath, mtimeOf(entryPath), manifestTime].join("|");
   const cached = imports.get(key);
   if (cached) return cached;
-  const outcome = importEntry(entryPath, packageName, toolsVersion);
+  const outcome = importEntry(entryPath, toolsVersion);
   imports.set(key, outcome);
   return outcome;
 }
 
 async function importEntry(
   entryPath: string,
-  packageName: string,
   toolsVersion: string,
 ): Promise<ImportOutcome> {
   const started = performance.now();
@@ -134,7 +112,6 @@ async function importEntry(
     if (module.EDITOR_API_VERSION !== SUPPORTED_API_VERSION) {
       const failure: HostFailure = {
         cause: "apiVersion",
-        packageName,
         entryPath,
         toolsVersion,
         apiVersion: module.EDITOR_API_VERSION,
@@ -148,7 +125,6 @@ async function importEntry(
       const error = new Error(`missing namespaces: ${missing.join(", ")}`);
       const failure: HostFailure = {
         cause: "importFailed",
-        packageName,
         entryPath,
         toolsVersion,
         error,
@@ -164,7 +140,6 @@ async function importEntry(
   } catch (error) {
     const failure: HostFailure = {
       cause: "importFailed",
-      packageName,
       entryPath,
       toolsVersion,
       error,

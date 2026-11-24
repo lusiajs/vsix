@@ -2,7 +2,6 @@ import type { LusiaHost } from "./types.ts";
 
 export interface HostInfo {
   entryPath: string;
-  packageName: string;
   toolsVersion: string;
   lusiaVersion: string | undefined;
   apiVersion: number;
@@ -17,22 +16,15 @@ export type HostFailure =
       lusiaVersion?: string;
     }
   | { cause: "untrusted"; entryPath: string }
-  | {
-      cause: "noEntry";
-      packageName: string;
-      packagePath: string;
-      toolsVersion: string;
-    }
+  | { cause: "noEntry"; packagePath: string; toolsVersion: string }
   | {
       cause: "apiVersion";
-      packageName: string;
       entryPath: string;
       toolsVersion: string;
       apiVersion: unknown;
     }
   | {
       cause: "importFailed";
-      packageName: string;
       entryPath: string;
       toolsVersion: string;
       error: unknown;

@@ -57,9 +57,9 @@ function reportLoaded(result: Extract<HostResult, { ok: true }>): void {
   );
   if (!once(`loaded|${info.entryPath}|${info.toolsVersion}|${lusia}`)) return;
   log([
-    `Loaded ${info.packageName}/${TOOLS_ENTRY.slice(2)}`,
+    `Loaded ${TOOLS_PACKAGE}/${TOOLS_ENTRY.slice(2)}`,
     `  path: ${info.entryPath}`,
-    `  ${info.packageName}: ${info.toolsVersion}`,
+    `  ${TOOLS_PACKAGE}: ${info.toolsVersion}`,
     `  lusiajs: ${lusia}`,
     `  editor API: ${info.apiVersion}`,
     `  load time: ${info.loadMs.toFixed(1)} ms`,
@@ -68,17 +68,13 @@ function reportLoaded(result: Extract<HostResult, { ok: true }>): void {
     info.lusiaVersion !== undefined &&
     info.lusiaVersion !== info.toolsVersion
   ) {
-    warnMismatch(info.packageName, info.toolsVersion, info.lusiaVersion);
+    warnMismatch(info.toolsVersion, info.lusiaVersion);
   }
 }
 
-function warnMismatch(
-  packageName: string,
-  toolsVersion: string,
-  lusiaVersion: string,
-): void {
-  const fix = `bun add -d ${packageName}@${lusiaVersion}`;
-  const message = `${packageName} ${toolsVersion} does not match lusiajs ${lusiaVersion}. Run: ${fix}`;
+function warnMismatch(toolsVersion: string, lusiaVersion: string): void {
+  const fix = `bun add -d ${TOOLS_PACKAGE}@${lusiaVersion}`;
+  const message = `${TOOLS_PACKAGE} ${toolsVersion} does not match lusiajs ${lusiaVersion}. Run: ${fix}`;
   log([`Warning: ${message}`]);
   void vscode.window
     .showWarningMessage(message, "Copy command")
@@ -129,12 +125,12 @@ function failureMessage(failure: HostFailure): FailureMessage {
       };
     case "noEntry":
       return {
-        summary: `${failure.packageName} ${failure.toolsVersion} has no ${TOOLS_ENTRY.slice(2)} entry. Update: bun update ${failure.packageName}`,
+        summary: `${TOOLS_PACKAGE} ${failure.toolsVersion} has no ${TOOLS_ENTRY.slice(2)} entry. Update: bun update ${TOOLS_PACKAGE}`,
         details: [`Package: ${failure.packagePath}`],
       };
     case "apiVersion":
       return {
-        summary: `${failure.packageName} ${failure.toolsVersion} uses editor API ${String(failure.apiVersion)}; this extension supports ${SUPPORTED_API_VERSION}. Update the extension or update ${failure.packageName}.`,
+        summary: `${TOOLS_PACKAGE} ${failure.toolsVersion} uses editor API ${String(failure.apiVersion)}; this extension supports ${SUPPORTED_API_VERSION}. Update the extension or update ${TOOLS_PACKAGE}.`,
         details: [`Entry: ${failure.entryPath}`],
       };
     case "importFailed":
