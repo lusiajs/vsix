@@ -133,7 +133,7 @@ function toggle(todo: Todo) {
 const EASE_APP = `<script>
 import { EASE } from "lusiajs";
 
-const land = { default: [EASE.STYLE.QUART, EASE.OUT] };
+const land = { ease: [EASE.STYLE.QUART, EASE.OUT] };
 </script>
 `;
 
@@ -380,6 +380,27 @@ describe("style wiring", () => {
     );
     const rename = actions.find((action: any) => action.title === "Rename to 'color'");
     expect(rename?.edit?.size).toBe(1);
+  });
+
+  test("offers a rename for an old animate name from its diagnostic", async () => {
+    const text = `<script>\n  const fade = { style: { opacity: 0 } };\n</script>\n`;
+    const document = fakeDocument(join(workspace.root, "Animate.lusia"), text);
+    const start = document.positionAt(text.indexOf("style"));
+    const end = document.positionAt(text.indexOf("\n", text.indexOf("style")));
+    const diagnostic = new vscode.Diagnostic(
+      new vscode.Range(start, end),
+      "'style' was renamed to 'play'. Write { play: ... }.",
+      vscode.DiagnosticSeverity.Error,
+    );
+    diagnostic.source = "lusia";
+    const actions = await mocked(new LusiaCodeActionProvider(realHosts)).provideCodeActions(
+      document,
+      diagnostic.range,
+      { diagnostics: [diagnostic] },
+    );
+    expect(actions.map((action: any) => action.title)).toEqual(["Rename to 'play'"]);
+    expect(actions[0]?.diagnostics).toEqual([diagnostic]);
+    expect(actions[0]?.edit?.size).toBe(1);
   });
 });
 
