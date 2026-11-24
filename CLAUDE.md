@@ -51,3 +51,7 @@ Work from `main`. Only `main` and `dev` stay long-lived. Delete a branch once it
 # 11. Worktrees
 
 Worktrees go in `.worktrees/` inside this repo (gitignored): `git worktree add .worktrees/<name> -b <branch> dev`. Never put them next to the repo or in `/tmp`.
+
+# 12. Reuse before writing
+
+Before writing logic, search the repo for code that already does the same job (a check, a cache, a parser, a helper). Reuse or extend it. When two places need the same thing, make one shared helper or base interface and have both use it. Never write a second version. Every agent spec includes this check.
