@@ -158,15 +158,15 @@ describe("format flow tags", () => {
   test("keeps a long expression attribute wrapped like the source", async () => {
     const source = `<ol>
   <li class="row" animate={[
-    { style: PRESET.SLIDE_UP, when: WHEN.ATTACH, duration: 300 },
-    { style: fadeOut, when: WHEN.DETACH, duration: 200 },
+    { play: PRESET.SLIDE_UP, on: ON.ATTACH, duration: 300 },
+    { play: fadeOut, on: ON.DETACH, duration: 200 },
   ]}>
     <span>{task.title}</span>
   </li>
 </ol>`;
     const output = await formatLusia(realHost, source);
     expect(output).toContain('<li\n    class="row"\n    animate={[');
-    expect(output).toContain("when: WHEN.ATTACH");
+    expect(output).toContain("on: ON.ATTACH");
     expect(await formatLusia(realHost, output)).toBe(output);
   });
 
