@@ -34,7 +34,7 @@ Run `bun run typecheck`, `bun run test` and `bun run build` before a commit.
 
 # 7. Commits and code
 
-Use Conventional Commits, one commit per logical change. Use full plain names and write no comment bloat.
+Use Conventional Commits, one commit per logical change. Use full plain names and write no comment bloat. Before committing, look for the issue the change belongs to and reference it: `refs #N`, or `fixes #N` when the commit finishes it.
 
 # 8. Update workflow opens a PR
 
