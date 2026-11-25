@@ -2,7 +2,7 @@
   "name": "lusia-vscode",
   "displayName": "Lusia",
   "description": "Make .lusia files easy to write: colors, autocomplete, errors, format.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "lusia",
   "license": "MIT",
   "icon": "icon.png",
