@@ -21,6 +21,10 @@ function hostReturning(tokens: SemanticToken[]): LusiaHost {
       "parameter",
       "class",
       "enumMember",
+      "lusiaBranch",
+      "lusiaLoop",
+      "lusiaSlot",
+      "lusiaHint",
     ],
     TOKEN_MODIFIERS: ["readonly"],
   };
@@ -48,6 +52,10 @@ describe("semantic tokens provider", () => {
       "parameter",
       "class",
       "enumMember",
+      "lusiaBranch",
+      "lusiaLoop",
+      "lusiaSlot",
+      "lusiaHint",
     ]);
     expect(SEMANTIC_TOKENS_LEGEND.tokenModifiers).toEqual(["readonly"]);
   });

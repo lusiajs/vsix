@@ -11,6 +11,10 @@ const LEGEND_TYPES = [
   "parameter",
   "class",
   "enumMember",
+  "lusiaBranch",
+  "lusiaLoop",
+  "lusiaSlot",
+  "lusiaHint",
 ];
 const LEGEND_MODIFIERS = ["readonly"];
 

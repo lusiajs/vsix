@@ -48,6 +48,22 @@
     "configurationDefaults": {
       "emmet.includeLanguages": {
         "lusia": "html"
+      },
+      "editor.semanticTokenColorCustomizations": {
+        "rules": {
+          "lusiaBranch:lusia": {
+            "bold": true
+          },
+          "lusiaLoop:lusia": {
+            "bold": true
+          },
+          "lusiaSlot:lusia": {
+            "bold": true
+          },
+          "lusiaHint:lusia": {
+            "bold": true
+          }
+        }
       }
     },
     "languages": [
@@ -113,10 +129,22 @@
             "entity.other.attribute-name.html"
           ],
           "class": [
-            "entity.name.tag.html"
+            "entity.name.type.class.lusia"
           ],
           "enumMember": [
             "variable.other.enummember"
+          ],
+          "lusiaBranch": [
+            "keyword.control.conditional.lusia"
+          ],
+          "lusiaLoop": [
+            "keyword.control.loop.lusia"
+          ],
+          "lusiaSlot": [
+            "storage.type.lusia"
+          ],
+          "lusiaHint": [
+            "storage.modifier.lusia"
           ]
         }
       }
@@ -125,6 +153,28 @@
       {
         "command": "lusia.reloadHost",
         "title": "Lusia: Reload language host"
+      }
+    ],
+    "semanticTokenTypes": [
+      {
+        "id": "lusiaBranch",
+        "superType": "keyword",
+        "description": "Lusia branch tag: IF, ELSEIF, ELSE"
+      },
+      {
+        "id": "lusiaLoop",
+        "superType": "keyword",
+        "description": "Lusia loop tag: EACH, FOR"
+      },
+      {
+        "id": "lusiaSlot",
+        "superType": "keyword",
+        "description": "Lusia slot tag: CONTENT, HTML, FALLBACK"
+      },
+      {
+        "id": "lusiaHint",
+        "superType": "keyword",
+        "description": "Lusia render hint tag: NO_LAZY, NO_SSR"
       }
     ]
   },
