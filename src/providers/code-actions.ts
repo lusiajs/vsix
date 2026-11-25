@@ -10,6 +10,7 @@ import { animateRenameFix, isRenameMessage } from "../logic/animate-renames.ts";
 import { hostFor, type HostSource } from "../host/source.ts";
 import type { LusiaHost } from "../host/types.ts";
 import { rangeOf } from "./common.ts";
+import { addPropInserts, missingPropName, type PropInsert } from "../ts/props-fix.ts";
 
 export class LusiaCodeActionProvider implements vscode.CodeActionProvider {
   constructor(private readonly hosts: HostSource = hostFor) {}
@@ -32,8 +33,51 @@ export class LusiaCodeActionProvider implements vscode.CodeActionProvider {
       ).map((action) => cssAction(document, action)),
       ...lintActions(host, document, context.diagnostics),
       ...renameActions(document, context.diagnostics),
+      ...addPropActions(host, document, context.diagnostics),
     ];
   }
+}
+
+function addPropActions(
+  host: LusiaHost,
+  document: vscode.TextDocument,
+  diagnostics: readonly vscode.Diagnostic[],
+): vscode.CodeAction[] {
+  const actions: vscode.CodeAction[] = [];
+  for (const diagnostic of diagnostics) {
+    const name = missingPropOf(document, diagnostic);
+    if (name === undefined) continue;
+    const inserts = addPropInserts(host, document.getText(), name);
+    if (inserts.length === 0) continue;
+    actions.push(addPropAction(document, diagnostic, name, inserts));
+  }
+  return actions;
+}
+
+/** The name the diagnostic reports, when it is the text of a read such as `size` in `{size}` or `p.size`. */
+function missingPropOf(document: vscode.TextDocument, diagnostic: vscode.Diagnostic): string | undefined {
+  if (diagnostic.source !== "typescript") return undefined;
+  const name = missingPropName(diagnostic.message);
+  const text = document.getText();
+  const range = diagnostic.range;
+  const readText = text.slice(document.offsetAt(range.start), document.offsetAt(range.end));
+  return name !== undefined && readText === name ? name : undefined;
+}
+
+function addPropAction(
+  document: vscode.TextDocument,
+  diagnostic: vscode.Diagnostic,
+  name: string,
+  inserts: PropInsert[],
+): vscode.CodeAction {
+  const action = new vscode.CodeAction(`Add \`${name}\` to props`, vscode.CodeActionKind.QuickFix);
+  action.diagnostics = [diagnostic];
+  const edit = new vscode.WorkspaceEdit();
+  for (const insert of inserts) {
+    edit.insert(document.uri, document.positionAt(insert.offset), insert.text);
+  }
+  action.edit = edit;
+  return action;
 }
 
 const RENAME_SOURCES: ReadonlySet<string | undefined> = new Set([

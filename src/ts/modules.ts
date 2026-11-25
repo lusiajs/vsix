@@ -1,7 +1,6 @@
 import { basename } from "node:path";
 import { readFileSync } from "node:fs";
 import type { LusiaHost } from "../host/types.ts";
-import { expressionEnd } from "./scan.ts";
 import { flowDeclarations } from "./flow-declarations.ts";
 import { virtualScript } from "./virtual.ts";
 
@@ -9,7 +8,6 @@ export interface VirtualSink {
   set(fileName: string, text: string): void;
 }
 
-const PROPS_CALL = /\bprops\s*(?:<[^>()]*>)?\s*\(\s*\{/;
 const sources = new Map<string, { text: string; version: number }>();
 let serial = 0;
 
@@ -54,7 +52,7 @@ export function componentModule(
 
 export function componentSource(host: LusiaHost, text: string): string {
   const virtual = virtualScript(host, text);
-  return `${virtual.text}${flowDeclarations(virtual.flowNames)}${propsDeclaration(scriptOf(host, text))}`;
+  return `${virtual.text}${flowDeclarations(virtual.flowNames)}${propsDeclaration(host, text)}`;
 }
 
 function readComponent(fileName: string): string | undefined {
@@ -84,18 +82,15 @@ function componentShim(childPath: string): string {
   ].join("\n");
 }
 
-function propsDeclaration(script: string): string {
-  const call = PROPS_CALL.exec(script) ?? undefined;
-  const open = call === undefined ? -1 : call.index + call[0].length - 1;
-  const close = open === -1 ? -1 : expressionEnd(script, open);
-  if (open === -1 || close === -1) return "\nexport type LusiaProps = {};\n";
+function propsDeclaration(host: LusiaHost, text: string): string {
+  const script = scriptOf(host, text);
+  const call = host.parseProps.findPropsCall(script);
+  if (call === undefined) return "\nexport type LusiaProps = {};\n";
+  const fields = call.names.length > 0 ? call.names.map((name) => JSON.stringify(name)).join(" | ") : "never";
   return [
     "",
-    'import { props as __lusiaProps } from "lusiajs";',
-    "type __LusiaPropValue<P> = P extends { readonly value: infer V } ? V : P;",
-    `const __lusiaDefaults = (${script.slice(open, close + 1)});`,
-    "const __lusiaPropsObject = __lusiaProps(__lusiaDefaults);",
-    "export type LusiaProps = { [K in keyof typeof __lusiaPropsObject]: __LusiaPropValue<(typeof __lusiaPropsObject)[K]> };",
+    `const __PropsClass = ${script.slice(call.classStart, call.classEnd)};`,
+    `export type LusiaProps = Partial<Pick<InstanceType<typeof __PropsClass>, ${fields}>>;`,
     "",
   ].join("\n");
 }

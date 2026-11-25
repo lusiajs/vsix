@@ -16,7 +16,7 @@
   "Lusia props": {
     "prefix": "props",
     "description": "Declare props with defaults",
-    "body": ["const { ${1:label} } = props({ ${1:label}: ${2:\"New\"} });"]
+    "body": ["const { ${1:label} } = props(class {", "\t${1:label} = ${2:\"New\"};", "});"]
   },
   "Lusia component with props": {
     "prefix": "lusia-props",

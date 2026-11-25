@@ -478,6 +478,29 @@ describe("style wiring", () => {
     expect(actions[0]?.diagnostics).toEqual([diagnostic]);
     expect(actions[0]?.edit?.size).toBe(1);
   });
+
+  test("offers to add a missing prop to props", async () => {
+    const text = `<script>\nimport { props } from "lusiajs";\nconst p = props(class {\n  label = "New";\n});\n</script>\n<p>{p.size}</p>\n`;
+    const document = fakeDocument(join(workspace.root, "Prop.lusia"), text);
+    const start = document.positionAt(text.indexOf("p.size") + 2);
+    const end = document.positionAt(text.indexOf("size", text.indexOf("p.size")) + 4);
+    const diagnostic = new vscode.Diagnostic(
+      new vscode.Range(start, end),
+      "Property 'size' does not exist on type 'PropsClass'.",
+      vscode.DiagnosticSeverity.Error,
+    );
+    diagnostic.source = "typescript";
+    const actions = await mocked(
+      new LusiaCodeActionProvider(realHosts),
+    ).provideCodeActions(document, diagnostic.range, {
+      diagnostics: [diagnostic],
+    });
+    expect(actions.map((action: any) => action.title)).toEqual([
+      "Add `size` to props",
+    ]);
+    expect(actions[0]?.kind).toBe(vscode.CodeActionKind.QuickFix);
+    expect(actions[0]?.edit?.size).toBe(1);
+  });
 });
 
 describe("diagnostic wiring", () => {

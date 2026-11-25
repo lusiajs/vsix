@@ -11,9 +11,12 @@ export function greet(name: string): { text: string; length: number } {
 
 const BADGE = `<script>
 import { props } from "lusiajs";
-const { label, size } = props({ label: "New", size: 1 });
+const { label, size } = props(class {
+  label = "New";
+  size = 1;
+});
 </script>
-<span>{label.value}</span>
+<span>{label}</span>
 `;
 
 const workspace = createWorkspace({ "util.ts": UTIL });
