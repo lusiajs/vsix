@@ -30,11 +30,11 @@
     "package": "bun run build && bunx @vscode/vsce package"
   },
   "devDependencies": {
-    "lusiajs": "^0.2.0-beta",
     "@types/bun": "latest",
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.80.0",
     "html-validate": "^11.21.1",
+    "lusiajs": "^0.2.1-beta.1",
     "prettier": "^3.10.1",
     "sass-graph": "^4.0.1",
     "scss-symbols-parser": "^2.0.1",
