@@ -23,6 +23,8 @@ const CONFIG: ConfigData = {
 
 const START_TAG = /^<([A-Za-z][\w.-]*)/;
 const NO_SELF_CLOSING = "no-self-closing";
+// ELSE and ELSEIF split an IF into branches and never close, so the checker must not see them.
+const BRANCH_TAG = /<(?:ELSEIF|ELSE)(?=[\s/>])[^>]*>/g;
 
 let validator: Promise<HtmlValidate> | undefined;
 
@@ -60,7 +62,7 @@ function htmlValidate(): Promise<HtmlValidate> {
 
 /** The markup with section content and expressions blanked, on the same offsets and lines. */
 function markupView(host: LusiaHost, text: string): string {
-  return blankExpressions(host, blankSections(host, text));
+  return blankBranchTags(blankExpressions(host, blankSections(host, text)));
 }
 
 function blankSections(host: LusiaHost, text: string): string {
@@ -92,6 +94,10 @@ function blankExpressions(host: LusiaHost, text: string): string {
     index++;
   }
   return view;
+}
+
+function blankBranchTags(text: string): string {
+  return text.replace(BRANCH_TAG, (tag) => blank(tag, " "));
 }
 
 function blank(value: string, filler: string): string {

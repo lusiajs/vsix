@@ -215,6 +215,12 @@ const view = { count: 1 };
     expect(await htmlDiagnostics(realHost, text)).toEqual([]);
   });
 
+  test("accepts ELSE and ELSEIF branches inside an IF", async () => {
+    const text =
+      "<li>\n<IF {a}>\n<b>x</b>\n<ELSEIF {b}>\n<i>y</i>\n<ELSE>\n<span>z</span>\n</IF>\n</li>";
+    expect(await htmlDiagnostics(realHost, text)).toEqual([]);
+  });
+
   test("reports self-closed plain tags but not Lusia tags", async () => {
     const text = `<script>import Badge from "./Badge.lusia";</script><div /><Badge /><CONTENT />`;
     expect(await htmlDiagnostics(realHost, text)).toEqual([
