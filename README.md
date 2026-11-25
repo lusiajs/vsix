@@ -4,7 +4,7 @@
 
 Editor support for `.lusia` components: colors, completion, errors and formatting.
 
-Works with `lusiajs` 0.1.1-beta and `@lusiajs/vscode-support` 0.1.2-beta, and later 0.1 versions.
+Works with `lusiajs` 0.2.x (0.2.0-beta and later 0.2 versions).
 ## Features
 
 | Feature               | What you get                                                                                                                                        |

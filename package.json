@@ -30,7 +30,7 @@
     "package": "bun run build && bunx @vscode/vsce package"
   },
   "devDependencies": {
-    "lusiajs": "^0.1.5-beta",
+    "lusiajs": "^0.2.0-beta",
     "@types/bun": "latest",
     "@types/node": "^22.0.0",
     "@types/vscode": "^1.80.0",

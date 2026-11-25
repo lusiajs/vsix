@@ -192,4 +192,22 @@ describe("flow tags, events and bind-value in the grammar", () => {
       "keyword.other.bind.lusia",
     );
   });
+
+  test("NO_LAZY and NO_SSR are flow keywords", async () => {
+    const lines = await tokenizeLusia("<NO_LAZY />\n<NO_SSR />");
+    expect(tokenOn(lines, 0, "NO_LAZY")?.scopes).toContain(
+      "keyword.control.flow.lusia",
+    );
+    expect(tokenOn(lines, 1, "NO_SSR")?.scopes).toContain(
+      "keyword.control.flow.lusia",
+    );
+  });
+
+  test("top-level head is a plain HTML tag", async () => {
+    const lines = await tokenizeLusia("<head>\n  <title>{name}</title>\n</head>");
+    expect(tokenOn(lines, 0, "head")?.scopes).toContain("entity.name.tag.html");
+    expect(tokenOn(lines, 0, "head")?.scopes).not.toContain(
+      "keyword.control.flow.lusia",
+    );
+  });
 });

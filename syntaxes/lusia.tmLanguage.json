@@ -18,7 +18,7 @@
       ]
     },
     "flow-open": {
-      "begin": "(<)(IF|ELSEIF|ELSE|EACH|FOR|CONTENT|HTML|FALLBACK|NOLAZY)(?=[\\s/>])",
+      "begin": "(<)(IF|ELSEIF|ELSE|EACH|FOR|CONTENT|HTML|FALLBACK|NO_LAZY|NO_SSR)(?=[\\s/>])",
       "end": "(/?>)",
       "beginCaptures": {
         "1": { "name": "punctuation.definition.tag.begin.html" },
